@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestión de Personas</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+
+<body>
+  <div class="app">
+
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">📋</div>
+        <p id="totalPersonas">0 personas cargadas</p>
+      </div>
+
+      <button id="btnPanel" class="nav-btn active">
+        <span>🏠</span>
+        <span>Panel Principal</span>
+      </button>
+      <button id="btnAgenda" class="nav-btn">
+  <span>📒</span>
+  <span>Agenda</span>
+</button>
+
+<button id="btnCalcular" class="nav-btn">
+  <span>🧮</span>
+  <span>Calcular</span>
+</button>
+
+<button id="btnLibro" class="nav-btn">
+  <span>📘</span>
+  <span>Libro</span>
+</button>
+
+      <div class="section-title">BASES DE DATOS</div>
+      <div id="categoriasSidebar"></div>
+
+      <div class="new-db-box">
+        <button id="btnMostrarNuevaCat" class="new-db-btn">＋ Nueva base de datos</button>
+
+        <div id="formNuevaCat" class="new-db-form hidden">
+          <input id="inputNuevaCat" placeholder="Nombre de categoría..." />
+          <div class="mini-actions">
+            <button id="btnGuardarNuevaCat">Agregar</button>
+            <button id="btnCancelarNuevaCat">Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="content">
+
+      <section id="panelView" class="view">
+        <div class="container">
+
+          <div class="topbar">
+            <div>
+              <h1>Panel Principal</h1>
+              <p>Cargá una nueva persona y asignala a una base de datos</p>
+            </div>
+
+            <button id="btnCargarPersona" class="primary">+ Cargar Persona</button>
+          </div>
+
+          <div id="formPersona" class="form-card hidden">
+            <h2 id="formTitle">➕ Nueva Persona</h2>
+
+            <div class="grid-form">
+              <label>
+                Nombre *
+                <input id="nombre" placeholder="Nombre completo" />
+              </label>
+
+              <label>
+                Celular
+                <input id="celular" placeholder="Ej: 2926-123456" />
+              </label>
+
+              <label>
+                Dirección
+                <input id="direccion" placeholder="Calle y número" />
+              </label>
+
+              <label>
+                Barrio
+                <input id="barrio" placeholder="Nombre del barrio" />
+              </label>
+
+              <label class="full">
+                Motivo de consulta
+                <textarea id="motivo" rows="3" placeholder="Describir el motivo de consulta..."></textarea>
+              </label>
+
+              <label class="full">
+                Base de datos de destino *
+                <select id="categoriaSelect"></select>
+              </label>
+
+              <label>
+                Fecha de carga
+                <input id="fechaCarga" type="date" />
+              </label>
+            </div>
+
+            <div id="destinoAviso" class="destino-aviso hidden"></div>
+
+            <div class="actions">
+              <button id="btnGuardarPersona" class="primary">Guardar Persona</button>
+              <button id="btnCancelarPersona" class="secondary">Cancelar</button>
+            </div>
+          </div>
+
+          <div id="cardsCategorias" class="cards-grid"></div>
+
+        </div>
+      </section>
+
+      <section id="categoriaView" class="view hidden">
+        <div class="container">
+          <div id="categoriaHeader" class="cat-header"></div>
+
+          <input
+            id="busqueda"
+            class="search"
+            placeholder="🔍 Buscar por nombre, barrio o celular..."
+          />
+
+          <div id="personasLista" class="personas-lista"></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="./renderer.js?v=1"></script>
+</body>
+</html>
