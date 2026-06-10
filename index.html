@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gestión de Personas</title>
-  <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="./style.css?v=20260610-resaltador-espacio-labels" />
 </head>
 
 <body>
@@ -20,20 +20,26 @@
         <span>🏠</span>
         <span>Panel Principal</span>
       </button>
+
       <button id="btnAgenda" class="nav-btn">
-  <span>📒</span>
-  <span>Agenda</span>
-</button>
+        <span>📒</span>
+        <span>Agenda</span>
+      </button>
 
-<button id="btnCalcular" class="nav-btn">
-  <span>🧮</span>
-  <span>Calcular</span>
-</button>
+      <button id="btnCalcular" class="nav-btn">
+        <span>🧮</span>
+        <span>Calcular</span>
+      </button>
 
-<button id="btnLibro" class="nav-btn">
-  <span>📘</span>
-  <span>Libro</span>
-</button>
+      <button id="btnLibro" class="nav-btn">
+        <span>📘</span>
+        <span>Libro</span>
+      </button>
+
+      <button id="btnGraficos" class="nav-btn">
+        <span>📊</span>
+        <span>Gráficos</span>
+      </button>
 
       <div class="section-title">BASES DE DATOS</div>
       <div id="categoriasSidebar"></div>
@@ -42,7 +48,15 @@
         <button id="btnMostrarNuevaCat" class="new-db-btn">＋ Nueva base de datos</button>
 
         <div id="formNuevaCat" class="new-db-form hidden">
-          <input id="inputNuevaCat" placeholder="Nombre de categoría..." />
+          <div class="tipo-base-box">
+            <button type="button" id="tipoBaseNormal" class="tipo-base-btn active">📁 Base normal</button>
+            <button type="button" id="tipoBaseBarrio" class="tipo-base-btn">🏘️ Base para barrios</button>
+          </div>
+
+          <input id="inputNuevaCat" placeholder="Nombre de la base de datos..." />
+
+          <input id="tipoNuevaCat" type="hidden" value="normal" />
+
           <div class="mini-actions">
             <button id="btnGuardarNuevaCat">Agregar</button>
             <button id="btnCancelarNuevaCat">Cancelar</button>
@@ -135,6 +149,7 @@
     </main>
   </div>
 
-  <script src="./renderer.js?v=1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <script src="./renderer.js?v=20260610-resaltador-espacio-labels"></script>
 </body>
 </html>
