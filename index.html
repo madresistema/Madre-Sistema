@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gestión de Personas</title>
-  <link rel="stylesheet" href="./style.css?v=20260610-resaltador-espacio-labels" />
+  <link rel="stylesheet" href="./style.css?v=20260610-seguimiento-editor-cuadros" />
 </head>
 
 <body>
@@ -76,7 +76,8 @@
               <p>Cargá una nueva persona y asignala a una base de datos</p>
             </div>
 
-            <button id="btnCargarPersona" class="primary">+ Cargar Persona</button>
+            <button id="btnCrearArchivo" class="primary ghost">🧾 Crear archivo</button>
+          <button id="btnCargarPersona" class="primary">+ Cargar Persona</button>
           </div>
 
           <div id="formPersona" class="form-card hidden">
@@ -150,6 +151,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-  <script src="./renderer.js?v=20260610-resaltador-espacio-labels"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="./renderer.js?v=20260610-seguimiento-editor-cuadros"></script>
 </body>
 </html>
