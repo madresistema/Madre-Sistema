@@ -42,7 +42,7 @@ const CATEGORIAS_DEFAULT = [
 
 let categorias = [];
 let categoriasEliminadas = [];
-let modoEliminarBases = false;
+let modoEditarBases = false;
 let personas = [];
 let registros = [];
 let planos = [];
@@ -69,6 +69,8 @@ let libroEditorActivo = null;
 let libroUltimoRango = null;
 let libroPasandoPagina = "";
 let libroPaginaSeleccionada = 0;
+let encuestaPendienteRevision = null;
+let encuestaOCRTrabajando = false;
 
 const $ = (id) => document.getElementById(id);
 
@@ -109,6 +111,7 @@ function guardarStorage() {
   localStorage.setItem("agendas", JSON.stringify(agendas));
   localStorage.setItem("notasCalcular", JSON.stringify(notasCalcular));
   localStorage.setItem("libroPaginas", JSON.stringify(libroPaginas));
+  localStorage.setItem("baseOrden", JSON.stringify(categorias.map((c) => Number(c.id))));
 }
 
 function cargarStorage() {
@@ -167,6 +170,334 @@ function cargarStorage() {
 // ===============================
 
 
+
+function iconoPorTipoBase(tipo) {
+  if (tipo === "barrio") return "🏘️";
+  return "📁";
+}
+
+function colorAleatorioBase() {
+  const colores = ["indigo", "blue", "green", "purple", "orange", "pink", "gray", "yellow"];
+  return colores[Math.floor(Math.random() * colores.length)];
+}
+
+
+function moverBaseDatos(catId, direccion) {
+  const cat = categorias.find((c) => Number(c.id) === Number(catId));
+  if (!cat) return;
+
+  const mismaSeccion = (c) => {
+    if (cat.parent === "Barrios") return c.parent === "Barrios";
+    return !c.parent && c.tipo !== "barrio";
+  };
+
+  const visibles = categorias.filter(mismaSeccion);
+  const actual = visibles.findIndex((c) => Number(c.id) === Number(catId));
+  if (actual === -1) return;
+
+  const nuevo = actual + direccion;
+
+  if (nuevo < 0 || nuevo >= visibles.length) return;
+
+  const a = visibles[actual];
+  const b = visibles[nuevo];
+
+  const ia = categorias.findIndex((c) => Number(c.id) === Number(a.id));
+  const ib = categorias.findIndex((c) => Number(c.id) === Number(b.id));
+
+  if (ia === -1 || ib === -1) return;
+
+  const temp = categorias[ia];
+  categorias[ia] = categorias[ib];
+  categorias[ib] = temp;
+
+  localStorage.setItem("baseOrden", JSON.stringify(categorias.map((c) => Number(c.id))));
+  guardarStorage();
+  renderSidebar();
+  renderPanel();
+
+  if (catActiva && Number(catActiva.id) === Number(catId)) {
+    catActiva = categorias.find((c) => Number(c.id) === Number(catId));
+  }
+}
+
+function subirPosicionBase(catId) {
+  moverBaseDatos(catId, -1);
+}
+
+function bajarPosicionBase(catId) {
+  moverBaseDatos(catId, 1);
+}
+
+
+function datosDeBase(catId) {
+  const cat = categorias.find((c) => Number(c.id) === Number(catId));
+  if (!cat) return null;
+
+  if (cat.tipo === "barrio") {
+    return {
+      version: 1,
+      tipo: "barrio",
+      categoria: cat,
+      planos: planos.filter((p) => Number(p.barrio_id) === Number(catId)),
+      encuestas: encuestas.filter((e) => Number(e.barrio_id) === Number(catId)),
+      exportado: new Date().toISOString()
+    };
+  }
+
+  return {
+    version: 1,
+    tipo: "normal",
+    categoria: cat,
+    personas: personas.filter((p) => Number(p.categoria_id) === Number(catId)),
+    registros: registros.filter((r) => Number(r.categoria_id) === Number(catId)),
+    exportado: new Date().toISOString()
+  };
+}
+
+function descargarArchivoTexto(nombre, texto) {
+  const blob = new Blob([texto], { type: "application/json;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = nombre;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  URL.revokeObjectURL(url);
+}
+
+function bajarBaseDatos(catId) {
+  const data = datosDeBase(catId);
+  if (!data) {
+    alert("No se encontró la base de datos.");
+    return;
+  }
+
+  const nombre = nombreArchivoSeguro(`base-${data.categoria.nombre}`) + ".json";
+  descargarArchivoTexto(nombre, JSON.stringify(data, null, 2));
+}
+
+function subirBaseDatos(catId) {
+  const cat = categorias.find((c) => Number(c.id) === Number(catId));
+  if (!cat) {
+    alert("No se encontró la base de datos.");
+    return;
+  }
+
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".json,application/json";
+
+  input.onchange = () => {
+    const archivo = input.files && input.files[0];
+    if (!archivo) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+      try {
+        const data = JSON.parse(String(e.target.result || "{}"));
+
+        const ok = confirm(
+          `¿Seguro que quieres subir datos a la base "${cat.nombre}"?\n\n` +
+          `Aceptar = importar datos\n` +
+          `Cancelar = no importar`
+        );
+
+        if (!ok) return;
+
+        importarDatosEnBase(cat, data);
+      } catch (error) {
+        alert("El archivo no es una base de datos válida.");
+      }
+    };
+
+    reader.readAsText(archivo, "utf-8");
+  };
+
+  input.click();
+}
+
+function importarDatosEnBase(cat, data) {
+  if (cat.tipo === "barrio") {
+    const nuevosPlanos = Array.isArray(data.planos) ? data.planos : [];
+    const nuevasEncuestas = Array.isArray(data.encuestas) ? data.encuestas : [];
+
+    nuevosPlanos.forEach((p) => {
+      planos.push({
+        ...p,
+        id: Date.now() + Math.floor(Math.random() * 999999),
+        barrio_id: cat.id,
+        barrio_nombre: cat.nombre
+      });
+    });
+
+    nuevasEncuestas.forEach((e) => {
+      encuestas.push({
+        ...e,
+        id: Date.now() + Math.floor(Math.random() * 999999),
+        barrio_id: cat.id,
+        barrio_nombre: cat.nombre
+      });
+    });
+  } else {
+    const nuevasPersonas = Array.isArray(data.personas) ? data.personas : [];
+    const nuevosRegistros = Array.isArray(data.registros) ? data.registros : [];
+
+    const mapaIds = {};
+
+    nuevasPersonas.forEach((p) => {
+      const nuevoId = Date.now() + Math.floor(Math.random() * 999999);
+      mapaIds[p.id] = nuevoId;
+
+      personas.push({
+        ...p,
+        id: nuevoId,
+        categoria_id: cat.id
+      });
+    });
+
+    nuevosRegistros.forEach((r) => {
+      registros.push({
+        ...r,
+        id: Date.now() + Math.floor(Math.random() * 999999),
+        persona_id: mapaIds[r.persona_id] || r.persona_id,
+        categoria_id: cat.id
+      });
+    });
+  }
+
+  guardarStorage();
+  renderTodo();
+  alert("Base de datos subida correctamente.");
+}
+
+function editarNombreBase(catId) {
+  const cat = categorias.find((c) => Number(c.id) === Number(catId));
+  if (!cat) return;
+
+  const nuevoNombre = prompt("Nuevo nombre de la base de datos:", cat.nombre);
+  if (!nuevoNombre || !nuevoNombre.trim()) return;
+
+  const nombreLimpio = nuevoNombre.trim();
+
+  const existe = categorias.some(
+    (c) => Number(c.id) !== Number(catId) &&
+    String(c.nombre).toLowerCase() === nombreLimpio.toLowerCase()
+  );
+
+  if (existe) {
+    alert("Ya existe una base de datos con ese nombre.");
+    return;
+  }
+
+  const nombreAnterior = cat.nombre;
+  cat.nombre = nombreLimpio;
+
+  if (cat.tipo === "barrio") {
+    planos = planos.map((p) =>
+      Number(p.barrio_id) === Number(catId)
+        ? { ...p, barrio_nombre: nombreLimpio }
+        : p
+    );
+
+    encuestas = encuestas.map((e) =>
+      Number(e.barrio_id) === Number(catId)
+        ? { ...e, barrio_nombre: nombreLimpio }
+        : e
+    );
+  }
+
+  categorias = ordenarCategorias(categorias);
+
+  guardarStorage();
+  renderTodo();
+
+  if (catActiva && Number(catActiva.id) === Number(catId)) {
+    catActiva = categorias.find((c) => Number(c.id) === Number(catId));
+    renderTodo();
+  }
+}
+
+function confirmarEliminarBase(catId) {
+  const cat = categorias.find((c) => Number(c.id) === Number(catId));
+
+  if (!cat) {
+    alert("No se encontró la base de datos.");
+    return;
+  }
+
+  let detalle = "";
+
+  if (cat.tipo === "barrio") {
+    const totalPlanos = planos.filter((p) => Number(p.barrio_id) === Number(catId)).length;
+    const totalEncuestas = encuestas.filter((e) => Number(e.barrio_id) === Number(catId)).length;
+
+    detalle =
+      `También se eliminarán ${totalPlanos} plano${totalPlanos !== 1 ? "s" : ""} ` +
+      `y ${totalEncuestas} encuesta${totalEncuestas !== 1 ? "s" : ""}.`;
+  } else {
+    const totalPersonas = personas.filter((p) => Number(p.categoria_id) === Number(catId)).length;
+    const totalRegistros = registros.filter((r) => Number(r.categoria_id) === Number(catId)).length;
+
+    detalle =
+      `También se eliminarán ${totalPersonas} persona${totalPersonas !== 1 ? "s" : ""} ` +
+      `y ${totalRegistros} registro${totalRegistros !== 1 ? "s" : ""}.`;
+  }
+
+  const confirmar = confirm(
+    `¿Seguro que quieres eliminar esta base de datos?\n\n` +
+    `Base: "${cat.nombre}"\n\n` +
+    `${detalle}\n\n` +
+    `Aceptar = Sí, eliminar\n` +
+    `Cancelar = No, conservar`
+  );
+
+  if (!confirmar) return;
+
+  eliminarBaseDatosConfirmada(catId);
+}
+
+function eliminarBaseDatosConfirmada(catId) {
+  const cat = categorias.find((c) => Number(c.id) === Number(catId));
+  if (!cat) return;
+
+  categorias = categorias.filter((c) => Number(c.id) !== Number(catId));
+
+  if (esCategoriaDefault(cat)) {
+    categoriasEliminadas.push(cat.id);
+    categoriasEliminadas.push(cat.nombre);
+    categoriasEliminadas = [...new Set(categoriasEliminadas.map(String))];
+  }
+
+  if (cat.tipo === "barrio") {
+    planos = planos.filter((p) => Number(p.barrio_id) !== Number(catId));
+    encuestas = encuestas.filter((e) => Number(e.barrio_id) !== Number(catId));
+  } else {
+    personas = personas.filter((p) => Number(p.categoria_id) !== Number(catId));
+    registros = registros.filter((r) => Number(r.categoria_id) !== Number(catId));
+  }
+
+  localStorage.setItem("baseOrden", JSON.stringify(categorias.map((c) => Number(c.id))));
+
+  if (catActiva && Number(catActiva.id) === Number(catId)) {
+    catActiva = null;
+    vista = "panel";
+    $("panelView").classList.remove("hidden");
+    $("categoriaView").classList.add("hidden");
+    $("busqueda").style.display = "block";
+    activarNavPrincipal("btnPanel");
+  }
+
+  guardarStorage();
+  renderTodo();
+}
+
+
+
 function esCategoriaDefault(cat) {
   return CATEGORIAS_DEFAULT.some(
     (c) => Number(c.id) === Number(cat.id) || String(c.nombre).toLowerCase() === String(cat.nombre).toLowerCase()
@@ -178,19 +509,31 @@ function puedeBorrarCategoria(cat) {
 }
 
 function ordenarCategorias(lista) {
-  const orden = CATEGORIAS_DEFAULT.map((cat) => cat.nombre);
+  const guardado = JSON.parse(localStorage.getItem("baseOrden") || "[]").map(Number);
+  const ordenDefault = CATEGORIAS_DEFAULT.map((cat) => Number(cat.id));
 
   return [...lista].sort((a, b) => {
-    const ia = orden.indexOf(a.nombre);
-    const ib = orden.indexOf(b.nombre);
+    const aid = Number(a.id);
+    const bid = Number(b.id);
 
-    if (ia !== -1 && ib !== -1) return ia - ib;
-    if (ia !== -1) return -1;
-    if (ib !== -1) return 1;
+    const ga = guardado.indexOf(aid);
+    const gb = guardado.indexOf(bid);
 
-    return String(a.nombre).localeCompare(String(b.nombre));
+    if (ga !== -1 && gb !== -1) return ga - gb;
+    if (ga !== -1) return -1;
+    if (gb !== -1) return 1;
+
+    const da = ordenDefault.indexOf(aid);
+    const db = ordenDefault.indexOf(bid);
+
+    if (da !== -1 && db !== -1) return da - db;
+    if (da !== -1) return -1;
+    if (db !== -1) return 1;
+
+    return aid - bid;
   });
 }
+
 
 function formatPersonas(n) {
   return `${n} persona${n !== 1 ? "s" : ""}`;
@@ -205,11 +548,9 @@ function totalEnCategoria(catId) {
     return totalPlanos + totalEncuestas;
   }
 
-  if (Number(catId) === 10) return planos.length;
-  if (Number(catId) === 11) return encuestas.length;
-
   return personas.filter((p) => Number(p.categoria_id) === Number(catId)).length;
 }
+
 
 
 function escapeHtml(str) {
@@ -255,7 +596,36 @@ function nombreArchivoSeguro(nombre) {
 }
 
 async function descargarHTML(nombre, contenidoHtml) {
-  const html = `
+  const html = documentoHTMLParaPDF(nombre, contenidoHtml);
+  const nombrePdf = `${nombreArchivoSeguro(nombre)}.pdf`;
+
+  // Modo Electron: guarda PDF directo si la app está abierta como .exe/npm run dev.
+  if (window.api && typeof window.api.guardarPdfHTML === "function") {
+    const resultado = await window.api.guardarPdfHTML({
+      nombre: nombrePdf,
+      html
+    });
+
+    if (resultado?.cancelado) return;
+
+    if (resultado?.ok) {
+      alert(`PDF guardado correctamente en:
+${resultado.ruta}`);
+      return;
+    }
+
+    alert(resultado?.error || "No se pudo guardar el PDF.");
+    return;
+  }
+
+  // Modo web/GitHub/Chrome:
+  // Chrome no permite guardar un PDF directo desde una página estática sin backend.
+  // Por eso abrimos la vista lista para "Guardar como PDF".
+  abrirVentanaPDFWeb(nombre, html);
+}
+
+function documentoHTMLParaPDF(nombre, contenidoHtml) {
+  return `
     <!doctype html>
     <html lang="es">
     <head>
@@ -270,6 +640,16 @@ async function descargarHTML(nombre, contenidoHtml) {
         }
 
         h1 { margin-top: 0; }
+
+        .aviso-web-pdf {
+          background: #eff6ff;
+          border: 1px solid #bfdbfe;
+          border-radius: 12px;
+          padding: 12px;
+          margin-bottom: 18px;
+          color: #1e3a8a;
+          font-weight: 700;
+        }
 
         .card {
           border: 1px solid #ddd;
@@ -291,6 +671,8 @@ async function descargarHTML(nombre, contenidoHtml) {
           border: 1px solid #ddd;
           border-radius: 10px;
           background: #f3f4f6;
+          display: block;
+          margin: 10px 0;
         }
 
         iframe {
@@ -333,34 +715,85 @@ async function descargarHTML(nombre, contenidoHtml) {
           background-image: linear-gradient(#ffffff 39px, #dbeafe 40px);
           background-size: 100% 40px;
         }
+
+        @media print {
+          .no-print,
+          .aviso-web-pdf {
+            display: none !important;
+          }
+
+          body {
+            padding: 18px;
+          }
+
+          img {
+            break-inside: avoid;
+            page-break-inside: avoid;
+          }
+        }
       </style>
     </head>
     <body>${contenidoHtml}</body>
     </html>
   `;
+}
 
-  const nombrePdf = `${nombreArchivoSeguro(nombre)}.pdf`;
+function abrirVentanaPDFWeb(nombre, html) {
+  const ventana = window.open("", "_blank");
 
-  if (!(window.api && typeof window.api.guardarPdfHTML === "function")) {
-    alert("Para guardar PDF directo tenés que abrir la app desde el .exe o con npm run dev. Si abrís index.html en Chrome, el navegador no deja guardar archivos directo.");
+  if (!ventana) {
+    alert("Chrome bloqueó la ventana. Permití ventanas emergentes para descargar/imprimir PDF.");
     return;
   }
 
-  const resultado = await window.api.guardarPdfHTML({
-    nombre: nombrePdf,
-    html
+  ventana.document.open();
+  ventana.document.write(html.replace(
+    "<body>",
+    `<body>
+      <div class="aviso-web-pdf no-print">
+        Para descargar en PDF desde Google Chrome: elegí destino "Guardar como PDF" y tocá Guardar.
+      </div>`
+  ));
+  ventana.document.close();
+
+  esperarImagenesYPrint(ventana);
+}
+
+function esperarImagenesYPrint(ventana) {
+  const lanzarPrint = () => {
+    setTimeout(() => {
+      try {
+        ventana.focus();
+        ventana.print();
+      } catch (e) {}
+    }, 350);
+  };
+
+  const imgs = Array.from(ventana.document.images || []);
+
+  if (!imgs.length) {
+    lanzarPrint();
+    return;
+  }
+
+  let pendientes = imgs.length;
+  const listo = () => {
+    pendientes--;
+    if (pendientes <= 0) lanzarPrint();
+  };
+
+  imgs.forEach((img) => {
+    if (img.complete) {
+      listo();
+    } else {
+      img.onload = listo;
+      img.onerror = listo;
+    }
   });
 
-  if (resultado?.cancelado) return;
-
-  if (resultado?.ok) {
-    alert(`PDF guardado correctamente en:
-${resultado.ruta}`);
-    return;
-  }
-
-  alert(resultado?.error || "No se pudo guardar el PDF.");
+  setTimeout(lanzarPrint, 2500);
 }
+
 
 function abrirCorreo(asunto, cuerpo) {
   const mailto = `mailto:?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
@@ -382,28 +815,29 @@ function imprimirHTML(titulo, contenidoHtml) {
       <style>
         body { font-family: Arial, sans-serif; padding: 30px; color: #111827; }
         h1 { margin-top: 0; }
-        .card { border: 1px solid #ddd; border-radius: 12px; padding: 18px; margin-bottom: 16px; }
-        img { max-width: 100%; max-height: 760px; object-fit: contain; }
+        .card { border: 1px solid #ddd; border-radius: 12px; padding: 18px; margin-bottom: 16px; page-break-inside: avoid; }
+        img { max-width: 100%; max-height: 760px; object-fit: contain; display:block; margin:10px 0; }
         iframe { width: 100%; height: 760px; border: 1px solid #ddd; }
         pre { white-space: pre-wrap; font-size: 14px; }
         table { width:100%; border-collapse:collapse; }
         th, td { border: 1px solid #999; padding: 8px; vertical-align: top; }
         th { background: #818cf8; }
         .print-doble{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-        .pagina-print{border:1px solid #d1d5db;padding:25px;min-height:700px;background:white}
+        .pagina-print{border:1px solid #d1d5db;padding:25px;min-height:700px;background:white;page-break-inside:avoid}
         .pagina-print.lined{background-image:linear-gradient(#ffffff 39px,#dbeafe 40px);background-size:100% 40px}
-        @media print { button { display:none; } }
+        @media print { button { display:none; } img { break-inside: avoid; page-break-inside: avoid; } }
       </style>
     </head>
     <body>
       ${contenidoHtml}
-      <script>window.onload = function(){ setTimeout(function(){ window.print(); }, 300); }<\/script>
     </body>
     </html>
   `);
 
   ventana.document.close();
+  esperarImagenesYPrint(ventana);
 }
+
 
 function abrirFichaCorreoHTML(titulo, contenidoHtml, cuerpoTexto = "") {
   const ventana = window.open("", "_blank");
@@ -564,50 +998,53 @@ function init() {
 
 
 
-function asegurarBotonEliminarBases() {
+function asegurarBotonEditarBases() {
   const box = document.querySelector(".new-db-box");
   if (!box) return;
 
-  let btn = $("btnToggleEliminarBases");
+  let btn = $("btnToggleEditarBases");
 
   if (!btn) {
     btn = document.createElement("button");
-    btn.id = "btnToggleEliminarBases";
+    btn.id = "btnToggleEditarBases";
     btn.type = "button";
-    btn.className = "new-db-btn delete-db-toggle";
+    btn.className = "new-db-btn edit-db-toggle";
     box.appendChild(btn);
   }
 
   btn.onclick = () => {
-    modoEliminarBases = !modoEliminarBases;
-    actualizarBotonEliminarBases();
+    modoEditarBases = !modoEditarBases;
+    actualizarBotonEditarBases();
     renderSidebar();
     renderPanel();
   };
 
-  actualizarBotonEliminarBases();
+  actualizarBotonEditarBases();
 }
 
-function actualizarBotonEliminarBases() {
-  const btn = $("btnToggleEliminarBases");
+
+function actualizarBotonEditarBases() {
+  const btn = $("btnToggleEditarBases");
   if (!btn) return;
 
-  btn.textContent = modoEliminarBases
-    ? "✅ Terminar eliminación"
-    : "🗑️ Eliminar base de datos";
+  btn.textContent = modoEditarBases
+    ? "✅ Terminar edición"
+    : "✏️ Editar bases de datos";
 
-  btn.classList.toggle("activo", modoEliminarBases);
+  btn.classList.toggle("activo", modoEditarBases);
 }
+
 
 
 function bindEvents() {
-  asegurarBotonEliminarBases();
-  actualizarBotonEliminarBases();
+  asegurarBotonEditarBases();
+  actualizarBotonEditarBases();
   $("btnPanel").onclick = mostrarPanel;
 
   if ($("btnAgenda")) $("btnAgenda").onclick = mostrarAgenda;
   if ($("btnLibro")) $("btnLibro").onclick = mostrarLibro;
   if ($("btnCalcular")) $("btnCalcular").onclick = mostrarCalcular;
+  if ($("btnGraficos")) $("btnGraficos").onclick = mostrarGraficos;
 
   $("btnCargarPersona").onclick = () => {
     vista = "panel";
@@ -622,18 +1059,50 @@ function bindEvents() {
   $("btnMostrarNuevaCat").onclick = () => {
     $("btnMostrarNuevaCat").classList.add("hidden");
     $("formNuevaCat").classList.remove("hidden");
+
+    $("formNuevaCat").innerHTML = `
+      <div class="tipo-base-box">
+        <button type="button" id="tipoBaseNormal" class="tipo-base-btn active">📁 Base normal</button>
+        <button type="button" id="tipoBaseBarrio" class="tipo-base-btn">🏘️ Base para barrios</button>
+      </div>
+
+      <input id="inputNuevaCat" placeholder="Nombre de la base de datos..." />
+
+      <input id="tipoNuevaCat" type="hidden" value="normal" />
+
+      <div class="mini-actions">
+        <button id="btnGuardarNuevaCat">Agregar</button>
+        <button id="btnCancelarNuevaCat">Cancelar</button>
+      </div>
+    `;
+
+    $("tipoBaseNormal").onclick = () => seleccionarTipoNuevaBase("normal");
+    $("tipoBaseBarrio").onclick = () => seleccionarTipoNuevaBase("barrio");
+    $("btnCancelarNuevaCat").onclick = cerrarNuevaCat;
+    $("btnGuardarNuevaCat").onclick = crearCategoria;
+
+    $("inputNuevaCat").onkeydown = (e) => {
+      if (e.key === "Enter") crearCategoria();
+    };
+
+    seleccionarTipoNuevaBase("normal");
     $("inputNuevaCat").focus();
   };
 
-  $("btnCancelarNuevaCat").onclick = cerrarNuevaCat;
-  $("btnGuardarNuevaCat").onclick = crearCategoria;
+  if ($("btnCancelarNuevaCat")) $("btnCancelarNuevaCat").onclick = cerrarNuevaCat;
+  if ($("btnGuardarNuevaCat")) $("btnGuardarNuevaCat").onclick = crearCategoria;
 
-  $("inputNuevaCat").onkeydown = (e) => {
-    if (e.key === "Enter") crearCategoria();
-  };
+  if ($("inputNuevaCat")) {
+    $("inputNuevaCat").onkeydown = (e) => {
+      if (e.key === "Enter") crearCategoria();
+    };
+  }
 
   $("busqueda").oninput = renderCategoria;
 }
+
+
+
 
 function renderTodo() {
   renderSidebar();
@@ -643,8 +1112,10 @@ function renderTodo() {
   else if (vista === "agenda") renderAgenda();
   else if (vista === "libro") renderLibro();
   else if (vista === "calcular") renderCalcular();
+  else if (vista === "graficos") renderGraficos();
   else renderCategoria();
 }
+
 
 // ===============================
 // SIDEBAR / PANEL
@@ -656,7 +1127,7 @@ function activarNavPrincipal(idActivo) {
 }
 
 function renderSidebar() {
-  actualizarBotonEliminarBases();
+  actualizarBotonEditarBases();
 
   const total = personas.length + planos.length + encuestas.length;
 
@@ -665,22 +1136,29 @@ function renderSidebar() {
 
   let html = "";
 
-  const categoriasNormales = categorias.filter((cat) => !cat.parent);
-  const categoriasBarrios = categorias.filter((cat) => cat.parent === "Barrios");
+  const categoriasNormales = categorias.filter((cat) => !cat.parent && cat.tipo !== "barrio");
+  const categoriasBarrios = categorias.filter((cat) => cat.parent === "Barrios" || cat.tipo === "barrio");
 
   categoriasNormales.forEach((cat) => {
     const totalCat = totalEnCategoria(cat.id);
 
     html += `
-      <div class="cat-row">
+      <div class="cat-row ${modoEditarBases ? "editando-base" : ""}">
         <button class="cat-btn ${catActiva?.id === cat.id ? "active bg-" + cat.color : ""}" data-cat="${cat.id}">
           <span class="left"><span>${cat.icono}</span><span>${cat.nombre}</span></span>
           <span class="count">${totalCat}</span>
         </button>
 
         ${
-          modoEliminarBases
-            ? `<button class="cat-delete-btn" title="Eliminar base de datos" onclick="borrarCategoriaCompleta(${cat.id}); event.stopPropagation();">🗑️</button>`
+          modoEditarBases
+            ? `
+              <div class="base-edit-actions">
+                <button title="Editar nombre" onclick="editarNombreBase(${cat.id}); event.stopPropagation();">✏️</button>
+                <button title="Bajar posición" onclick="bajarPosicionBase(${cat.id}); event.stopPropagation();">⬇️</button>
+                <button title="Subir posición" onclick="subirPosicionBase(${cat.id}); event.stopPropagation();">⬆️</button>
+                <button class="danger" title="Eliminar base" onclick="confirmarEliminarBase(${cat.id}); event.stopPropagation();">🗑️</button>
+              </div>
+            `
             : ""
         }
       </div>
@@ -699,15 +1177,22 @@ function renderSidebar() {
       const totalCat = totalEnCategoria(cat.id);
 
       html += `
-        <div class="cat-row">
+        <div class="cat-row ${modoEditarBases ? "editando-base" : ""}">
           <button class="cat-btn sub-cat ${catActiva?.id === cat.id ? "active bg-" + cat.color : ""}" data-cat="${cat.id}">
             <span class="left"><span>${cat.icono}</span><span>${cat.nombre}</span></span>
             <span class="count">${totalCat}</span>
           </button>
 
           ${
-            modoEliminarBases
-              ? `<button class="cat-delete-btn" title="Eliminar base de datos" onclick="borrarCategoriaCompleta(${cat.id}); event.stopPropagation();">🗑️</button>`
+            modoEditarBases
+              ? `
+                <div class="base-edit-actions">
+                  <button title="Editar nombre" onclick="editarNombreBase(${cat.id}); event.stopPropagation();">✏️</button>
+                  <button title="Bajar posición" onclick="bajarPosicionBase(${cat.id}); event.stopPropagation();">⬇️</button>
+                  <button title="Subir posición" onclick="subirPosicionBase(${cat.id}); event.stopPropagation();">⬆️</button>
+                  <button class="danger" title="Eliminar base" onclick="confirmarEliminarBase(${cat.id}); event.stopPropagation();">🗑️</button>
+                </div>
+              `
               : ""
           }
         </div>
@@ -730,18 +1215,22 @@ function renderSidebar() {
   }
 }
 
+
+
 function renderSelectCategorias() {
-  const normales = categorias.filter((cat) => !cat.parent);
+  const normales = categorias.filter((cat) => !cat.parent && cat.tipo !== "barrio");
 
   $("categoriaSelect").innerHTML =
     `<option value="">— Seleccioná una base de datos —</option>` +
     normales.map((cat) => `<option value="${cat.id}">${cat.icono} ${cat.nombre}</option>`).join("");
 }
 
+
+
 function renderPanel() {
   activarNavPrincipal("btnPanel");
 
-  const categoriasPanel = categorias.filter((cat) => !cat.parent);
+  const categoriasPanel = categorias.filter((cat) => !cat.parent && cat.tipo !== "barrio");
 
   $("cardsCategorias").innerHTML = categoriasPanel.map((cat) => {
     const totalCat = totalEnCategoria(cat.id);
@@ -758,7 +1247,7 @@ function renderPanel() {
     <div class="card" id="cardBarrios">
       <div class="emoji">🏘️</div>
       <h3>Barrios</h3>
-      <span class="badge badge-indigo">Planos / Encuesta</span>
+      <span class="badge badge-indigo">${categorias.filter((cat) => cat.parent === "Barrios" || cat.tipo === "barrio").length} barrios</span>
     </div>
   `;
 
@@ -771,10 +1260,14 @@ function renderPanel() {
     cardBarrios.onclick = () => {
       barriosAbierto = true;
       renderSidebar();
-      mostrarCategoria(10);
+
+      const primerBarrio = categorias.find((cat) => cat.parent === "Barrios" || cat.tipo === "barrio");
+      if (primerBarrio) mostrarCategoria(primerBarrio.id);
     };
   }
 }
+
+
 
 function mostrarPanel() {
   document.body.classList.remove("modo-libro");
@@ -860,7 +1353,7 @@ function renderCategoria() {
       <button id="btnAgregarAqui">+ Agregar Persona Aquí</button>
       <button onclick="imprimirBase()">🖨️ Imprimir base</button>
       <button onclick="correoBase()">📧 Correo base</button>
-      <button onclick="descargarBase()">⬇️ Descargar base</button>
+      <button onclick="descargarBase()">⬇️ Descargar PDF</button>
     </div>
   `;
 
@@ -1111,83 +1604,53 @@ function actualizarAvisoDestino() {
 }
 
 
-function borrarCategoriaCompleta(catId) {
-  const cat = categorias.find((c) => Number(c.id) === Number(catId));
-
-  if (!cat) {
-    alert("No se encontró la base de datos.");
+function borrarCategoriaCompleta(catId, yaConfirmado = false) {
+  if (!yaConfirmado) {
+    confirmarEliminarBase(catId);
     return;
   }
 
-  let detalle = "";
-
-  if (cat.tipo === "planos") {
-    detalle = `También se eliminarán ${planos.length} plano${planos.length !== 1 ? "s" : ""}.`;
-  } else if (cat.tipo === "encuesta") {
-    detalle = `También se eliminarán ${encuestas.length} encuesta${encuestas.length !== 1 ? "s" : ""}.`;
-  } else {
-    const totalPersonas = personas.filter((p) => Number(p.categoria_id) === Number(catId)).length;
-    const totalRegistros = registros.filter((r) => Number(r.categoria_id) === Number(catId)).length;
-
-    detalle =
-      `También se eliminarán ${totalPersonas} persona${totalPersonas !== 1 ? "s" : ""} ` +
-      `y ${totalRegistros} registro${totalRegistros !== 1 ? "s" : ""}.`;
-  }
-
-  const confirmar = confirm(
-    `¿Seguro que quieres eliminar la base de datos "${cat.nombre}"?\\n\\n` +
-    `${detalle}\\n\\n` +
-    `Aceptar = Sí, eliminar\\n` +
-    `Cancelar = No, conservar`
-  );
-
-  if (!confirmar) return;
-
-  categorias = categorias.filter((c) => Number(c.id) !== Number(catId));
-
-  if (esCategoriaDefault(cat)) {
-    categoriasEliminadas.push(cat.id);
-    categoriasEliminadas.push(cat.nombre);
-    categoriasEliminadas = [...new Set(categoriasEliminadas.map(String))];
-  }
-
-  if (cat.tipo === "planos") {
-    planos = [];
-    planoAbiertoId = null;
-  } else if (cat.tipo === "encuesta") {
-    encuestas = [];
-    preguntasEncuesta = [];
-  } else if (cat.tipo === "barrio") {
-    planos = planos.filter((p) => Number(p.barrio_id) !== Number(catId));
-    encuestas = encuestas.filter((e) => Number(e.barrio_id) !== Number(catId));
-  } else {
-    personas = personas.filter((p) => Number(p.categoria_id) !== Number(catId));
-    registros = registros.filter((r) => Number(r.categoria_id) !== Number(catId));
-  }
-
-  modoEliminarBases = false;
-
-  if (catActiva && Number(catActiva.id) === Number(catId)) {
-    catActiva = null;
-    vista = "panel";
-    $("panelView").classList.remove("hidden");
-    $("categoriaView").classList.add("hidden");
-    $("busqueda").style.display = "block";
-    activarNavPrincipal("btnPanel");
-  }
-
-  guardarStorage();
-  renderTodo();
+  eliminarBaseDatosConfirmada(catId);
 }
+
+function borrarCategoriaNueva(catId) {
+  confirmarEliminarBase(catId);
+}
+
+
 
 function borrarCategoriaNueva(catId) {
   borrarCategoriaCompleta(catId);
 }
 
 
+
+function seleccionarTipoNuevaBase(tipo) {
+  if ($("tipoNuevaCat")) $("tipoNuevaCat").value = tipo;
+
+  if ($("tipoBaseNormal")) {
+    $("tipoBaseNormal").classList.toggle("active", tipo === "normal");
+  }
+
+  if ($("tipoBaseBarrio")) {
+    $("tipoBaseBarrio").classList.toggle("active", tipo === "barrio");
+  }
+
+  if ($("inputNuevaCat")) {
+    $("inputNuevaCat").placeholder =
+      tipo === "barrio"
+        ? "Nombre del barrio o base de barrio..."
+        : "Nombre de la base de datos...";
+  }
+}
+
+
+
 function crearCategoria() {
   const nombre = $("inputNuevaCat").value.trim();
   if (!nombre) return;
+
+  const tipo = $("tipoNuevaCat")?.value || "normal";
 
   const existe = categorias.find((c) => c.nombre.toLowerCase() === nombre.toLowerCase());
   if (existe) {
@@ -1197,22 +1660,50 @@ function crearCategoria() {
   }
 
   const nuevoId = categorias.length > 0 ? Math.max(...categorias.map((c) => Number(c.id))) + 1 : 1;
-  const nuevaCat = { id: nuevoId, nombre, icono: "📁", color: "indigo", total: 0 };
+
+  const nuevaCat =
+    tipo === "barrio"
+      ? {
+          id: nuevoId,
+          nombre,
+          icono: "🏘️",
+          color: colorAleatorioBase(),
+          total: 0,
+          parent: "Barrios",
+          tipo: "barrio"
+        }
+      : {
+          id: nuevoId,
+          nombre,
+          icono: "📁",
+          color: "indigo",
+          total: 0,
+          tipo: "normal"
+        };
 
   categorias.push(nuevaCat);
-  categorias = ordenarCategorias(categorias);
 
+  localStorage.setItem("baseOrden", JSON.stringify(categorias.map((c) => Number(c.id))));
   guardarStorage();
   cerrarNuevaCat();
+
+  if (tipo === "barrio") {
+    barriosAbierto = true;
+  }
+
   renderTodo();
   mostrarCategoria(nuevaCat.id);
 }
 
+
+
 function cerrarNuevaCat() {
-  $("inputNuevaCat").value = "";
-  $("formNuevaCat").classList.add("hidden");
-  $("btnMostrarNuevaCat").classList.remove("hidden");
+  if ($("inputNuevaCat")) $("inputNuevaCat").value = "";
+  if ($("formNuevaCat")) $("formNuevaCat").classList.add("hidden");
+  if ($("btnMostrarNuevaCat")) $("btnMostrarNuevaCat").classList.remove("hidden");
+  if ($("tipoNuevaCat")) $("tipoNuevaCat").value = "normal";
 }
+
 
 function guardarRegistro(personaId) {
   const titulo = $(`regtitulo-${personaId}`).value.trim();
@@ -1259,6 +1750,1016 @@ function archivoEsPdf(archivo) {
   return archivo.type === "application/pdf" || String(archivo.name || "").toLowerCase().endsWith(".pdf");
 }
 
+
+// ===============================
+// GRÁFICOS DE ENCUESTAS
+// ===============================
+
+function mostrarGraficos() {
+  document.body.classList.remove("modo-libro");
+  vista = "graficos";
+  catActiva = null;
+
+  cerrarFormPersona();
+
+  activarNavPrincipal("btnGraficos");
+  $("panelView").classList.add("hidden");
+  $("categoriaView").classList.remove("hidden");
+  $("busqueda").style.display = "none";
+
+  renderTodo();
+}
+
+
+
+function reducirImagenParaOCR(dataUrl, maxWidth = 1200) {
+  return new Promise((resolve) => {
+    const img = new Image();
+
+    img.onload = () => {
+      const anchoOriginal = img.naturalWidth || img.width;
+      const altoOriginal = img.naturalHeight || img.height;
+
+      if (!anchoOriginal || !altoOriginal || anchoOriginal <= maxWidth) {
+        resolve(dataUrl);
+        return;
+      }
+
+      const escala = maxWidth / anchoOriginal;
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(anchoOriginal * escala);
+      canvas.height = Math.round(altoOriginal * escala);
+
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      resolve(canvas.toDataURL("image/jpeg", 0.78));
+    };
+
+    img.onerror = () => resolve(dataUrl);
+    img.src = dataUrl;
+  });
+}
+
+function lineasRapidasPorCanvas(dataUrl) {
+  // Respaldo rápido: si OCR tarda o falla, intenta sacar preguntas por patrones comunes
+  // usando el nombre/archivo y deja modo manual. No bloquea la app.
+  return [];
+}
+
+
+function preguntasEncuestaBase() {
+  return [
+    "Tiene obra social?",
+    "Tiene las calles cortadas?",
+    "Tiene luz?",
+    "Tiene internet?",
+    "Tiene asfalto?"
+  ];
+}
+
+function limpiarPreguntaOCR(linea) {
+  let texto = String(linea || "")
+    .replace(/\s+/g, " ")
+    .replace(/^[^¿A-Za-zÁÉÍÓÚÑáéíóúñ0-9]+/g, "")
+    .trim();
+
+  // Si OCR mezcló la pregunta con opciones "Sí / No",
+  // cortamos en el primer signo de pregunta.
+  const idxPregunta = texto.indexOf("?");
+  if (idxPregunta !== -1) {
+    texto = texto.slice(0, idxPregunta + 1);
+  }
+
+  texto = texto
+    .replace(/\s*[oO0]\s+(si|sí|no)\s*[oO0]?\s*$/i, "")
+    .replace(/\s+(si|sí|no)\s*$/i, "")
+    .replace(/\s*[oO0]\s*$/i, "")
+    .trim();
+
+  if (texto && !texto.endsWith("?")) {
+    texto += "?";
+  }
+
+  return texto;
+}
+
+
+function extraerPreguntasDesdeTextoOCR(texto) {
+  const lineas = String(texto || "")
+    .split(/\n+/)
+    .map((l) => l.replace(/\s+/g, " ").trim())
+    .filter(Boolean);
+
+  const preguntas = [];
+
+  lineas.forEach((linea) => {
+    // Solo detectamos preguntas reales con signo.
+    if (!linea.includes("?") && !linea.includes("¿")) return;
+
+    let pregunta = limpiarPreguntaOCR(linea);
+
+    const idxPregunta = pregunta.indexOf("?");
+    if (idxPregunta !== -1) {
+      pregunta = pregunta.slice(0, idxPregunta + 1);
+    }
+
+    if (!pregunta.endsWith("?")) pregunta += "?";
+
+    const repetida = preguntas.some(
+      (p) => normalizarPregunta(p.pregunta) === normalizarPregunta(pregunta)
+    );
+
+    if (!repetida) {
+      preguntas.push({
+        pregunta,
+        respuesta: "si",
+        detectado: true,
+        metodo: "OCR texto"
+      });
+    }
+  });
+
+  return preguntas;
+}
+
+
+function obtenerLineasOCR(resultado) {
+  const data = resultado?.data || {};
+  const lineas = data.lines || [];
+
+  return lineas
+    .map((linea) => ({
+      texto: String(linea.text || "").replace(/\s+/g, " ").trim(),
+      bbox: linea.bbox || null
+    }))
+    .filter((l) => l.texto);
+}
+
+function obtenerPalabrasOCR(resultado) {
+  const data = resultado?.data || {};
+  const palabras = data.words || [];
+
+  return palabras
+    .map((w) => ({
+      texto: String(w.text || "").trim(),
+      bbox: w.bbox || null
+    }))
+    .filter((w) => w.texto && w.bbox);
+}
+
+function normalizarOCR(texto) {
+  return String(texto || "")
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "");
+}
+
+function buscarOpcionesSiNoEnLinea(palabrasOCR, y) {
+  if (!palabrasOCR || !palabrasOCR.length) return null;
+
+  const cerca = palabrasOCR.filter((w) => {
+    if (!w.bbox) return false;
+    const cy = (w.bbox.y0 + w.bbox.y1) / 2;
+    return Math.abs(cy - y) < 38;
+  });
+
+  const siWords = cerca.filter((w) => {
+    const t = normalizarOCR(w.texto);
+    return t === "si" || t === "s";
+  });
+
+  const noWords = cerca.filter((w) => {
+    const t = normalizarOCR(w.texto);
+    return t === "no" || t === "n";
+  });
+
+  if (!siWords.length || !noWords.length) return null;
+
+  const si = siWords.sort((a, b) => a.bbox.x0 - b.bbox.x0)[0];
+  const no = noWords.sort((a, b) => a.bbox.x0 - b.bbox.x0)[0];
+
+  return { si, no };
+}
+
+
+function detectarPreguntaDesdeLinea(linea) {
+  const textoOriginal = String(linea.texto || "").replace(/\s+/g, " ").trim();
+
+  // IMPORTANTE:
+  // Solo aceptamos líneas que tengan signo de pregunta.
+  // Así no toma títulos como "Barrio Cristo Redentor" como pregunta.
+  if (!textoOriginal.includes("?") && !textoOriginal.includes("¿")) {
+    return null;
+  }
+
+  let pregunta = limpiarPreguntaOCR(textoOriginal);
+
+  const idxPregunta = pregunta.indexOf("?");
+  if (idxPregunta !== -1) {
+    pregunta = pregunta.slice(0, idxPregunta + 1);
+  }
+
+  pregunta = pregunta
+    .replace(/\s*[oO0]\s+(si|sí|no).*$/i, "?")
+    .replace(/\s+(si|sí|no).*$/i, "?")
+    .replace(/\?+$/, "?")
+    .trim();
+
+  if (!pregunta.endsWith("?")) pregunta += "?";
+
+  return pregunta;
+}
+
+
+
+function cargarImagenParaCanvas(dataUrl) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = dataUrl;
+  });
+}
+
+function promedioMarcaEnZona(ctx, x, y, radio) {
+  const canvas = ctx.canvas;
+  const sx = Math.max(0, Math.floor(x - radio));
+  const sy = Math.max(0, Math.floor(y - radio));
+  const sw = Math.min(canvas.width - sx, Math.floor(radio * 2));
+  const sh = Math.min(canvas.height - sy, Math.floor(radio * 2));
+
+  if (sw <= 0 || sh <= 0) return 0;
+
+  const data = ctx.getImageData(sx, sy, sw, sh).data;
+  let puntos = 0;
+
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i];
+    const g = data[i + 1];
+    const b = data[i + 2];
+
+    const brillo = (r + g + b) / 3;
+    const saturacion = Math.max(r, g, b) - Math.min(r, g, b);
+
+    // Detecta marca verde, azul, roja, negra, cruz o tick.
+    // Evita contar el fondo blanco del círculo vacío.
+    const marcaColor = saturacion > 45 && brillo < 235;
+    const marcaOscura = brillo < 145;
+
+    if (marcaColor || marcaOscura) puntos++;
+  }
+
+  return puntos / (data.length / 4);
+}
+
+async function detectarRespuestasSiNoPorImagen(dataUrl, preguntasOCR, palabrasOCR = []) {
+  try {
+    const img = await cargarImagenParaCanvas(dataUrl);
+    const canvas = document.createElement("canvas");
+    canvas.width = img.naturalWidth || img.width;
+    canvas.height = img.naturalHeight || img.height;
+
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+    const ancho = canvas.width;
+    const alto = canvas.height;
+
+    return preguntasOCR.map((p, index) => {
+      let y;
+
+      if (p.bbox && typeof p.bbox.y0 === "number" && typeof p.bbox.y1 === "number") {
+        y = (p.bbox.y0 + p.bbox.y1) / 2;
+      } else {
+        y = alto * (0.18 + index * 0.085);
+      }
+
+      const opciones = buscarOpcionesSiNoEnLinea(palabrasOCR, y);
+
+      let yesX;
+      let noX;
+
+      if (opciones?.si?.bbox && opciones?.no?.bbox) {
+        // En la imagen los círculos están a la izquierda del texto Sí / No.
+        const siBox = opciones.si.bbox;
+        const noBox = opciones.no.bbox;
+        const distanciaSi = Math.max(28, Math.min(70, (noBox.x0 - siBox.x0) * 0.35));
+
+        yesX = siBox.x0 - distanciaSi;
+        noX = noBox.x0 - distanciaSi;
+      } else {
+        // Respaldo para formularios estándar
+        yesX = ancho * 0.64;
+        noX = ancho * 0.83;
+      }
+
+      const radio = Math.max(11, Math.min(28, ancho * 0.018));
+
+      const yesScore = promedioMarcaEnZona(ctx, yesX, y, radio);
+      const noScore = promedioMarcaEnZona(ctx, noX, y, radio);
+
+      let respuesta = "si";
+      let confianza = "baja";
+
+      // Si un círculo tiene marca de color, cruz, tick o trazo oscuro,
+      // su score tiene que ser mayor que el otro.
+      if (yesScore > noScore * 1.10 && yesScore > 0.025) {
+        respuesta = "si";
+        confianza = "media";
+      } else if (noScore > yesScore * 1.10 && noScore > 0.025) {
+        respuesta = "no";
+        confianza = "media";
+      } else if (noScore > yesScore) {
+        respuesta = "no";
+      } else {
+        respuesta = "si";
+      }
+
+      return {
+        ...p,
+        respuesta,
+        yesScore,
+        noScore,
+        confianza,
+        metodo: `${p.metodo || "OCR"} + detector Sí/No`
+      };
+    });
+  } catch (error) {
+    return preguntasOCR;
+  }
+}
+
+
+function crearEncuestaManualDesdeArchivo({ nombre, nombreArchivo, tipo, dataUrl, barrio_id, barrio_nombre }) {
+  encuestaOCRTrabajando = false;
+
+  const idBarrio = barrio_id || catActiva?.id;
+  const nombreBarrio =
+    barrio_nombre ||
+    categorias.find((c) => Number(c.id) === Number(idBarrio))?.nombre ||
+    catActiva?.nombre ||
+    "";
+
+  encuestaPendienteRevision = {
+    id: Date.now(),
+    barrio_id: idBarrio,
+    barrio_nombre: nombreBarrio,
+    nombre,
+    telefono: "",
+    direccion: "",
+    observaciones: "",
+    preguntas: [
+      {
+        pregunta: "Escribí acá la primera pregunta?",
+        respuesta: "si",
+        detectado: false,
+        metodo: "Manual"
+      }
+    ],
+    archivo: dataUrl || "",
+    nombreArchivo: nombreArchivo || "Encuesta manual",
+    tipo: tipo || "manual",
+    fecha: new Date().toLocaleDateString("es-AR"),
+    ocrError: "No se detectaron preguntas automáticamente. Cargá la encuesta manualmente."
+  };
+
+  renderBarrio();
+}
+
+
+
+async function leerEncuestaDesdeImagen({ nombre, nombreArchivo, tipo, dataUrl }) {
+  encuestaOCRTrabajando = true;
+  renderBarrio();
+
+  const barrioCreacionId = catActiva?.id;
+
+  const fallbackManual = () => {
+    if (!catActiva || Number(catActiva.id) !== Number(barrioCreacionId)) return;
+
+    encuestaOCRTrabajando = false;
+
+    crearEncuestaManualDesdeArchivo({
+      nombre,
+      nombreArchivo,
+      tipo,
+      dataUrl,
+      barrio_id: barrioCreacionId,
+      barrio_nombre: categorias.find((c) => Number(c.id) === Number(barrioCreacionId))?.nombre || catActiva?.nombre || ""
+    });
+  };
+
+  try {
+    if (tipo === "pdf") {
+      fallbackManual();
+      return;
+    }
+
+    if (!window.Tesseract || !window.Tesseract.recognize) {
+      fallbackManual();
+      return;
+    }
+
+    const dataUrlOCR = await reducirImagenParaOCR(dataUrl, 1200);
+
+    const tareaOCR = window.Tesseract.recognize(
+      dataUrlOCR,
+      "spa",
+      {
+        logger: () => {}
+      }
+    );
+
+    const timeoutOCR = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error("OCR_TIMEOUT")), 6000);
+    });
+
+    const resultado = await Promise.race([tareaOCR, timeoutOCR]);
+
+    if (!catActiva || Number(catActiva.id) !== Number(barrioCreacionId)) return;
+
+    const textoOCR = resultado?.data?.text || "";
+    const lineasOCR = obtenerLineasOCR(resultado);
+    const palabrasOCR = obtenerPalabrasOCR(resultado);
+
+    let preguntas = lineasOCR
+      .map((linea) => ({
+        pregunta: detectarPreguntaDesdeLinea(linea),
+        bbox: linea.bbox,
+        respuesta: "si",
+        detectado: true,
+        metodo: "OCR rápido"
+      }))
+      .filter((p) => p.pregunta)
+      .map((p) => ({
+        ...p,
+        pregunta: limpiarPreguntaOCR(p.pregunta)
+      }));
+
+    if (!preguntas.length) {
+      preguntas = extraerPreguntasDesdeTextoOCR(textoOCR);
+    }
+
+    if (!preguntas.length) {
+      fallbackManual();
+      return;
+    }
+
+    preguntas = await detectarRespuestasSiNoPorImagen(dataUrl, preguntas, palabrasOCR);
+
+    encuestaOCRTrabajando = false;
+
+    encuestaPendienteRevision = {
+      id: Date.now(),
+      barrio_id: barrioCreacionId,
+      barrio_nombre: categorias.find((c) => Number(c.id) === Number(barrioCreacionId))?.nombre || catActiva?.nombre || "",
+      nombre,
+      telefono: "",
+      direccion: "",
+      observaciones: "",
+      preguntas,
+      archivo: dataUrl,
+      nombreArchivo,
+      tipo,
+      textoOCR,
+      fecha: new Date().toLocaleDateString("es-AR")
+    };
+
+    // Render inmediato: ya no queda en "Analizando" hasta que cambies de barrio.
+    renderBarrio();
+  } catch (error) {
+    fallbackManual();
+  } finally {
+    encuestaOCRTrabajando = false;
+  }
+}
+
+
+
+
+
+function iniciarRevisionEncuestaBarrio({ nombre, archivo, nombreArchivo, tipo, dataUrl }) {
+  leerEncuestaDesdeImagen({ nombre, nombreArchivo, tipo, dataUrl });
+}
+
+
+function renderRevisionEncuestaPendiente() {
+  const barrioActualId = catActiva?.id;
+
+  if (
+    encuestaPendienteRevision &&
+    Number(encuestaPendienteRevision.barrio_id) !== Number(barrioActualId)
+  ) {
+    return "";
+  }
+
+  if (encuestaOCRTrabajando) {
+    return `
+      <div class="revision-encuesta-box">
+        <h2>🤖 Analizando encuesta...</h2>
+        <p>La aplicación está intentando leer las preguntas y detectar las marcas de Sí / No.</p>
+        <div class="loader-ocr"></div>
+
+        <div class="actions" style="margin-top:14px">
+          <button class="secondary" onclick="crearEncuestaManualBarrio()">Crear encuesta manual</button>
+          <button class="secondary danger" onclick="cancelarRevisionEncuesta()">Cancelar análisis</button>
+        </div>
+      </div>
+    `;
+  }
+
+  if (!encuestaPendienteRevision) return "";
+
+  return `
+    <div class="revision-encuesta-box">
+      <h2>🤖 Revisión inteligente de encuesta</h2>
+      <p>
+        La aplicación detectó estas preguntas y respuestas desde la imagen.
+        Revisá, modificá o confirmá antes de crear los gráficos.
+      </p>
+
+      ${
+        encuestaPendienteRevision.ocrError
+          ? `<div class="ocr-alerta">${escapeHtml(encuestaPendienteRevision.ocrError)}</div>`
+          : ""
+      }
+
+      <div class="metodo-deteccion-mini">
+        Barrio: ${escapeHtml(encuestaPendienteRevision.barrio_nombre || "—")} ·
+        Método: ${escapeHtml(encuestaPendienteRevision.preguntas?.[0]?.metodo || "Detección automática")}
+      </div>
+
+      <div class="revision-grid">
+        ${
+          encuestaPendienteRevision.preguntas.map((p, index) => `
+            <div class="revision-row">
+              <label>
+                Pregunta ${index + 1}
+                <input id="revPregunta-${index}" value="${escapeHtml(limpiarPreguntaOCR(p.pregunta))}" />
+              </label>
+
+              <label>
+                Respuesta detectada
+                <select id="revRespuesta-${index}">
+                  <option value="si" ${p.respuesta === "si" ? "selected" : ""}>Sí</option>
+                  <option value="no" ${p.respuesta === "no" ? "selected" : ""}>No</option>
+                </select>
+              </label>
+
+              <button type="button" class="icon-btn danger" onclick="quitarPreguntaRevision(${index})">🗑️</button>
+            </div>
+          `).join("")
+        }
+      </div>
+
+      <div class="actions">
+        <button class="secondary" onclick="agregarPreguntaRevision()">+ Agregar pregunta</button>
+        <button class="primary" onclick="confirmarRevisionEncuesta()">Confirmar</button>
+        <button class="secondary" onclick="modificarApartadoRevisionEncuesta()">Modificar apartado</button>
+        <button class="secondary" onclick="crearEncuestaManualActual()">Crear encuesta manual</button>
+        <button class="secondary danger" onclick="cancelarRevisionEncuesta()">Cancelar</button>
+      </div>
+    </div>
+  `;
+}
+
+
+
+
+
+function crearEncuestaManualActual() {
+  if (!encuestaPendienteRevision) return;
+
+  encuestaOCRTrabajando = false;
+
+  encuestaPendienteRevision.preguntas = [
+    {
+      pregunta: "Escribí acá la pregunta?",
+      respuesta: "si",
+      detectado: false,
+      metodo: "Manual"
+    }
+  ];
+
+  encuestaPendienteRevision.ocrError = "Encuesta manual: agregá, borrá o modificá preguntas antes de confirmar.";
+  renderBarrio();
+}
+
+
+
+function leerPreguntasRevision() {
+  if (!encuestaPendienteRevision) return [];
+
+  return encuestaPendienteRevision.preguntas.map((_, index) => ({
+    pregunta: limpiarPreguntaOCR($(`revPregunta-${index}`)?.value.trim() || ""),
+    respuesta: $(`revRespuesta-${index}`)?.value || "si",
+    detectado: true
+  })).filter((p) => p.pregunta);
+}
+
+
+function agregarPreguntaRevision() {
+  if (!encuestaPendienteRevision) return;
+
+  encuestaPendienteRevision.preguntas = leerPreguntasRevision();
+  encuestaPendienteRevision.preguntas.push({
+    pregunta: "Nueva pregunta?",
+    respuesta: "si",
+    detectado: false
+  });
+
+  renderBarrio();
+}
+
+function quitarPreguntaRevision(index) {
+  if (!encuestaPendienteRevision) return;
+
+  encuestaPendienteRevision.preguntas = leerPreguntasRevision();
+  encuestaPendienteRevision.preguntas.splice(index, 1);
+
+  renderBarrio();
+}
+
+function modificarApartadoRevisionEncuesta() {
+  if (!encuestaPendienteRevision) return;
+
+  encuestaPendienteRevision.preguntas = leerPreguntasRevision();
+  alert("Ahora podés modificar las preguntas y respuestas en la revisión.");
+}
+
+function cancelarRevisionEncuesta() {
+  encuestaOCRTrabajando = false;
+
+  if (
+    encuestaPendienteRevision &&
+    catActiva &&
+    Number(encuestaPendienteRevision.barrio_id) !== Number(catActiva.id)
+  ) {
+    renderBarrio();
+    return;
+  }
+
+  encuestaPendienteRevision = null;
+  renderBarrio();
+}
+
+
+
+function confirmarRevisionEncuesta() {
+  if (!encuestaPendienteRevision) return;
+
+  if (
+    catActiva &&
+    Number(encuestaPendienteRevision.barrio_id) !== Number(catActiva.id)
+  ) {
+    alert("Esta encuesta pertenece a otro barrio. Volvé al barrio donde la estabas cargando para confirmarla.");
+    return;
+  }
+
+  encuestaPendienteRevision.preguntas = leerPreguntasRevision();
+
+  if (!encuestaPendienteRevision.preguntas.length) {
+    alert("Agregá al menos una pregunta para confirmar la encuesta.");
+    return;
+  }
+
+  if (encuestaPendienteRevision.modoEdicion && encuestaPendienteRevision.editandoTipo === "encuesta") {
+    const index = encuestas.findIndex((e) => Number(e.id) === Number(encuestaPendienteRevision.editandoId));
+
+    if (index !== -1) {
+      encuestas[index] = {
+        ...encuestas[index],
+        ...encuestaPendienteRevision,
+        respuestas_detectadas: encuestaPendienteRevision.preguntas,
+        modoEdicion: false,
+        editandoId: null,
+        editandoTipo: null,
+        ocrError: ""
+      };
+    }
+  } else {
+    encuestas.push({
+      ...encuestaPendienteRevision,
+      respuestas_detectadas: encuestaPendienteRevision.preguntas
+    });
+  }
+
+  encuestaPendienteRevision = null;
+  encuestaOCRTrabajando = false;
+
+  guardarStorage();
+  renderBarrio();
+  alert("Encuesta guardada. Los gráficos se actualizaron automáticamente.");
+}
+
+
+
+function normalizarPregunta(texto) {
+  return String(texto || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[¿?]/g, "")
+    .replace(/\s+/g, " ");
+}
+
+function obtenerRespuestasEncuestas() {
+  const filas = [];
+
+  encuestas.forEach((encuesta) => {
+    const respuestas = encuesta.respuestas_detectadas || encuesta.preguntas || [];
+
+    respuestas.forEach((r) => {
+      if (!r || !r.pregunta) return;
+
+      filas.push({
+        barrio_id: encuesta.barrio_id,
+        barrio_nombre: encuesta.barrio_nombre || "Sin barrio",
+        encuesta_id: encuesta.id,
+        encuesta_nombre: encuesta.nombre || "Encuesta",
+        pregunta: r.pregunta,
+        preguntaKey: normalizarPregunta(r.pregunta),
+        respuesta: String(r.respuesta || "").toLowerCase() === "no" ? "no" : "si"
+      });
+    });
+  });
+
+  return filas;
+}
+
+function agruparGraficosPorPregunta() {
+  const filas = obtenerRespuestasEncuestas();
+  const grupos = {};
+
+  filas.forEach((fila) => {
+    if (!grupos[fila.preguntaKey]) {
+      grupos[fila.preguntaKey] = {
+        pregunta: fila.pregunta,
+        si: 0,
+        no: 0,
+        barrios: {}
+      };
+    }
+
+    grupos[fila.preguntaKey][fila.respuesta]++;
+
+    if (!grupos[fila.preguntaKey].barrios[fila.barrio_nombre]) {
+      grupos[fila.preguntaKey].barrios[fila.barrio_nombre] = { si: 0, no: 0 };
+    }
+
+    grupos[fila.preguntaKey].barrios[fila.barrio_nombre][fila.respuesta]++;
+  });
+
+  return Object.values(grupos);
+}
+
+
+
+function htmlGraficoPregunta(grupo) {
+  const total = grupo.si + grupo.no;
+  const porcentajeSi = total ? Math.round((grupo.si / total) * 100) : 0;
+  const porcentajeNo = 100 - porcentajeSi;
+
+  const filasBarrios = Object.entries(grupo.barrios).map(([barrio, datos]) => {
+    const totalBarrio = datos.si + datos.no;
+    const pctSiBarrio = totalBarrio ? Math.round((datos.si / totalBarrio) * 100) : 0;
+    const pctNoBarrio = totalBarrio ? Math.round((datos.no / totalBarrio) * 100) : 0;
+
+    return `
+      <tr>
+        <td>${escapeHtml(barrio)}</td>
+        <td>${datos.si}</td>
+        <td>${datos.no}</td>
+        <td>${pctSiBarrio}%</td>
+        <td>${pctNoBarrio}%</td>
+      </tr>
+    `;
+  }).join("");
+
+  return `
+    <div class="grafico-pdf-card">
+      <h1>${escapeHtml(grupo.pregunta)}</h1>
+
+      <div class="grafico-pdf-resumen">
+        <div class="pie-chart-export" style="--si:${porcentajeSi};"></div>
+
+        <div class="grafico-pdf-numeros">
+          <p><b>Sí:</b> ${grupo.si} (${porcentajeSi}%)</p>
+          <p><b>No:</b> ${grupo.no} (${porcentajeNo}%)</p>
+          <p><b>Total de respuestas:</b> ${total}</p>
+        </div>
+      </div>
+
+      <h2>Detalle por barrio</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Barrio</th>
+            <th>Sí</th>
+            <th>No</th>
+            <th>% Sí</th>
+            <th>% No</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${filasBarrios || `<tr><td colspan="5">Sin detalle por barrio.</td></tr>`}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function estilosGraficosPDF() {
+  return `
+    <style>
+      .grafico-pdf-card {
+        page-break-inside: avoid;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        padding: 22px;
+        margin-bottom: 22px;
+        background: #ffffff;
+      }
+
+      .grafico-pdf-card h1 {
+        font-size: 24px;
+        margin: 0 0 18px;
+        color: #111827;
+      }
+
+      .grafico-pdf-card h2 {
+        font-size: 18px;
+        margin: 20px 0 10px;
+        color: #111827;
+      }
+
+      .grafico-pdf-resumen {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        margin: 12px 0 18px;
+      }
+
+      .pie-chart-export {
+        width: 170px;
+        height: 170px;
+        border-radius: 999px;
+        background:
+          conic-gradient(
+            #22c55e 0 calc(var(--si) * 1%),
+            #ef4444 calc(var(--si) * 1%) 100%
+          );
+        border: 8px solid #f3f4f6;
+        box-shadow: inset 0 0 0 2px #e5e7eb;
+        flex-shrink: 0;
+      }
+
+      .grafico-pdf-numeros p {
+        font-size: 17px;
+        margin: 8px 0;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 8px;
+      }
+
+      th,
+      td {
+        border: 1px solid #d1d5db;
+        padding: 10px;
+        text-align: left;
+        font-size: 13px;
+      }
+
+      th {
+        background: #eef2ff;
+        color: #111827;
+      }
+    </style>
+  `;
+}
+
+async function descargarGraficoPregunta(key) {
+  const grupos = agruparGraficosPorPregunta();
+  const grupo = grupos.find((g) => normalizarPregunta(g.pregunta) === key);
+
+  if (!grupo) {
+    alert("No se encontró el gráfico.");
+    return;
+  }
+
+  await descargarHTML(
+    `grafico-${grupo.pregunta}`,
+    `
+      ${estilosGraficosPDF()}
+      ${htmlGraficoPregunta(grupo)}
+    `
+  );
+}
+
+async function descargarTodosGraficos() {
+  const grupos = agruparGraficosPorPregunta();
+
+  if (!grupos.length) {
+    alert("No hay gráficos para descargar.");
+    return;
+  }
+
+  await descargarHTML(
+    "todos-los-graficos-encuestas",
+    `
+      ${estilosGraficosPDF()}
+      <h1>Gráficos de encuestas</h1>
+      <p>Exportado el ${new Date().toLocaleString("es-AR")}</p>
+      ${grupos.map((grupo) => htmlGraficoPregunta(grupo)).join("")}
+    `
+  );
+}
+
+
+function renderGraficoTortaSiNo(grupo) {
+  const total = grupo.si + grupo.no;
+  const porcentajeSi = total ? Math.round((grupo.si / total) * 100) : 0;
+  const porcentajeNo = 100 - porcentajeSi;
+  const key = normalizarPregunta(grupo.pregunta);
+
+  return `
+    <div class="grafico-card">
+      <div class="grafico-card-head">
+        <h3>${escapeHtml(grupo.pregunta)}</h3>
+        <button class="secondary mini-download" onclick="descargarGraficoPregunta('${key}')">⬇️ PDF</button>
+      </div>
+
+      <div class="grafico-body">
+        <div class="pie-chart" style="--si:${porcentajeSi};"></div>
+
+        <div class="grafico-info">
+          <p><b>Sí:</b> ${grupo.si} (${porcentajeSi}%)</p>
+          <p><b>No:</b> ${grupo.no} (${porcentajeNo}%)</p>
+          <p><b>Total:</b> ${total}</p>
+        </div>
+      </div>
+
+      <div class="grafico-barrios">
+        <h4>Detalle por barrio</h4>
+        ${
+          Object.entries(grupo.barrios).map(([barrio, datos]) => `
+            <div class="grafico-barrio-row">
+              <span>${escapeHtml(barrio)}</span>
+              <b> Sí ${datos.si} / No ${datos.no}</b>
+            </div>
+          `).join("")
+        }
+      </div>
+    </div>
+  `;
+}
+
+
+function renderGraficos() {
+  $("categoriaHeader").className = "cat-header bg-indigo";
+  $("categoriaHeader").innerHTML = `
+    <div class="left">
+      <div class="emoji">📊</div>
+      <div>
+        <h2>Gráficos de encuestas</h2>
+        <p>Los gráficos se generan solos con las preguntas confirmadas en las encuestas de cada barrio</p>
+      </div>
+    </div>
+
+    <div class="cat-actions">
+      <button onclick="renderGraficos()">🔄 Actualizar</button>
+      <button onclick="descargarTodosGraficos()">⬇️ Descargar todos PDF</button>
+    </div>
+  `;
+
+  const grupos = agruparGraficosPorPregunta();
+
+  $("personasLista").innerHTML = `
+    <div class="graficos-layout">
+      ${
+        grupos.length
+          ? grupos.map((grupo) => renderGraficoTortaSiNo(grupo)).join("")
+          : `
+            <div class="empty">
+              <div style="font-size:54px">📊</div>
+              <p>No hay gráficos todavía.</p>
+              <small>Subí una encuesta en un barrio, confirmá las preguntas y se crearán los gráficos automáticamente.</small>
+            </div>
+          `
+      }
+    </div>
+  `;
+}
+
+
+
 function renderBarrio() {
   cerrarFormPersona();
   $("formPersona").classList.add("hidden");
@@ -1280,7 +2781,7 @@ function renderBarrio() {
     <div class="cat-actions">
       <button onclick="imprimirBarrio()">🖨️ Imprimir barrio</button>
       <button onclick="correoBarrio()">📧 Correo barrio</button>
-      <button onclick="descargarBarrio()">⬇️ Descargar barrio</button>
+      <button onclick="descargarBarrio()">⬇️ Descargar PDF</button>
     </div>
   `;
 
@@ -1337,8 +2838,11 @@ function renderBarrio() {
 
           <div class="actions">
             <button class="primary" onclick="guardarEncuestaBarrio()">Guardar encuesta</button>
+          <button class="secondary" onclick="crearEncuestaManualBarrio()">Crear encuesta manual</button>
           </div>
         </div>
+
+        ${renderRevisionEncuestaPendiente()}
 
         <div id="listaEncuestasBarrio"></div>
       </section>
@@ -1392,6 +2896,7 @@ function renderArchivoBarrioCard(item, tipo) {
   const archivo = item.archivo || item.imagen || "";
   const esPdf = item.tipo === "pdf";
   const titulo = tipo === "plano" ? "Plano" : "Encuesta";
+  const respuestas = item.respuestas_detectadas || item.preguntas || [];
 
   return `
     <div class="barrio-archivo-card">
@@ -1403,12 +2908,29 @@ function renderArchivoBarrioCard(item, tipo) {
         </div>
 
         <div class="registro-actions">
+          <button class="icon-btn" onclick="editarArchivoBarrio(${item.id}, '${tipo}')">✏️</button>
           <button class="icon-btn" onclick="imprimirArchivoBarrio(${item.id}, '${tipo}')">🖨️</button>
           <button class="icon-btn" onclick="correoArchivoBarrio(${item.id}, '${tipo}')">📧</button>
           <button class="icon-btn" onclick="descargarArchivoBarrio(${item.id}, '${tipo}')">⬇️</button>
           <button class="icon-btn danger" onclick="eliminarArchivoBarrio(${item.id}, '${tipo}')">🗑️</button>
         </div>
       </div>
+
+      ${
+        tipo === "encuesta" && respuestas.length
+          ? `
+            <div class="respuestas-detectadas-mini">
+              <b>Preguntas confirmadas:</b>
+              ${respuestas.map((r) => `
+                <div>
+                  ${escapeHtml(r.pregunta)}:
+                  <strong class="${r.respuesta === "si" ? "resp-si" : "resp-no"}">${r.respuesta === "si" ? "Sí" : "No"}</strong>
+                </div>
+              `).join("")}
+            </div>
+          `
+          : ""
+      }
 
       <div class="barrio-preview">
         ${
@@ -1420,6 +2942,7 @@ function renderArchivoBarrioCard(item, tipo) {
     </div>
   `;
 }
+
 
 function guardarPlanoBarrio() {
   if (!catActiva || catActiva.tipo !== "barrio") return;
@@ -1464,6 +2987,56 @@ function guardarPlanoBarrio() {
   reader.readAsDataURL(archivo);
 }
 
+
+function crearEncuestaManualBarrio() {
+  if (!catActiva || catActiva.tipo !== "barrio") return;
+
+  const nombreInput = $("barrioEncuestaNombre");
+  const archivoInput = $("barrioEncuestaArchivo");
+
+  const nombre =
+    nombreInput && nombreInput.value.trim()
+      ? nombreInput.value.trim()
+      : prompt("Nombre de la encuesta manual:", "Encuesta manual");
+
+  if (!nombre || !nombre.trim()) return;
+
+  const archivo = archivoInput && archivoInput.files ? archivoInput.files[0] : null;
+
+  if (!archivo) {
+    crearEncuestaManualDesdeArchivo({
+      nombre: nombre.trim(),
+      nombreArchivo: "Sin imagen",
+      tipo: "manual",
+      dataUrl: ""
+    });
+    return;
+  }
+
+  const pesoMaximoMB = 2;
+  const pesoMB = archivo.size / 1024 / 1024;
+
+  if (pesoMB > pesoMaximoMB) {
+    alert(`El archivo es muy pesado. Usá archivos de hasta ${pesoMaximoMB} MB.`);
+    return;
+  }
+
+  const reader = new FileReader();
+  const esPdf = archivoEsPdf(archivo);
+
+  reader.onload = function (e) {
+    crearEncuestaManualDesdeArchivo({
+      nombre: nombre.trim(),
+      nombreArchivo: archivo.name,
+      tipo: esPdf ? "pdf" : "imagen",
+      dataUrl: e.target.result
+    });
+  };
+
+  reader.readAsDataURL(archivo);
+}
+
+
 function guardarEncuestaBarrio() {
   if (!catActiva || catActiva.tipo !== "barrio") return;
 
@@ -1487,32 +3060,127 @@ function guardarEncuestaBarrio() {
   const reader = new FileReader();
 
   reader.onload = function (e) {
-    encuestas.push({
-      id: Date.now(),
-      barrio_id: catActiva.id,
-      barrio_nombre: catActiva.nombre,
+    iniciarRevisionEncuestaBarrio({
       nombre,
-      telefono: "",
-      direccion: "",
-      observaciones: "",
-      preguntas: [],
-      archivo: e.target.result,
+      archivo,
       nombreArchivo: archivo.name,
       tipo: esPdf ? "pdf" : "imagen",
-      fecha: new Date().toLocaleDateString("es-AR")
+      dataUrl: e.target.result
     });
-
-    guardarStorage();
-    renderBarrio();
   };
 
   reader.readAsDataURL(archivo);
 }
 
+
 function buscarArchivoBarrio(id, tipo) {
   const lista = tipo === "plano" ? planos : encuestas;
   return lista.find((x) => Number(x.id) === Number(id));
 }
+
+
+function seleccionarArchivoWeb(accept = "image/*,.pdf") {
+  return new Promise((resolve) => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = accept;
+    input.style.display = "none";
+
+    input.onchange = () => {
+      const archivo = input.files && input.files[0] ? input.files[0] : null;
+      input.remove();
+      resolve(archivo);
+    };
+
+    document.body.appendChild(input);
+    input.click();
+  });
+}
+
+function leerArchivoComoDataUrl(archivo) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = (e) => resolve(e.target.result);
+    reader.onerror = reject;
+
+    reader.readAsDataURL(archivo);
+  });
+}
+
+async function editarArchivoBarrio(id, tipo) {
+  const item = buscarArchivoBarrio(id, tipo);
+  if (!item) return;
+
+  const nuevoNombre = prompt(`Editar nombre del ${tipo}:`, item.nombre || "");
+
+  if (nuevoNombre === null) return;
+
+  if (nuevoNombre.trim()) {
+    item.nombre = nuevoNombre.trim();
+  }
+
+  if (tipo === "encuesta") {
+    const editarPreguntas = confirm("¿Querés editar las preguntas y respuestas de esta encuesta?");
+
+    if (editarPreguntas) {
+      encuestaPendienteRevision = {
+        ...item,
+        preguntas: (item.respuestas_detectadas || item.preguntas || []).map((r) => ({
+          pregunta: r.pregunta || "Pregunta?",
+          respuesta: r.respuesta === "no" ? "no" : "si",
+          detectado: false,
+          metodo: "Edición manual"
+        })),
+        modoEdicion: true,
+        editandoId: item.id,
+        editandoTipo: "encuesta",
+        ocrError: "Editando encuesta existente. Modificá las preguntas y confirmá para guardar cambios."
+      };
+
+      if (!encuestaPendienteRevision.preguntas.length) {
+        encuestaPendienteRevision.preguntas = [
+          {
+            pregunta: "Escribí acá la pregunta?",
+            respuesta: "si",
+            detectado: false,
+            metodo: "Edición manual"
+          }
+        ];
+      }
+
+      guardarStorage();
+      renderBarrio();
+      return;
+    }
+  }
+
+  const reemplazar = confirm(`¿Querés reemplazar la imagen/PDF del ${tipo}?`);
+
+  if (reemplazar) {
+    const archivo = await seleccionarArchivoWeb("image/*,.pdf");
+
+    if (archivo) {
+      const pesoMaximoMB = 2;
+      const pesoMB = archivo.size / 1024 / 1024;
+
+      if (pesoMB > pesoMaximoMB) {
+        alert(`El archivo es muy pesado. Usá archivos de hasta ${pesoMaximoMB} MB.`);
+        return;
+      }
+
+      const dataUrl = await leerArchivoComoDataUrl(archivo);
+      item.archivo = dataUrl;
+      item.imagen = dataUrl;
+      item.nombreArchivo = archivo.name;
+      item.tipo = archivoEsPdf(archivo) ? "pdf" : "imagen";
+    }
+  }
+
+  guardarStorage();
+  renderBarrio();
+}
+
 
 function eliminarArchivoBarrio(id, tipo) {
   if (!confirm(`¿Eliminar este ${tipo}?`)) return;
@@ -1574,21 +3242,61 @@ Fecha: ${item.fecha || ""}
   });
 }
 
+
+function htmlArchivoBarrioPDF(item, tipo) {
+  const archivo = item.archivo || item.imagen || "";
+  const titulo = tipo === "plano" ? "Plano" : "Encuesta";
+  const respuestas = item.respuestas_detectadas || item.preguntas || [];
+
+  return `
+    <h3>${escapeHtml(titulo)}: ${escapeHtml(item.nombre || "")}</h3>
+    <p><b>Barrio:</b> ${escapeHtml(item.barrio_nombre || catActiva?.nombre || "")}</p>
+    <p><b>Archivo:</b> ${escapeHtml(item.nombreArchivo || "")}</p>
+
+    ${
+      tipo === "encuesta" && respuestas.length
+        ? `
+          <h4>Preguntas confirmadas</h4>
+          <table>
+            <thead>
+              <tr>
+                <th>Pregunta</th>
+                <th>Respuesta</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${respuestas.map((r) => `
+                <tr>
+                  <td>${escapeHtml(r.pregunta || "")}</td>
+                  <td>${r.respuesta === "no" ? "No" : "Sí"}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        `
+        : ""
+    }
+
+    ${
+      archivo
+        ? (
+          item.tipo === "pdf"
+            ? `<iframe src="${archivo}"></iframe>`
+            : `<img src="${archivo}" alt="${escapeHtml(item.nombre || titulo)}" />`
+        )
+        : `<p>Sin imagen cargada.</p>`
+    }
+  `;
+}
+
+
 function descargarArchivoBarrio(id, tipo) {
   const item = buscarArchivoBarrio(id, tipo);
   if (!item) return;
 
-  descargarHTML(`${tipo}-${item.nombre}`, `
-    <h1>${escapeHtml(tipo === "plano" ? "Plano" : "Encuesta")}: ${escapeHtml(item.nombre)}</h1>
-    <p><b>Barrio:</b> ${escapeHtml(item.barrio_nombre || catActiva?.nombre || "")}</p>
-    <p><b>Archivo:</b> ${escapeHtml(item.nombreArchivo || "Archivo cargado")}</p>
-    ${
-      item.tipo === "pdf"
-        ? `<iframe src="${item.archivo || item.imagen}"></iframe>`
-        : `<img src="${item.archivo || item.imagen}" />`
-    }
-  `);
+  descargarHTML(`${tipo}-${item.nombre}`, htmlArchivoBarrioPDF(item, tipo));
 }
+
 
 function imprimirBarrio() {
   if (!catActiva) return;
@@ -1601,17 +3309,18 @@ function imprimirBarrio() {
     <h2>Planos</h2>
     ${
       planosBarrio.length
-        ? planosBarrio.map((p) => `<div class="card"><h3>${escapeHtml(p.nombre)}</h3><p>${escapeHtml(p.nombreArchivo || "")}</p></div>`).join("")
+        ? planosBarrio.map((p) => `<div class="card">${htmlArchivoBarrioPDF(p, "plano")}</div>`).join("")
         : `<p>Sin planos.</p>`
     }
     <h2>Encuestas</h2>
     ${
       encuestasBarrio.length
-        ? encuestasBarrio.map((e) => `<div class="card"><h3>${escapeHtml(e.nombre)}</h3><p>${escapeHtml(e.nombreArchivo || "")}</p></div>`).join("")
+        ? encuestasBarrio.map((e) => `<div class="card">${htmlArchivoBarrioPDF(e, "encuesta")}</div>`).join("")
         : `<p>Sin encuestas.</p>`
     }
   `);
 }
+
 
 function correoBarrio() {
   if (!catActiva) return;
@@ -1643,17 +3352,18 @@ function descargarBarrio() {
     <h2>Planos</h2>
     ${
       planosBarrio.length
-        ? planosBarrio.map((p) => `<div class="card"><h3>${escapeHtml(p.nombre)}</h3><p>${escapeHtml(p.nombreArchivo || "")}</p></div>`).join("")
+        ? planosBarrio.map((p) => `<div class="card">${htmlArchivoBarrioPDF(p, "plano")}</div>`).join("")
         : `<p>Sin planos.</p>`
     }
     <h2>Encuestas</h2>
     ${
       encuestasBarrio.length
-        ? encuestasBarrio.map((e) => `<div class="card"><h3>${escapeHtml(e.nombre)}</h3><p>${escapeHtml(e.nombreArchivo || "")}</p></div>`).join("")
+        ? encuestasBarrio.map((e) => `<div class="card">${htmlArchivoBarrioPDF(e, "encuesta")}</div>`).join("")
         : `<p>Sin encuestas.</p>`
     }
   `);
 }
+
 
 
 function renderPlanos() {
@@ -1675,7 +3385,7 @@ function renderPlanos() {
     <div class="cat-actions">
       <button onclick="imprimirBase()">🖨️ Imprimir base</button>
       <button onclick="correoBase()">📧 Correo base</button>
-      <button onclick="descargarBase()">⬇️ Descargar base</button>
+      <button onclick="descargarBase()">⬇️ Descargar PDF</button>
     </div>
   `;
 
@@ -1755,7 +3465,7 @@ function renderPlanoCard(plano) {
         <button class="icon-btn" onclick="togglePlanoAbierto(${plano.id})">${abierto ? "🔼 Cerrar" : "👁️ Ver / Editar"}</button>
         <button class="icon-btn" onclick="imprimirPlano(${plano.id})">🖨️ Imprimir</button>
         <button class="icon-btn" onclick="correoPlano(${plano.id})">📧 Correo</button>
-        <button class="icon-btn" onclick="descargarPlano(${plano.id})">⬇️ Descargar</button>
+        <button class="icon-btn" onclick="descargarPlano(${plano.id})">⬇️ PDF</button>
         <button class="icon-btn danger" onclick="eliminarPlano(${plano.id})">🗑️ Eliminar</button>
       </div>
 
@@ -2000,7 +3710,7 @@ function renderEncuesta() {
     <div class="cat-actions">
       <button onclick="imprimirBase()">🖨️ Imprimir base</button>
       <button onclick="correoBase()">📧 Correo base</button>
-      <button onclick="descargarBase()">⬇️ Descargar base</button>
+      <button onclick="descargarBase()">⬇️ Descargar PDF</button>
     </div>
   `;
 
@@ -2098,7 +3808,7 @@ function renderPreguntasMultiple() {
     <div class="pregunta-card">
       <label class="full">
         Pregunta ${index + 1}
-        <input placeholder="Ej: ¿Agrega una encuesta?" value="${escapeHtml(p.pregunta)}" oninput="actualizarPregunta(${p.id}, this.value)" />
+        <input placeholder="Ej: ¿Agrega una encuesta?" value="${escapeHtml(limpiarPreguntaOCR(p.pregunta))}" oninput="actualizarPregunta(${p.id}, this.value)" />
       </label>
 
       <div class="opciones-encuesta">
@@ -2479,7 +4189,7 @@ function renderAgenda() {
     <div class="cat-actions">
       <button onclick="imprimirAgendas()">🖨️ Imprimir base</button>
       <button onclick="correoAgendas()">📧 Correo base</button>
-      <button onclick="descargarAgendas()">⬇️ Descargar base</button>
+      <button onclick="descargarAgendas()">⬇️ Descargar PDF</button>
     </div>
   `;
 
@@ -2607,7 +4317,7 @@ function renderListaAgendas() {
             <button class="icon-btn" onclick="editarAgenda(${a.id})">✏️ Editar</button>
             <button class="icon-btn" onclick="imprimirAgenda(${a.id})">🖨️ Imprimir</button>
             <button class="icon-btn" onclick="correoAgenda(${a.id})">📧 Correo</button>
-            <button class="icon-btn" onclick="descargarAgenda(${a.id})">⬇️ Descargar</button>
+            <button class="icon-btn" onclick="descargarAgenda(${a.id})">⬇️ PDF</button>
             <button class="icon-btn danger" onclick="eliminarAgenda(${a.id})">🗑️ Eliminar</button>
           </div>
         </div>
@@ -2738,7 +4448,7 @@ function renderCalcular() {
     <div class="cat-actions">
       <button onclick="imprimirNotasCalcular()">🖨️ Imprimir base</button>
       <button onclick="correoNotasCalcular()">📧 Correo base</button>
-      <button onclick="descargarNotasCalcular()">⬇️ Descargar base</button>
+      <button onclick="descargarNotasCalcular()">⬇️ Descargar PDF</button>
     </div>
   `;
 
@@ -3026,10 +4736,10 @@ function renderLibro() {
       <button onclick="guardarPaginasLibro()">💾 Guardar</button>
       <button onclick="imprimirPaginaLibro()">🖨️ Imprimir página</button>
       <button onclick="correoPaginaLibro()">📧 Correo página</button>
-      <button onclick="descargarPaginaLibro()">⬇️ Descargar página</button>
+      <button onclick="descargarPaginaLibro()">⬇️ Descargar PDF</button>
       <button onclick="imprimirLibro()">🖨️ Imprimir libro</button>
       <button onclick="correoLibro()">📧 Correo libro</button>
-      <button onclick="descargarLibro()">⬇️ Descargar libro</button>
+      <button onclick="descargarLibro()">⬇️ Descargar PDF</button>
     </div>
   `;
 
@@ -3047,7 +4757,7 @@ function renderLibro() {
         <div class="lapiz-grupo">
           <label class="tool-label">
             Color lápiz
-            <input id="libroColor" type="color" value="${libroColorLapiz}" onchange="cambiarColorLapiz(this.value)" />
+            <input id="libroColor" type="color" value="${libroColorLapiz}" oninput="cambiarColorLapiz(this.value)" onchange="cambiarColorLapiz(this.value)" />
           </label>
           <button type="button" onclick="lapizNormal()">Lápiz normal</button>
         </div>
@@ -3183,12 +4893,14 @@ function activarEventosLibro() {
     const editor = document.getElementById(`libroContenido-${lado}`);
     if (!editor) return;
 
+    editor.style.setProperty("--color-lapiz-activo", colorCssSeguro(libroColorLapiz));
+
     editor.addEventListener("focus", () => {
       libroEditorActivo = editor;
       guardarRangoLibro();
 
       if (!libroResaltadorActivo) {
-        document.execCommand("foreColor", false, libroColorLapiz);
+        aplicarColorLapizAlEditor(editor);
       }
     });
 
@@ -3205,6 +4917,10 @@ function activarEventosLibro() {
     editor.addEventListener("click", () => {
       libroEditorActivo = editor;
       guardarRangoLibro();
+
+      if (!libroResaltadorActivo) {
+        aplicarColorLapizAlEditor(editor);
+      }
     });
 
     editor.addEventListener("beforeinput", (e) => {
@@ -3229,9 +4945,9 @@ function activarEventosLibro() {
         return;
       }
 
-      // FIX CLAVE:
+      // FIX CLAVE DEL SPAN:
       // Si el botón está apagado pero el cursor quedó dentro de un span resaltado,
-      // no dejamos que el navegador siga escribiendo dentro del amarillo.
+      // escribimos afuera normal, sin amarillo y con el color de lápiz elegido.
       if (cursorEstaDentroDeResaltadoLibro()) {
         if (e.inputType === "insertText") {
           e.preventDefault();
@@ -3247,11 +4963,34 @@ function activarEventosLibro() {
           return;
         }
       }
+
+      // Color lápiz real:
+      // insertamos el texto dentro de un span con color inline !important.
+      if (e.inputType === "insertText") {
+        e.preventDefault();
+        insertarTextoColorLapiz(e.data || "");
+        guardarPaginaLibroSinAlerta();
+        return;
+      }
+
+      if (e.inputType === "insertParagraph") {
+        e.preventDefault();
+        insertarSaltoLineaColorLapiz();
+        insertarSaltoLineaColorLapiz();
+        guardarPaginaLibroSinAlerta();
+        return;
+      }
+    });
+
+    editor.addEventListener("input", () => {
+      guardarPaginaLibroSinAlerta();
     });
   });
 
   actualizarBotonResaltador();
 }
+
+
 
 
 
@@ -3279,9 +5018,16 @@ function lapizNormal() {
   }
 
   salirDelResaltadoActivo();
-  document.execCommand("foreColor", false, "#111827");
+
+  const editor = obtenerEditorLibroActual();
+  if (editor) {
+    aplicarColorLapizAlEditor(editor);
+  }
+
   actualizarBotonResaltador();
 }
+
+
 
 
 
@@ -3547,7 +5293,11 @@ function insertarTextoNormalFueraDelResaltado(texto) {
   if (texto === "\n") {
     nodoNuevo = document.createElement("br");
   } else {
-    nodoNuevo = document.createTextNode(texto || "");
+    nodoNuevo = document.createElement("span");
+    nodoNuevo.className = "texto-color-lapiz-libro";
+    nodoNuevo.setAttribute("data-color-lapiz", colorCssSeguro(libroColorLapiz));
+    nodoNuevo.style.setProperty("color", colorCssSeguro(libroColorLapiz), "important");
+    nodoNuevo.textContent = texto || "";
   }
 
   if (spanResaltado.nextSibling) {
@@ -3567,6 +5317,8 @@ function insertarTextoNormalFueraDelResaltado(texto) {
 
   return true;
 }
+
+
 
 function salirDelResaltadoActivo() {
   restaurarRangoLibro();
@@ -4025,3 +5777,44 @@ function descargarLibro() {
 }
 
 document.addEventListener("DOMContentLoaded", init);
+
+
+
+
+
+
+
+
+
+function colorCssSeguro(color) {
+  const valor = String(color || "").trim();
+  return /^#[0-9a-fA-F]{6}$/.test(valor) ? valor : "#111827";
+}
+
+function aplicarColorLapizAlEditor(editor) {
+  if (!editor) return;
+
+  editor.style.setProperty("--color-lapiz-activo", colorCssSeguro(libroColorLapiz));
+  editor.style.caretColor = colorCssSeguro(libroColorLapiz);
+
+  try {
+    document.execCommand("styleWithCSS", false, true);
+    document.execCommand("foreColor", false, colorCssSeguro(libroColorLapiz));
+  } catch (e) {}
+}
+
+function insertarTextoColorLapiz(texto) {
+  const color = colorCssSeguro(libroColorLapiz);
+  const span = document.createElement("span");
+
+  span.className = "texto-color-lapiz-libro";
+  span.setAttribute("data-color-lapiz", color);
+  span.style.setProperty("color", color, "important");
+  span.textContent = texto || "";
+
+  insertarNodoEnCursorLibro(span);
+}
+
+function insertarSaltoLineaColorLapiz() {
+  insertarNodoEnCursorLibro(document.createElement("br"));
+}
