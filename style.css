@@ -1,3 +1,8 @@
+/* =====================================================
+   GESTIÓN DE PERSONAS - STYLE.CSS COMPLETO CORREGIDO
+   Reemplazá TODO tu style.css por este archivo.
+===================================================== */
+
 /* ===============================
    BASE
 ================================ */
@@ -2260,4 +2265,632 @@ body.modo-libro .container {
 .pagina-print,
 .pagina-print * {
   white-space: break-spaces !important;
+}
+
+
+/* =====================================================
+   OCR ENCUESTAS - PREGUNTAS MÁS LIMPIAS
+===================================================== */
+
+.revision-row {
+  grid-template-columns: minmax(0, 1.6fr) minmax(160px, 0.7fr) auto !important;
+}
+
+.revision-row input {
+  min-width: 0 !important;
+  width: 100% !important;
+}
+
+
+/* =====================================================
+   OCR ENCUESTAS - RECUPERA PREGUNTAS FALTANTES
+===================================================== */
+
+.revision-row {
+  grid-template-columns: minmax(0, 1.8fr) minmax(150px, 0.7fr) auto !important;
+}
+
+.revision-row input {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+
+/* =====================================================
+   INFORME EN ENCUESTAS
+===================================================== */
+
+.informe-label textarea,
+.revision-informe-label textarea {
+  width: 100%;
+  min-height: 120px;
+  resize: vertical;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 12px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.45;
+  background: #ffffff;
+  color: #111827;
+}
+
+.informe-encuesta-box {
+  margin: 10px 0 12px;
+  padding: 12px 14px;
+  border-left: 4px solid #2563eb;
+  border-radius: 12px;
+  background: #eff6ff;
+  color: #111827;
+  line-height: 1.45;
+}
+
+.informe-encuesta-box h4 {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 900;
+  color: #1e3a8a;
+}
+
+.revision-informe-label {
+  display: block;
+  margin: 14px 0;
+  font-weight: 800;
+}
+
+
+/* =====================================================
+   ENCUESTAS MULTIPLE CHOICE + DATOS PERSONALES
+===================================================== */
+
+.datos-encuesta-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #dbeafe;
+  border-radius: 14px;
+  background: #eff6ff;
+}
+
+.datos-encuesta-form label {
+  font-weight: 800;
+  color: #111827;
+}
+
+.datos-encuesta-form input {
+  margin-top: 5px;
+}
+
+.datos-encuesta-box {
+  margin: 10px 0 12px;
+  padding: 12px 14px;
+  border-left: 4px solid #16a34a;
+  border-radius: 12px;
+  background: #f0fdf4;
+  color: #111827;
+}
+
+.datos-encuesta-box h4 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  color: #14532d;
+}
+
+.datos-encuesta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 12px;
+  font-size: 14px;
+}
+
+.opciones-extra-input {
+  margin-top: 6px !important;
+  font-size: 12px !important;
+}
+
+.opcion-barra-row {
+  display: grid;
+  grid-template-columns: 120px 1fr 90px;
+  align-items: center;
+  gap: 10px;
+  margin: 7px 0;
+}
+
+.opcion-barra {
+  height: 12px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.opcion-barra i {
+  display: block;
+  height: 100%;
+  background: #2563eb;
+  border-radius: 999px;
+}
+
+.grafico-body-multi {
+  display: block;
+}
+
+.grafico-info-multi {
+  width: 100%;
+}
+
+.grafico-barrio-row-multi {
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.barra-pdf {
+  height: 10px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  margin: 3px 0 8px;
+  overflow: hidden;
+}
+
+.barra-pdf span {
+  display: block;
+  height: 100%;
+  background: #2563eb;
+}
+
+.familias-pdf-grid-multi {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 900px) {
+  .datos-encuesta-form,
+  .datos-encuesta-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .opcion-barra-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* =====================================================
+   OCR TABLAS Y OPCIONES MULTIPLES
+===================================================== */
+
+.revision-encuesta-box .actions {
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.revision-encuesta-box .actions .secondary {
+  white-space: nowrap;
+}
+
+.opciones-extra-input {
+  border-color: #bfdbfe !important;
+  background: #f8fafc !important;
+}
+
+
+/* =====================================================
+   FINAL: WORD + GRAFICO TORTA MULTIPLE + DATOS SOLO EN IA
+===================================================== */
+
+.pie-svg-app {
+  width: 145px;
+  height: 145px;
+  flex-shrink: 0;
+  border-radius: 999px;
+}
+
+.archivo-link-descarga {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 130px;
+  width: 100%;
+  border: 2px dashed #93c5fd;
+  border-radius: 14px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.archivo-link-descarga:hover {
+  background: #dbeafe;
+}
+
+.grafico-body {
+  align-items: center;
+}
+
+
+/* =====================================================
+   CONFIRMAR ENCUESTA - SOLO 4 BOTONES
+===================================================== */
+
+.revision-actions-final {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px !important;
+  align-items: stretch;
+}
+
+.revision-actions-final button {
+  width: 100%;
+  min-height: 44px;
+}
+
+.revision-grid.config-cerrada .revision-row input[readonly] {
+  background: #f9fafb;
+  cursor: default;
+}
+
+.opciones-resumen {
+  display: block;
+  margin-top: 6px;
+  color: #64748b;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.revision-grid.config-activa .opciones-extra-input {
+  margin-top: 7px !important;
+  border-color: #2563eb !important;
+  background: #ffffff !important;
+}
+
+@media (max-width: 900px) {
+  .revision-actions-final {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+
+/* =====================================================
+   DOCX + TIPO TABLA EN ENCUESTAS
+===================================================== */
+
+.config-tablas-tools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f8fafc;
+  border: 1px dashed #93c5fd;
+  border-radius: 12px;
+  padding: 10px;
+  margin: 12px 0;
+  flex-wrap: wrap;
+}
+
+.config-tablas-tools small {
+  color: #64748b;
+  font-weight: 800;
+}
+
+.archivo-link-descarga {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 130px;
+  width: 100%;
+  border: 2px dashed #93c5fd;
+  border-radius: 14px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+
+/* =====================================================
+   SEGUIMIENTOS + BARRIOS Y LOCALIDADES
+===================================================== */
+
+.seguimiento-form textarea,
+#segInforme {
+  width: 100%;
+  resize: vertical;
+  min-height: 130px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  padding: 12px;
+  font-family: inherit;
+}
+
+.grid-form .full {
+  grid-column: 1 / -1;
+}
+
+.seguimientos-lista {
+  display: grid;
+  gap: 18px;
+}
+
+.seguimiento-card .barrio-preview {
+  margin-top: 12px;
+}
+
+.bg-teal {
+  background: linear-gradient(135deg, #0f766e, #14b8a6) !important;
+}
+
+.badge-teal {
+  background: #ccfbf1 !important;
+  color: #115e59 !important;
+}
+
+.archivo-link-descarga {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 130px;
+  width: 100%;
+  border: 2px dashed #93c5fd;
+  border-radius: 14px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+
+/* =====================================================
+   CREAR ARCHIVO PERSONALIZADO
+===================================================== */
+
+.crear-archivo-box {
+  display: grid;
+  gap: 16px;
+}
+
+.crear-archivo-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 10px;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 8px 24px #00000012;
+}
+
+.crear-archivo-lista {
+  display: grid;
+  gap: 10px;
+}
+
+.crear-archivo-item {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 14px;
+  cursor: pointer;
+  transition: .18s ease;
+}
+
+.crear-archivo-item:hover {
+  border-color: #2563eb;
+  box-shadow: 0 6px 18px #00000010;
+}
+
+.crear-archivo-item.seleccionado {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.crear-archivo-item b {
+  color: #111827;
+}
+
+.crear-archivo-item p {
+  margin: 4px 0;
+  color: #475569;
+}
+
+.crear-archivo-item small {
+  color: #64748b;
+}
+
+.archivo-personalizado-section {
+  page-break-inside: avoid;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 16px;
+  margin: 0 0 16px;
+}
+
+.tabla-seguimiento-box {
+  margin: 14px 0;
+  padding: 12px;
+  border-radius: 14px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+}
+
+.tabla-scroll {
+  overflow-x: auto;
+}
+
+.tabla-seguimiento-box table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-seguimiento-box th,
+.tabla-seguimiento-box td {
+  border: 1px solid #cbd5e1;
+  padding: 8px;
+  font-size: 13px;
+}
+
+.tabla-seguimiento-box th {
+  background: #e0f2fe;
+}
+
+@media (max-width: 900px) {
+  .crear-archivo-toolbar {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* =====================================================
+   CREAR ARCHIVO - AGRUPADO POR BASE / NOMBRE / FECHA
+===================================================== */
+
+.select-orden-crear {
+  min-height: 42px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  padding: 0 12px;
+  background: #ffffff;
+  font-weight: 800;
+  color: #111827;
+}
+
+.crear-archivo-grupos {
+  display: grid;
+  gap: 18px;
+}
+
+.crear-archivo-grupo {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  padding: 14px;
+  box-shadow: 0 8px 22px #0000000d;
+}
+
+.crear-archivo-grupo-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.crear-archivo-grupo-head h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #111827;
+}
+
+.crear-archivo-grupo-head span {
+  font-weight: 900;
+  color: #4f46e5;
+  background: #eef2ff;
+  border-radius: 999px;
+  padding: 6px 10px;
+}
+
+.archivo-personalizado-grupo {
+  margin: 0 0 22px;
+  padding: 12px;
+  border: 2px solid #dbeafe;
+  border-radius: 16px;
+  page-break-inside: avoid;
+}
+
+.archivo-personalizado-grupo > h2 {
+  background: #eff6ff;
+  padding: 10px 12px;
+  border-radius: 12px;
+  margin: 0 0 14px;
+}
+
+@media (max-width: 1100px) {
+  .crear-archivo-toolbar {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+
+/* =====================================================
+   SEGUIMIENTOS - EDITOR DE CUADROS Y PREGUNTAS
+===================================================== */
+
+.revision-seguimiento-box {
+  margin: 18px 0;
+  padding: 18px;
+  border: 2px solid #14b8a6;
+  border-radius: 18px;
+  background: #f0fdfa;
+}
+
+.revision-seguimiento-box h2 {
+  margin-top: 0;
+  color: #115e59;
+}
+
+.seg-editor-section,
+.seg-editor-preguntas {
+  margin-top: 18px;
+  background: #ffffff;
+  border: 1px solid #ccfbf1;
+  border-radius: 16px;
+  padding: 14px;
+}
+
+.seg-tabla-editor {
+  margin: 14px 0;
+  border: 1px solid #dbeafe;
+  border-radius: 14px;
+  padding: 12px;
+  background: #f8fafc;
+}
+
+.seg-tabla-editor table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.seg-tabla-editor th,
+.seg-tabla-editor td {
+  border: 1px solid #cbd5e1;
+  padding: 6px;
+  vertical-align: top;
+}
+
+.seg-tabla-editor th input,
+.seg-tabla-editor td textarea {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 7px;
+  font-family: inherit;
+  font-size: 13px;
+  background: #ffffff;
+}
+
+.seg-pregunta-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(150px, .7fr) minmax(200px, 1fr);
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  margin-bottom: 10px;
+}
+
+.preguntas-seguimiento-box {
+  margin: 14px 0;
+  padding: 12px;
+  border-radius: 14px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+}
+
+@media (max-width: 900px) {
+  .seg-pregunta-row {
+    grid-template-columns: 1fr;
+  }
 }
