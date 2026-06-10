@@ -7,37 +7,38 @@ const CATEGORIAS_DEFAULT = [
   { id: 6, nombre: "Desarrollo Social", icono: "🤝", color: "orange", total: 0 },
   { id: 7, nombre: "Mujer", icono: "👩", color: "pink", total: 0 },
   { id: 8, nombre: "Legales", icono: "⚖️", color: "gray", total: 0 },
-  { id: 100, nombre: "Centro", icono: "🏘️", color: "indigo", total: 0, parent: "Barrios", tipo: "barrio" },
-  { id: 101, nombre: "Villa Belgrano", icono: "🏘️", color: "blue", total: 0, parent: "Barrios", tipo: "barrio" },
-  { id: 102, nombre: "Barrio Rosario", icono: "🏘️", color: "green", total: 0, parent: "Barrios", tipo: "barrio" },
-  { id: 103, nombre: "Barrio San Martín", icono: "🏘️", color: "purple", total: 0, parent: "Barrios", tipo: "barrio" },
-  { id: 104, nombre: "Barrio San Cayetano", icono: "🏘️", color: "orange", total: 0, parent: "Barrios", tipo: "barrio" },
-  { id: 105, nombre: "Puente Chico", icono: "🏘️", color: "pink", total: 0, parent: "Barrios", tipo: "barrio" },
-  { id: 106, nombre: "Barrio Boca / Boca Juniors", icono: "🏘️", color: "gray", total: 0, parent: "Barrios", tipo: "barrio" },
-  { id: 107, nombre: "Tres Repúblicas", icono: "🏘️", color: "yellow", total: 0, parent: "Barrios", tipo: "barrio" },
-  { id: 108, nombre: "Domingo Moccero", icono: "🏘️", color: "indigo", total: 0, parent: "Barrios", tipo: "barrio" },
-  { id: 109, nombre: "Miguel de Güemes", icono: "🏘️", color: "blue", total: 0, parent: "Barrios", tipo: "barrio" },
-  { id: 110, nombre: "Barrio Mar del Plata", icono: "🏘️", color: "green", total: 0, parent: "Barrios", tipo: "barrio" },
-  { id: 111, nombre: "Lovecchio / Julio César Lovecchio", icono: "🏘️", color: "purple", total: 0, parent: "Barrios", tipo: "barrio" },
-  { id: 112, nombre: "Altos Balcarce", icono: "🏘️", color: "orange", total: 0, parent: "Barrios", tipo: "barrio" },
-  { id: 113, nombre: "Teodosio Alaniz / Alaniz", icono: "🏘️", color: "pink", total: 0, parent: "Barrios", tipo: "barrio" },
-  { id: 114, nombre: "Cristo Redentor", icono: "🏘️", color: "gray", total: 0, parent: "Barrios", tipo: "barrio" },
-  { id: 115, nombre: "Barrio Cristo", icono: "🏘️", color: "yellow", total: 0, parent: "Barrios", tipo: "barrio" },
-  { id: 116, nombre: "Barrio Puente", icono: "🏘️", color: "indigo", total: 0, parent: "Barrios", tipo: "barrio" },
-  { id: 117, nombre: "Barrio Familia", icono: "🏘️", color: "blue", total: 0, parent: "Barrios", tipo: "barrio" },
-  { id: 118, nombre: "Brandenberg", icono: "🏘️", color: "green", total: 0, parent: "Barrios", tipo: "barrio" },
-  { id: 119, nombre: "Remedios de Escalada", icono: "🏘️", color: "purple", total: 0, parent: "Barrios", tipo: "barrio" },
-  { id: 120, nombre: "Islas Malvinas", icono: "🏘️", color: "orange", total: 0, parent: "Barrios", tipo: "barrio" },
-  { id: 121, nombre: "Etchegaray", icono: "🏘️", color: "pink", total: 0, parent: "Barrios", tipo: "barrio" },
-  { id: 122, nombre: "Fátima", icono: "🏘️", color: "gray", total: 0, parent: "Barrios", tipo: "barrio" },
-  { id: 123, nombre: "René Favaloro", icono: "🏘️", color: "yellow", total: 0, parent: "Barrios", tipo: "barrio" },
-  { id: 124, nombre: "Bonifacino", icono: "🏘️", color: "indigo", total: 0, parent: "Barrios", tipo: "barrio" },
-  { id: 125, nombre: "Pueblo Santa Trinidad / Colonia I", icono: "🏘️", color: "blue", total: 0, parent: "Barrios", tipo: "barrio" },
-  { id: 126, nombre: "Pueblo San José / Colonia II", icono: "🏘️", color: "green", total: 0, parent: "Barrios", tipo: "barrio" },
-  { id: 127, nombre: "Pueblo Santa María / Colonia III", icono: "🏘️", color: "purple", total: 0, parent: "Barrios", tipo: "barrio" },
-  { id: 128, nombre: "PROCREAR Santa Trinidad", icono: "🏘️", color: "orange", total: 0, parent: "Barrios", tipo: "barrio" },
-  { id: 129, nombre: "Los Manantiales, en Santa Trinidad", icono: "🏘️", color: "pink", total: 0, parent: "Barrios", tipo: "barrio" },
-  { id: 130, nombre: "Sector nuevo / loteo nuevo Santa Trinidad", icono: "🏘️", color: "gray", total: 0, parent: "Barrios", tipo: "barrio" }
+  { id: 9, nombre: "Seguimientos", icono: "📋", color: "teal", total: 0, tipo: "seguimiento" },
+  { id: 100, nombre: "Centro", icono: "🏘️", color: "indigo", total: 0, parent: "Barrios y Localidades", tipo: "barrio" },
+  { id: 101, nombre: "Villa Belgrano", icono: "🏘️", color: "blue", total: 0, parent: "Barrios y Localidades", tipo: "barrio" },
+  { id: 102, nombre: "Barrio Rosario", icono: "🏘️", color: "green", total: 0, parent: "Barrios y Localidades", tipo: "barrio" },
+  { id: 103, nombre: "Barrio San Martín", icono: "🏘️", color: "purple", total: 0, parent: "Barrios y Localidades", tipo: "barrio" },
+  { id: 104, nombre: "Barrio San Cayetano", icono: "🏘️", color: "orange", total: 0, parent: "Barrios y Localidades", tipo: "barrio" },
+  { id: 105, nombre: "Puente Chico", icono: "🏘️", color: "pink", total: 0, parent: "Barrios y Localidades", tipo: "barrio" },
+  { id: 106, nombre: "Barrio Boca / Boca Juniors", icono: "🏘️", color: "gray", total: 0, parent: "Barrios y Localidades", tipo: "barrio" },
+  { id: 107, nombre: "Tres Repúblicas", icono: "🏘️", color: "yellow", total: 0, parent: "Barrios y Localidades", tipo: "barrio" },
+  { id: 108, nombre: "Domingo Moccero", icono: "🏘️", color: "indigo", total: 0, parent: "Barrios y Localidades", tipo: "barrio" },
+  { id: 109, nombre: "Miguel de Güemes", icono: "🏘️", color: "blue", total: 0, parent: "Barrios y Localidades", tipo: "barrio" },
+  { id: 110, nombre: "Barrio Mar del Plata", icono: "🏘️", color: "green", total: 0, parent: "Barrios y Localidades", tipo: "barrio" },
+  { id: 111, nombre: "Lovecchio / Julio César Lovecchio", icono: "🏘️", color: "purple", total: 0, parent: "Barrios y Localidades", tipo: "barrio" },
+  { id: 112, nombre: "Altos Balcarce", icono: "🏘️", color: "orange", total: 0, parent: "Barrios y Localidades", tipo: "barrio" },
+  { id: 113, nombre: "Teodosio Alaniz / Alaniz", icono: "🏘️", color: "pink", total: 0, parent: "Barrios y Localidades", tipo: "barrio" },
+  { id: 114, nombre: "Cristo Redentor", icono: "🏘️", color: "gray", total: 0, parent: "Barrios y Localidades", tipo: "barrio" },
+  { id: 115, nombre: "Barrio Cristo", icono: "🏘️", color: "yellow", total: 0, parent: "Barrios y Localidades", tipo: "barrio" },
+  { id: 116, nombre: "Barrio Puente", icono: "🏘️", color: "indigo", total: 0, parent: "Barrios y Localidades", tipo: "barrio" },
+  { id: 117, nombre: "Barrio Familia", icono: "🏘️", color: "blue", total: 0, parent: "Barrios y Localidades", tipo: "barrio" },
+  { id: 118, nombre: "Brandenberg", icono: "🏘️", color: "green", total: 0, parent: "Barrios y Localidades", tipo: "barrio" },
+  { id: 119, nombre: "Remedios de Escalada", icono: "🏘️", color: "purple", total: 0, parent: "Barrios y Localidades", tipo: "barrio" },
+  { id: 120, nombre: "Islas Malvinas", icono: "🏘️", color: "orange", total: 0, parent: "Barrios y Localidades", tipo: "barrio" },
+  { id: 121, nombre: "Etchegaray", icono: "🏘️", color: "pink", total: 0, parent: "Barrios y Localidades", tipo: "barrio" },
+  { id: 122, nombre: "Fátima", icono: "🏘️", color: "gray", total: 0, parent: "Barrios y Localidades", tipo: "barrio" },
+  { id: 123, nombre: "René Favaloro", icono: "🏘️", color: "yellow", total: 0, parent: "Barrios y Localidades", tipo: "barrio" },
+  { id: 124, nombre: "Bonifacino", icono: "🏘️", color: "indigo", total: 0, parent: "Barrios y Localidades", tipo: "barrio" },
+  { id: 125, nombre: "Pueblo Santa Trinidad / Colonia I", icono: "🏘️", color: "blue", total: 0, parent: "Barrios y Localidades", tipo: "barrio" },
+  { id: 126, nombre: "Pueblo San José / Colonia II", icono: "🏘️", color: "green", total: 0, parent: "Barrios y Localidades", tipo: "barrio" },
+  { id: 127, nombre: "Pueblo Santa María / Colonia III", icono: "🏘️", color: "purple", total: 0, parent: "Barrios y Localidades", tipo: "barrio" },
+  { id: 128, nombre: "PROCREAR Santa Trinidad", icono: "🏘️", color: "orange", total: 0, parent: "Barrios y Localidades", tipo: "barrio" },
+  { id: 129, nombre: "Los Manantiales, en Santa Trinidad", icono: "🏘️", color: "pink", total: 0, parent: "Barrios y Localidades", tipo: "barrio" },
+  { id: 130, nombre: "Sector nuevo / loteo nuevo Santa Trinidad", icono: "🏘️", color: "gray", total: 0, parent: "Barrios y Localidades", tipo: "barrio" }
 ];
 
 let categorias = [];
@@ -47,6 +48,7 @@ let personas = [];
 let registros = [];
 let planos = [];
 let encuestas = [];
+let seguimientos = [];
 let agendas = [];
 let notasCalcular = [];
 let libroPaginas = [];
@@ -71,6 +73,8 @@ let libroPasandoPagina = "";
 let libroPaginaSeleccionada = 0;
 let encuestaPendienteRevision = null;
 let encuestaOCRTrabajando = false;
+let archivoSeleccionados = [];
+let seguimientoPendienteRevision = null;
 
 const $ = (id) => document.getElementById(id);
 
@@ -83,7 +87,7 @@ function limpiarCategoriasBarriosViejas() {
       Number(cat.id) === 10 ||
       Number(cat.id) === 11 ||
       (
-        cat.parent === "Barrios" &&
+        (cat.parent === "Barrios" || cat.parent === "Barrios y Localidades") &&
         nombresViejos.includes(String(cat.nombre || "").toLowerCase())
       );
 
@@ -108,6 +112,7 @@ function guardarStorage() {
   localStorage.setItem("registros", JSON.stringify(registros));
   localStorage.setItem("planos", JSON.stringify(planos));
   localStorage.setItem("encuestas", JSON.stringify(encuestas));
+  localStorage.setItem("seguimientos", JSON.stringify(seguimientos));
   localStorage.setItem("agendas", JSON.stringify(agendas));
   localStorage.setItem("notasCalcular", JSON.stringify(notasCalcular));
   localStorage.setItem("libroPaginas", JSON.stringify(libroPaginas));
@@ -121,11 +126,17 @@ function cargarStorage() {
   registros = JSON.parse(localStorage.getItem("registros")) || [];
   planos = JSON.parse(localStorage.getItem("planos")) || [];
   encuestas = JSON.parse(localStorage.getItem("encuestas")) || [];
+  seguimientos = JSON.parse(localStorage.getItem("seguimientos")) || [];
   agendas = JSON.parse(localStorage.getItem("agendas")) || [];
   notasCalcular = JSON.parse(localStorage.getItem("notasCalcular")) || [];
   libroPaginas = JSON.parse(localStorage.getItem("libroPaginas")) || [];
 
   limpiarCategoriasBarriosViejas();
+
+  categorias = categorias.map((cat) => {
+    if (cat.parent === "Barrios") return { ...cat, parent: "Barrios y Localidades" };
+    return cat;
+  });
 
   let huboCambios = false;
 
@@ -187,7 +198,7 @@ function moverBaseDatos(catId, direccion) {
   if (!cat) return;
 
   const mismaSeccion = (c) => {
-    if (cat.parent === "Barrios") return c.parent === "Barrios";
+    if ((cat.parent === "Barrios" || cat.parent === "Barrios y Localidades")) return c.parent === "Barrios";
     return !c.parent && c.tipo !== "barrio";
   };
 
@@ -548,8 +559,13 @@ function totalEnCategoria(catId) {
     return totalPlanos + totalEncuestas;
   }
 
+  if (cat?.tipo === "seguimiento") {
+    return seguimientos.length;
+  }
+
   return personas.filter((p) => Number(p.categoria_id) === Number(catId)).length;
 }
+
 
 
 
@@ -1066,6 +1082,7 @@ function bindEvents() {
   asegurarBotonEditarBases();
   actualizarBotonEditarBases();
   $("btnPanel").onclick = mostrarPanel;
+  if ($("btnCrearArchivo")) $("btnCrearArchivo").onclick = mostrarCrearArchivo;
 
   if ($("btnAgenda")) $("btnAgenda").onclick = mostrarAgenda;
   if ($("btnLibro")) $("btnLibro").onclick = mostrarLibro;
@@ -1130,6 +1147,355 @@ function bindEvents() {
 
 
 
+
+function mostrarCrearArchivo() {
+  document.body.classList.remove("modo-libro");
+  vista = "crearArchivo";
+  catActiva = null;
+
+  activarNavPrincipal("");
+  $("panelView").classList.add("hidden");
+  $("categoriaView").classList.remove("hidden");
+  $("busqueda").style.display = "none";
+
+  renderCrearArchivo();
+}
+
+function textoItemCrearArchivo(item) {
+  return [
+    item.tipo,
+    item.titulo,
+    item.subtitulo,
+    item.barrio,
+    item.detalle
+  ].join(" ").toLowerCase();
+}
+
+
+function fechaOrdenCrearArchivo(valor) {
+  const v = String(valor || "").trim();
+
+  if (!v) return 0;
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(v)) {
+    return new Date(v + "T00:00:00").getTime() || 0;
+  }
+
+  const m = v.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (m) {
+    return new Date(`${m[3]}-${m[2].padStart(2, "0")}-${m[1].padStart(2, "0")}T00:00:00`).getTime() || 0;
+  }
+
+  return 0;
+}
+
+function ordenarItemsCrearArchivo(items) {
+  const orden = String($("ordenCrearArchivo")?.value || "base-nombre");
+
+  const copia = [...items];
+
+  copia.sort((a, b) => {
+    const baseA = String(a.subtitulo || "").localeCompare(String(b.subtitulo || ""), "es");
+    const baseB = String(b.subtitulo || "").localeCompare(String(a.subtitulo || ""), "es");
+    const nombreA = String(a.titulo || "").localeCompare(String(b.titulo || ""), "es");
+    const nombreB = String(b.titulo || "").localeCompare(String(a.titulo || ""), "es");
+    const fechaA = fechaOrdenCrearArchivo(a.fecha);
+    const fechaB = fechaOrdenCrearArchivo(b.fecha);
+
+    if (orden === "nombre") return nombreA;
+    if (orden === "nombre-desc") return nombreB;
+    if (orden === "fecha") return (fechaA - fechaB) || nombreA;
+    if (orden === "fecha-desc") return (fechaB - fechaA) || nombreA;
+    if (orden === "base-fecha") return baseA || (fechaB - fechaA) || nombreA;
+
+    return baseA || nombreA || (fechaB - fechaA);
+  });
+
+  return copia;
+}
+
+function agruparItemsPorSubtitulo(items) {
+  const grupos = {};
+
+  items.forEach((item) => {
+    const key = item.subtitulo || "Sin base";
+
+    if (!grupos[key]) grupos[key] = [];
+
+    grupos[key].push(item);
+  });
+
+  return grupos;
+}
+
+function renderGrupoCrearArchivo(titulo, items) {
+  return `
+    <section class="crear-archivo-grupo">
+      <div class="crear-archivo-grupo-head">
+        <h3>${escapeHtml(titulo)}</h3>
+        <span>${items.length} elemento${items.length !== 1 ? "s" : ""}</span>
+      </div>
+
+      <div class="crear-archivo-lista">
+        ${items.map((item) => `
+          <label class="crear-archivo-item ${archivoSeleccionados.includes(item.id) ? "seleccionado" : ""}">
+            <input type="checkbox" ${archivoSeleccionados.includes(item.id) ? "checked" : ""} onchange="toggleSeleccionCrearArchivo('${item.id}')" />
+            <div>
+              <b>${escapeHtml(item.tipo)} · ${escapeHtml(item.titulo)}</b>
+              <p>${escapeHtml(item.subtitulo || "")}</p>
+              <small>
+                ${item.fecha ? `📅 ${escapeHtml(item.fecha)} · ` : ""}
+                ${escapeHtml(item.detalle || "")}
+              </small>
+            </div>
+          </label>
+        `).join("")}
+      </div>
+    </section>
+  `;
+}
+
+
+function buscarItemsCrearArchivo() {
+  const items = [];
+
+  personas.forEach((p) => {
+    const cat = categorias.find((c) => Number(c.id) === Number(p.categoria_id));
+    items.push({
+      id: `persona-${p.id}`,
+      tipo: "Persona",
+      titulo: p.nombre || "Persona",
+      subtitulo: cat ? cat.nombre : "Base normal",
+      barrio: p.barrio || "",
+      fecha: p.fecha_carga || "",
+      detalle: `${p.direccion || ""} ${p.celular || ""} ${p.motivo_consulta || ""}`,
+      html: () => htmlPersonaCrearArchivo(p)
+    });
+  });
+
+  planos.forEach((p) => {
+    items.push({
+      id: `plano-${p.id}`,
+      tipo: "Plano",
+      titulo: p.nombre || "Plano",
+      subtitulo: p.barrio_nombre || "Barrios y Localidades",
+      barrio: p.barrio_nombre || "",
+      fecha: p.fecha || "",
+      detalle: p.nombreArchivo || "",
+      html: () => htmlArchivoBarrioPDF(p, "plano")
+    });
+  });
+
+  encuestas.forEach((e) => {
+    items.push({
+      id: `encuesta-${e.id}`,
+      tipo: "Encuesta",
+      titulo: e.nombre || "Encuesta",
+      subtitulo: e.barrio_nombre || "Barrios y Localidades",
+      barrio: e.barrio_nombre || "",
+      fecha: e.fecha || "",
+      detalle: `${e.nombreArchivo || ""} ${(e.preguntas || []).map((p) => p.pregunta).join(" ")}`,
+      html: () => htmlArchivoBarrioPDF(e, "encuesta")
+    });
+  });
+
+  seguimientos.forEach((s) => {
+    items.push({
+      id: `seguimiento-${s.id}`,
+      tipo: "Seguimiento",
+      titulo: s.titulo || "Seguimiento",
+      subtitulo: s.barrio || "Seguimientos",
+      barrio: s.barrio || "",
+      fecha: s.fecha || s.fecha_carga || "",
+      detalle: `${s.nombre_apellido || ""} ${s.dni || ""} ${s.direccion_numero || ""} ${s.informe || ""} ${s.nombreArchivo || ""}`,
+      html: () => htmlSeguimientoPDF(s)
+    });
+  });
+
+  agruparGraficosPorPregunta().forEach((g, index) => {
+    items.push({
+      id: `grafico-${normalizarPregunta(g.pregunta)}-${index}`,
+      tipo: "Gráfico",
+      titulo: g.pregunta || "Gráfico",
+      subtitulo: "Gráficos de encuestas",
+      barrio: Object.keys(g.barrios || {}).join(", "),
+      fecha: "",
+      detalle: (g.opciones || []).join(", "),
+      html: () => htmlGraficoPregunta(g)
+    });
+  });
+
+  return items;
+}
+
+
+function htmlPersonaCrearArchivo(p) {
+  const cat = categorias.find((c) => Number(c.id) === Number(p.categoria_id));
+  const regs = registros.filter((r) => Number(r.persona_id) === Number(p.id));
+
+  return `
+    <div class="card">
+      <h2>👤 ${escapeHtml(p.nombre || "Persona")}</h2>
+      <table>
+        <tbody>
+          <tr><th>Base</th><td>${escapeHtml(cat?.nombre || "")}</td></tr>
+          <tr><th>Dirección</th><td>${escapeHtml(p.direccion || "")}</td></tr>
+          <tr><th>Celular</th><td>${escapeHtml(p.celular || "")}</td></tr>
+          <tr><th>Barrio</th><td>${escapeHtml(p.barrio || "")}</td></tr>
+          <tr><th>Fecha</th><td>${escapeHtml(p.fecha_carga || "")}</td></tr>
+          <tr><th>Motivo</th><td>${escapeHtml(p.motivo_consulta || "")}</td></tr>
+        </tbody>
+      </table>
+
+      ${
+        regs.length
+          ? `
+            <h3>Registros</h3>
+            ${regs.map((r) => `
+              <div class="card">
+                <h4>${escapeHtml(r.titulo || "Registro")}</h4>
+                <p><b>Fecha:</b> ${escapeHtml(r.fecha || "")}</p>
+                <p>${escapeHtml(r.descripcion || "").replace(/\n/g, "<br>")}</p>
+              </div>
+            `).join("")}
+          `
+          : ""
+      }
+    </div>
+  `;
+}
+
+function toggleSeleccionCrearArchivo(id) {
+  if (archivoSeleccionados.includes(id)) {
+    archivoSeleccionados = archivoSeleccionados.filter((x) => x !== id);
+  } else {
+    archivoSeleccionados.push(id);
+  }
+
+  renderCrearArchivo();
+}
+
+function seleccionarTodosCrearArchivo() {
+  const texto = String($("buscarCrearArchivo")?.value || "").toLowerCase();
+  const items = buscarItemsCrearArchivo().filter((item) => !texto || textoItemCrearArchivo(item).includes(texto));
+
+  const ids = items.map((x) => x.id);
+  const todosSeleccionados = ids.every((id) => archivoSeleccionados.includes(id));
+
+  if (todosSeleccionados) {
+    archivoSeleccionados = archivoSeleccionados.filter((id) => !ids.includes(id));
+  } else {
+    ids.forEach((id) => {
+      if (!archivoSeleccionados.includes(id)) archivoSeleccionados.push(id);
+    });
+  }
+
+  renderCrearArchivo();
+}
+
+function renderCrearArchivo() {
+  $("categoriaHeader").className = "cat-header bg-indigo";
+  $("categoriaHeader").innerHTML = `
+    <div class="left">
+      <div class="emoji">🧾</div>
+      <div>
+        <h2>Crear archivo</h2>
+        <p>Buscá registros de todas las bases, separados por base de datos, nombre o fecha.</p>
+      </div>
+    </div>
+
+    <div class="cat-actions">
+      <button onclick="imprimirArchivoPersonalizado()">🖨️ Imprimir</button>
+      <button onclick="descargarArchivoPersonalizado()">⬇️ Descargar PDF</button>
+    </div>
+  `;
+
+  const texto = String($("buscarCrearArchivo")?.value || "").toLowerCase();
+  const itemsFiltrados = buscarItemsCrearArchivo().filter((item) => !texto || textoItemCrearArchivo(item).includes(texto));
+  const items = ordenarItemsCrearArchivo(itemsFiltrados);
+  const grupos = agruparItemsPorSubtitulo(items);
+
+  $("personasLista").innerHTML = `
+    <div class="crear-archivo-box">
+      <div class="crear-archivo-toolbar">
+        <input id="buscarCrearArchivo" class="search" placeholder="🔍 Buscar en todas las bases: planos, encuestas, gráficos, personas, seguimientos..." value="${escapeHtml(texto)}" oninput="renderCrearArchivo()" />
+
+        <select id="ordenCrearArchivo" class="select-orden-crear" onchange="renderCrearArchivo()">
+          <option value="base-nombre" ${($("ordenCrearArchivo")?.value || "base-nombre") === "base-nombre" ? "selected" : ""}>Separar por base y nombre</option>
+          <option value="base-fecha" ${$("ordenCrearArchivo")?.value === "base-fecha" ? "selected" : ""}>Separar por base y fecha</option>
+          <option value="nombre" ${$("ordenCrearArchivo")?.value === "nombre" ? "selected" : ""}>Ordenar por nombre A-Z</option>
+          <option value="nombre-desc" ${$("ordenCrearArchivo")?.value === "nombre-desc" ? "selected" : ""}>Ordenar por nombre Z-A</option>
+          <option value="fecha-desc" ${$("ordenCrearArchivo")?.value === "fecha-desc" ? "selected" : ""}>Ordenar por fecha reciente</option>
+          <option value="fecha" ${$("ordenCrearArchivo")?.value === "fecha" ? "selected" : ""}>Ordenar por fecha antigua</option>
+        </select>
+
+        <button class="secondary" onclick="seleccionarTodosCrearArchivo()">Seleccionar / deseleccionar visibles</button>
+        <span class="badge badge-indigo">${archivoSeleccionados.length} seleccionado${archivoSeleccionados.length !== 1 ? "s" : ""}</span>
+      </div>
+
+      <div class="crear-archivo-grupos">
+        ${
+          items.length
+            ? Object.entries(grupos).map(([grupo, lista]) => renderGrupoCrearArchivo(grupo, lista)).join("")
+            : `<div class="empty"><p>No se encontraron registros con esa búsqueda.</p></div>`
+        }
+      </div>
+    </div>
+  `;
+}
+
+
+function htmlArchivoPersonalizado() {
+  const items = ordenarItemsCrearArchivo(
+    buscarItemsCrearArchivo().filter((item) => archivoSeleccionados.includes(item.id))
+  );
+
+  if (!items.length) {
+    return `<p>No seleccionaste elementos.</p>`;
+  }
+
+  const grupos = agruparItemsPorSubtitulo(items);
+
+  return `
+    <h1>Archivo personalizado</h1>
+    <p><b>Total de elementos:</b> ${items.length}</p>
+
+    ${Object.entries(grupos).map(([grupo, lista]) => `
+      <section class="archivo-personalizado-grupo">
+        <h2>${escapeHtml(grupo)}</h2>
+
+        ${lista.map((item) => `
+          <section class="archivo-personalizado-section">
+            <h3>${escapeHtml(item.tipo)} · ${escapeHtml(item.titulo)}</h3>
+            ${item.fecha ? `<p><b>Fecha:</b> ${escapeHtml(item.fecha)}</p>` : ""}
+            ${item.html()}
+          </section>
+        `).join("")}
+      </section>
+    `).join("")}
+  `;
+}
+
+
+function imprimirArchivoPersonalizado() {
+  if (!archivoSeleccionados.length) {
+    alert("Seleccioná al menos un registro, plano, encuesta, gráfico o seguimiento.");
+    return;
+  }
+
+  imprimirHTML("Archivo personalizado", htmlArchivoPersonalizado());
+}
+
+function descargarArchivoPersonalizado() {
+  if (!archivoSeleccionados.length) {
+    alert("Seleccioná al menos un registro, plano, encuesta, gráfico o seguimiento.");
+    return;
+  }
+
+  descargarHTML("archivo-personalizado", htmlArchivoPersonalizado());
+}
+
+
 function renderTodo() {
   renderSidebar();
   renderSelectCategorias();
@@ -1139,6 +1505,7 @@ function renderTodo() {
   else if (vista === "libro") renderLibro();
   else if (vista === "calcular") renderCalcular();
   else if (vista === "graficos") renderGraficos();
+  else if (vista === "crearArchivo") renderCrearArchivo();
   else renderCategoria();
 }
 
@@ -1155,7 +1522,7 @@ function activarNavPrincipal(idActivo) {
 function renderSidebar() {
   actualizarBotonEditarBases();
 
-  const total = personas.length + planos.length + encuestas.length;
+  const total = personas.length + planos.length + encuestas.length + seguimientos.length;
 
   $("totalPersonas").textContent =
     `${formatPersonas(total)} cargada${total !== 1 ? "s" : ""}`;
@@ -1163,7 +1530,7 @@ function renderSidebar() {
   let html = "";
 
   const categoriasNormales = categorias.filter((cat) => !cat.parent && cat.tipo !== "barrio");
-  const categoriasBarrios = categorias.filter((cat) => cat.parent === "Barrios" || cat.tipo === "barrio");
+  const categoriasBarrios = categorias.filter((cat) => cat.parent === "Barrios" || cat.parent === "Barrios y Localidades" || cat.tipo === "barrio");
 
   categoriasNormales.forEach((cat) => {
     const totalCat = totalEnCategoria(cat.id);
@@ -1272,8 +1639,8 @@ function renderPanel() {
   $("cardsCategorias").innerHTML += `
     <div class="card" id="cardBarrios">
       <div class="emoji">🏘️</div>
-      <h3>Barrios</h3>
-      <span class="badge badge-indigo">${categorias.filter((cat) => cat.parent === "Barrios" || cat.tipo === "barrio").length} barrios</span>
+      <h3>Barrios y Localidades</h3>
+      <span class="badge badge-indigo">${categorias.filter((cat) => cat.parent === "Barrios" || cat.parent === "Barrios y Localidades" || cat.tipo === "barrio").length} barrios/localidades</span>
     </div>
   `;
 
@@ -1287,7 +1654,7 @@ function renderPanel() {
       barriosAbierto = true;
       renderSidebar();
 
-      const primerBarrio = categorias.find((cat) => cat.parent === "Barrios" || cat.tipo === "barrio");
+      const primerBarrio = categorias.find((cat) => cat.parent === "Barrios" || cat.parent === "Barrios y Localidades" || cat.tipo === "barrio");
       if (primerBarrio) mostrarCategoria(primerBarrio.id);
     };
   }
@@ -1323,7 +1690,7 @@ function mostrarCategoria(catId) {
   $("busqueda").value = "";
   registrosAbiertos = null;
 
-  if (catActiva?.tipo === "planos" || catActiva?.tipo === "encuesta" || catActiva?.tipo === "barrio") {
+  if (catActiva?.tipo === "planos" || catActiva?.tipo === "encuesta" || catActiva?.tipo === "barrio" || catActiva?.tipo === "seguimiento") {
     cerrarFormPersona();
     $("formPersona").classList.add("hidden");
     renderTodo();
@@ -1358,6 +1725,11 @@ function renderCategoria() {
 
   if (catActiva.tipo === "encuesta") {
     renderEncuesta();
+    return;
+  }
+
+  if (catActiva.tipo === "seguimiento") {
+    renderSeguimientos();
     return;
   }
 
@@ -1695,7 +2067,7 @@ function crearCategoria() {
           icono: "🏘️",
           color: colorAleatorioBase(),
           total: 0,
-          parent: "Barrios",
+          parent: "Barrios y Localidades",
           tipo: "barrio"
         }
       : {
@@ -1846,24 +2218,1120 @@ function preguntasEncuestaBase() {
   ];
 }
 
-function limpiarPreguntaOCR(linea) {
-  let texto = String(linea || "")
+
+
+
+
+
+
+
+
+function textoParecePreguntaOCR(texto) {
+  const t = String(texto || "").trim();
+  const n = normalizarOCR(t);
+
+  if (!t) return false;
+
+  // Evita títulos.
+  if (/^barrio\s+/i.test(t) || n.includes("coronelsuarez")) return false;
+
+  // Evita líneas de opciones solas.
+  if (/^(o|0)?\s*(si|sí|no)\s*$/i.test(t)) return false;
+
+  // Preguntas con signos.
+  if (t.includes("¿") || t.includes("?")) return true;
+
+  // Si el OCR no leyó el signo, igual aceptamos frases típicas de encuesta.
+  return /^(hay|tiene|se siente|el barrio|la vivienda|existe|cuenta|posee|dispone|recibe|faltan|necesita|hay\s+)/i.test(t);
+}
+
+function agregarPreguntaOCRLista(lista, preguntaObj) {
+  if (!preguntaObj || !preguntaObj.pregunta) return;
+
+  const pregunta = limpiarPreguntaOCR(preguntaObj.pregunta);
+  if (!pregunta || pregunta.length < 6) return;
+
+  const key = normalizarPregunta(pregunta);
+
+  const existe = lista.some((p) => normalizarPregunta(p.pregunta) === key);
+  if (existe) return;
+
+  lista.push({
+    ...preguntaObj,
+    pregunta
+  });
+}
+
+function ordenarPreguntasOCR(preguntas) {
+  return (preguntas || []).sort((a, b) => {
+    const ay = a?.bbox?.y0 ?? 999999;
+    const by = b?.bbox?.y0 ?? 999999;
+    return ay - by;
+  });
+}
+
+
+
+function valorCampo(id) {
+  return String($(id)?.value || "").trim();
+}
+
+function datosEncuestaDesdeFormulario() {
+  return {
+    nombre_persona: valorCampo("encDatoNombre"),
+    telefono: valorCampo("encDatoTelefono"),
+    dni: valorCampo("encDatoDni"),
+    fecha: valorCampo("encDatoFecha"),
+    barrio: valorCampo("encDatoBarrio") || catActiva?.nombre || "",
+    direccion_numero: valorCampo("encDatoDireccion")
+  };
+}
+
+function htmlDatosEncuesta(datos) {
+  const d = datos || {};
+  const filas = [
+    ["Nombre", d.nombre_persona],
+    ["Teléfono", d.telefono],
+    ["DNI", d.dni],
+    ["Fecha", d.fecha],
+    ["Barrio", d.barrio],
+    ["Dirección y número", d.direccion_numero]
+  ].filter(([, v]) => String(v || "").trim());
+
+  if (!filas.length) return "";
+
+  return `
+    <div class="datos-encuesta-box">
+      <h4>👤 Datos de la encuesta</h4>
+      <div class="datos-encuesta-grid">
+        ${filas.map(([k, v]) => `
+          <div><b>${escapeHtml(k)}:</b> ${escapeHtml(v)}</div>
+        `).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function etiquetaRespuesta(valor) {
+  const raw = String(valor || "").trim();
+  const n = normalizarOCR(raw);
+
+  if (n === "si" || n === "s") return "Sí";
+  if (n === "no" || n === "n") return "No";
+  if (n === "bueno" || n === "buena") return "Bueno";
+  if (n === "regular") return "Regular";
+  if (n === "malo" || n === "mala") return "Malo";
+  if (n === "propia") return "Propia";
+  if (n === "alquilada") return "Alquilada";
+  if (n === "prestada") return "Prestada";
+  if (n === "caps") return "CAPS";
+  return raw || "Sin respuesta";
+}
+
+function claveRespuesta(valor) {
+  return normalizarOCR(etiquetaRespuesta(valor)) || "sinrespuesta";
+}
+
+function opcionesRespuestaPregunta(p) {
+  const opciones = Array.isArray(p?.opciones) && p.opciones.length
+    ? p.opciones
+    : ["Sí", "No"];
+
+  const limpias = [];
+  opciones.forEach((op) => {
+    const label = etiquetaRespuesta(op);
+    if (!limpias.some((x) => claveRespuesta(x) === claveRespuesta(label))) {
+      limpias.push(label);
+    }
+  });
+
+  return limpias.length ? limpias : ["Sí", "No"];
+}
+
+function esOpcionRespuestaOCR(w) {
+  const t = normalizarOCR(w?.texto || w || "");
+  return [
+    "si", "s", "no", "n",
+    "bueno", "buena", "regular", "malo", "mala",
+    "propia", "alquilada", "prestada", "otra",
+    "caps", "hospital", "privado"
+  ].includes(t);
+}
+
+function detectarOpcionesFilaOCR(palabras) {
+  const opts = [];
+
+  (palabras || []).forEach((w) => {
+    const n = normalizarOCR(w.texto);
+
+    let label = "";
+    if (n === "si" || n === "s") label = "Sí";
+    else if (n === "no" || n === "n") label = "No";
+    else if (n === "bueno" || n === "buena") label = "Bueno";
+    else if (n === "regular") label = "Regular";
+    else if (n === "malo" || n === "mala") label = "Malo";
+
+    if (label && !opts.some((o) => claveRespuesta(o.label) === claveRespuesta(label))) {
+      opts.push({ label, bbox: w.bbox });
+    }
+  });
+
+  return opts;
+}
+
+function obtenerTextoAntesDeOpciones(palabras) {
+  const idx = (palabras || []).findIndex((w) => esOpcionRespuestaOCR(w));
+  const base = idx >= 0 ? palabras.slice(0, idx) : palabras;
+
+  return base.map((w) => w.texto).join(" ").replace(/\s+/g, " ").trim();
+}
+
+function textoFilaOCR(fila) {
+  return (fila?.palabras || []).map((w) => w.texto).join(" ").replace(/\s+/g, " ").trim();
+}
+
+function esTituloSeccionOCR(texto) {
+  const t = String(texto || "").trim();
+  const n = normalizarOCR(t);
+
+  if (!t || t.length < 3) return false;
+  if (textoParecePreguntaOCR(t)) return false;
+  if (["aspecto", "tema", "nivel educativo alcanzado"].includes(n)) return false;
+
+  const letras = t.replace(/[^A-Za-zÁÉÍÓÚÑáéíóúñ]/g, "");
+  if (!letras) return false;
+
+  const mayus = letras.replace(/[^A-ZÁÉÍÓÚÑ]/g, "").length;
+  return mayus / letras.length > 0.65 || [
+    "vivienda", "salud", "lugar de atencion", "infraestructura",
+    "educacion y formacion", "ambiente", "comunidad", "desarrollo social"
+  ].includes(n);
+}
+
+function detectarHeadersMultiplesOCR(fila) {
+  const palabras = fila?.palabras || [];
+  const opciones = detectarOpcionesFilaOCR(palabras);
+
+  if (opciones.length >= 2) {
+    return opciones;
+  }
+
+  return null;
+}
+
+function xCheckboxParaOpcion(opcion, tipo = "inline", proxima = null) {
+  const b = opcion?.bbox;
+  if (!b) return null;
+
+  if (tipo === "tabla") {
+    return b.x0 + Math.min(24, Math.max(8, (b.x1 - b.x0) * 0.25));
+  }
+
+  const dist = proxima?.bbox
+    ? Math.max(24, Math.min(75, (proxima.bbox.x0 - b.x0) * 0.35))
+    : Math.max(24, Math.min(70, (b.x1 - b.x0) * 1.3));
+
+  return b.x0 - dist;
+}
+
+function crearPreguntaOCRConOpciones({ pregunta, bbox, opciones, tipoOpciones = "inline", metodo = "OCR multiple choice" }) {
+  const ops = (opciones || []).map((op, idx, arr) => {
+    const label = etiquetaRespuesta(op.label || op);
+    const boxX = op.boxX ?? xCheckboxParaOpcion(op, tipoOpciones, arr[idx + 1]);
+
+    return {
+      label,
+      bbox: op.bbox || null,
+      boxX,
+      tipo: tipoOpciones
+    };
+  }).filter((op) => op.label);
+
+  return {
+    pregunta: limpiarPreguntaOCR(pregunta),
+    bbox,
+    opciones: ops.map((o) => o.label),
+    opcionesBoxes: ops,
+    respuesta: ops[0]?.label || "Sí",
+    detectado: true,
+    metodo
+  };
+}
+
+function construirPreguntasMultipleChoiceDesdePalabrasOCR(palabrasOCR) {
+  const filas = agruparPalabrasPorRenglonOCR(palabrasOCR);
+  const preguntas = [];
+  let seccionActual = "";
+  let headersTabla = null;
+
+  // Primer método: tabla por columnas / encabezados.
+  reconstruirFilasTablaPorColumnasOCR(filas).forEach((p) => agregarPreguntaOCRLista(preguntas, p));
+
+  filas.forEach((fila) => {
+    const palabras = fila.palabras || [];
+    const texto = textoFilaOCR(fila);
+    const n = normalizarOCR(texto);
+
+    if (!texto) return;
+
+    if (esTituloSeccionOCR(texto)) {
+      seccionActual = texto.replace(/[:]+$/g, "").trim();
+      headersTabla = null;
+      return;
+    }
+
+    const headers = detectarHeadersMultiplesOCR(fila);
+
+    if (
+      headers &&
+      headers.length >= 2 &&
+      (
+        n.includes("bueno") ||
+        n.includes("regular") ||
+        n.includes("malo") ||
+        n.includes("sino") ||
+        n.includes("aspecto") ||
+        n.includes("tema")
+      )
+    ) {
+      headersTabla = headers.map((h) => ({ ...h, tipo: "tabla" }));
+      return;
+    }
+
+    const opcionesInline = detectarOpcionesFilaOCR(palabras);
+    if (textoParecePreguntaOCR(texto) && opcionesInline.length >= 2) {
+      const preguntaTxt = obtenerTextoAntesDeOpciones(palabras) || texto;
+      const baseBbox = {
+        x0: Math.min(...palabras.map((w) => w.bbox.x0)),
+        y0: Math.min(...palabras.map((w) => w.bbox.y0)),
+        x1: Math.max(...palabras.map((w) => w.bbox.x1)),
+        y1: Math.max(...palabras.map((w) => w.bbox.y1))
+      };
+
+      agregarPreguntaOCRLista(preguntas, crearPreguntaOCRConOpciones({
+        pregunta: preguntaTxt,
+        bbox: baseBbox,
+        opciones: opcionesInline,
+        tipoOpciones: "inline",
+        metodo: "OCR pregunta con opciones"
+      }));
+      return;
+    }
+
+    if (headersTabla && palabras.length) {
+      const minHeaderX = Math.min(...headersTabla.map((h) => h.bbox.x0 || 999999));
+      const palabrasPregunta = palabras.filter((w) => minHeaderX === 999999 || w.bbox.x0 < minHeaderX - 10);
+      const preguntaTxt = palabrasPregunta.length
+        ? palabrasPregunta.map((w) => w.texto).join(" ").replace(/\s+/g, " ").trim()
+        : texto.replace(/\b(bueno|regular|malo|mala|si|sí|no)\b/gi, "").trim();
+
+      if (preguntaTxt && preguntaTxt.length >= 3 && !esOpcionRespuestaOCR(preguntaTxt)) {
+        const baseBbox = {
+          x0: Math.min(...palabras.map((w) => w.bbox.x0)),
+          y0: Math.min(...palabras.map((w) => w.bbox.y0)),
+          x1: Math.max(...palabras.map((w) => w.bbox.x1)),
+          y1: Math.max(...palabras.map((w) => w.bbox.y1))
+        };
+
+        const preguntaFinal = seccionActual ? `${seccionActual} - ${preguntaTxt}` : preguntaTxt;
+
+        agregarPreguntaOCRLista(preguntas, crearPreguntaOCRConOpciones({
+          pregunta: preguntaFinal,
+          bbox: baseBbox,
+          opciones: headersTabla,
+          tipoOpciones: "tabla",
+          metodo: "OCR tabla multiple choice"
+        }));
+      }
+    }
+  });
+
+  return ordenarPreguntasOCR(preguntas);
+}
+
+
+
+
+
+
+function textoCeldaDocx(celda) {
+  return Array.from(celda.getElementsByTagName("w:t"))
+    .map((n) => n.textContent || "")
+    .join("")
     .replace(/\s+/g, " ")
-    .replace(/^[^¿A-Za-zÁÉÍÓÚÑáéíóúñ0-9]+/g, "")
+    .trim();
+}
+
+function limpiarHeaderTablaDocx(texto) {
+  return String(texto || "")
+    .replace(/\s+/g, " ")
+    .replace(/N\s*°/gi, "N°")
+    .trim();
+}
+
+function opcionesParaColumnaTablaDocx(header, valores = []) {
+  const h = normalizarOCR(header);
+  const unicos = [...new Set((valores || []).map((v) => etiquetaRespuesta(v)).filter(Boolean))]
+    .filter((v) => normalizarOCR(v) && !/^_+$/.test(v));
+
+  if (h.includes("estado")) return ["Pendiente", "En tratamiento", "Resuelto"];
+  if (h.includes("derivacion") || h.includes("accionrealizada")) return ["Sí", "No"];
+  if (h.includes("arearesponsable")) {
+    return ["Obras Públicas", "Salud", "Desarrollo Social", "Educación", "Ambiente", "Seguridad", "Otro"];
+  }
+  if (h.includes("problematica")) {
+    return unicos.length >= 2 ? unicos.slice(0, 8) : ["Cloacas", "Alumbrado", "Calles", "Limpieza", "Seguridad", "Salud", "Otro"];
+  }
+  if (h.includes("observaciones")) return ["Con observación", "Sin observación"];
+
+  if (unicos.length >= 2 && unicos.length <= 8) return unicos;
+
+  return ["Completar", "Pendiente", "No corresponde"];
+}
+
+function preguntasDesdeTablaDocx(rows, tablaIndex = 1) {
+  if (!Array.isArray(rows) || rows.length < 1) return [];
+
+  const limpias = rows
+    .map((r) => r.map((c) => limpiarHeaderTablaDocx(c)).filter((c) => c))
+    .filter((r) => r.length);
+
+  if (!limpias.length) return [];
+
+  const header = limpias[0];
+  const preguntas = [];
+
+  // Caso encuesta clásica: primera columna tema/aspecto, columnas siguientes son opciones.
+  const headerNorm = header.map((h) => normalizarOCR(h));
+  const tieneOpcionesEnHeader =
+    header.length >= 3 &&
+    (
+      headerNorm.includes("bueno") ||
+      headerNorm.includes("regular") ||
+      headerNorm.includes("malo") ||
+      headerNorm.includes("si") ||
+      headerNorm.includes("no")
+    );
+
+  if (tieneOpcionesEnHeader) {
+    const opciones = header.slice(1).map((h) => etiquetaRespuesta(h)).filter(Boolean);
+
+    limpias.slice(1).forEach((row) => {
+      const tema = row[0];
+      if (!tema || normalizarOCR(tema).includes("tema") || normalizarOCR(tema).includes("aspecto")) return;
+
+      preguntas.push({
+        pregunta: `Tabla ${tablaIndex} - ${tema}`,
+        opciones: opciones.length ? opciones : ["Sí", "No"],
+        respuesta: opciones[0] || "Sí",
+        detectado: true,
+        metodo: "DOCX tabla encuesta"
+      });
+    });
+
+    return preguntas;
+  }
+
+  // Caso planilla de seguimiento: columnas tipo Estado, Área responsable, etc.
+  const tituloTabla = header.some((h) => normalizarOCR(h).includes("problematica"))
+    ? "Seguimiento de problemáticas barriales"
+    : `Tabla ${tablaIndex}`;
+
+  header.forEach((col, colIndex) => {
+    const n = normalizarOCR(col);
+    if (!col || n === "n" || n === "numero" || n.includes("domicilio") || n.includes("fecha")) return;
+
+    const valores = limpias.slice(1).map((row) => row[colIndex] || "").filter(Boolean);
+    const opciones = opcionesParaColumnaTablaDocx(col, valores);
+
+    preguntas.push({
+      pregunta: `${tituloTabla} - ${col}`,
+      opciones,
+      respuesta: opciones[0] || "Completar",
+      detectado: true,
+      metodo: "DOCX tabla seguimiento"
+    });
+  });
+
+  return preguntas;
+}
+
+async function extraerEncuestaDesdeDocx(archivo) {
+  if (!window.JSZip) {
+    throw new Error("JSZip no está cargado.");
+  }
+
+  const zip = await window.JSZip.loadAsync(archivo);
+  const xmlText = await zip.file("word/document.xml")?.async("text");
+
+  if (!xmlText) {
+    throw new Error("No se pudo leer el Word.");
+  }
+
+  const xml = new DOMParser().parseFromString(xmlText, "application/xml");
+  const bodyText = Array.from(xml.getElementsByTagName("w:t"))
+    .map((n) => n.textContent || "")
+    .join(" ")
+    .replace(/\s+/g, " ")
     .trim();
 
-  // Si OCR mezcló la pregunta con opciones "Sí / No",
-  // cortamos en el primer signo de pregunta.
+  const tables = Array.from(xml.getElementsByTagName("w:tbl"));
+  let preguntas = [];
+
+  tables.forEach((tbl, idx) => {
+    const rows = Array.from(tbl.getElementsByTagName("w:tr")).map((tr) =>
+      Array.from(tr.getElementsByTagName("w:tc")).map((tc) => textoCeldaDocx(tc))
+    );
+
+    preguntas.push(...preguntasDesdeTablaDocx(rows, idx + 1));
+  });
+
+  // Campos generales del documento como informe.
+  const informeDocx = bodyText.slice(0, 1800);
+
+  if (!preguntas.length) {
+    const lineas = bodyText
+      .split(/(?=¿|Pregunta|Tema|Estado|Observaciones|Problemática)/i)
+      .map((x) => x.trim())
+      .filter(Boolean);
+
+    lineas.forEach((linea, i) => {
+      if (linea.length < 4) return;
+
+      preguntas.push({
+        pregunta: `Word - ${linea.slice(0, 80)}${linea.length > 80 ? "..." : ""}`,
+        opciones: ["Completar", "Pendiente", "Resuelto"],
+        respuesta: "Completar",
+        detectado: true,
+        metodo: "DOCX texto"
+      });
+    });
+  }
+
+  return {
+    preguntas: preguntas.slice(0, 60),
+    informe: informeDocx
+  };
+}
+
+async function leerEncuestaDesdeWord({ nombre, nombreArchivo, tipo, dataUrl, informe = "", datos = {}, archivo }) {
+  encuestaOCRTrabajando = true;
+  renderBarrio();
+
+  const barrioCreacionId = catActiva?.id;
+
+  try {
+    if (!archivo) throw new Error("Archivo Word no disponible.");
+
+    const resultado = await extraerEncuestaDesdeDocx(archivo);
+
+    encuestaOCRTrabajando = false;
+
+    const preguntas = resultado.preguntas.length
+      ? resultado.preguntas
+      : [
+          {
+            pregunta: "Word - Estado del seguimiento",
+            opciones: ["Pendiente", "En tratamiento", "Resuelto"],
+            respuesta: "Pendiente",
+            detectado: false,
+            metodo: "DOCX manual"
+          }
+        ];
+
+    encuestaPendienteRevision = {
+      id: Date.now(),
+      barrio_id: barrioCreacionId,
+      barrio_nombre: categorias.find((c) => Number(c.id) === Number(barrioCreacionId))?.nombre || catActiva?.nombre || "",
+      nombre,
+      informe: String(informe || resultado.informe || "").trim(),
+      datos: datos || {},
+      telefono: "",
+      direccion: "",
+      observaciones: "",
+      preguntas,
+      archivo: dataUrl,
+      nombreArchivo,
+      tipo: "word",
+      textoOCR: resultado.informe || "",
+      fecha: new Date().toLocaleDateString("es-AR")
+    };
+
+    renderBarrio();
+  } catch (error) {
+    encuestaOCRTrabajando = false;
+
+    crearEncuestaManualDesdeArchivo({
+      nombre,
+      informe,
+      datos,
+      nombreArchivo,
+      tipo: "word",
+      dataUrl,
+      barrio_id: barrioCreacionId,
+      barrio_nombre: categorias.find((c) => Number(c.id) === Number(barrioCreacionId))?.nombre || catActiva?.nombre || ""
+    });
+
+    if (encuestaPendienteRevision) {
+      encuestaPendienteRevision.preguntas = [
+        {
+          pregunta: "Word - Estado del seguimiento",
+          opciones: ["Pendiente", "En tratamiento", "Resuelto"],
+          respuesta: "Pendiente",
+          detectado: false,
+          metodo: "DOCX manual"
+        }
+      ];
+      encuestaPendienteRevision.ocrError = "El Word se cargó, pero no se pudieron leer automáticamente las tablas. Configurá las preguntas y respuestas.";
+    }
+
+    renderBarrio();
+  }
+}
+
+
+function archivoEsWord(archivo) {
+  const nombre = String(archivo?.name || "").toLowerCase();
+  const tipo = String(archivo?.type || "").toLowerCase();
+
+  return (
+    nombre.endsWith(".doc") ||
+    nombre.endsWith(".docx") ||
+    tipo.includes("word") ||
+    tipo.includes("officedocument.wordprocessingml")
+  );
+}
+
+function dataUrlEsWord(dataUrl, nombre = "") {
+  const n = String(nombre || "").toLowerCase();
+  const d = String(dataUrl || "").toLowerCase();
+
+  return (
+    n.endsWith(".doc") ||
+    n.endsWith(".docx") ||
+    d.includes("application/msword") ||
+    d.includes("officedocument.wordprocessingml")
+  );
+}
+
+function linkDescargaArchivo(nombre, dataUrl) {
+  if (!dataUrl) return "";
+  return `<a class="archivo-link-descarga" href="${dataUrl}" download="${escapeHtml(nombre || "archivo")}">📄 Descargar / abrir archivo Word</a>`;
+}
+
+function esPreguntaPlantillaInfra(p) {
+  const n = normalizarPregunta(p?.pregunta || "");
+  return (
+    n.includes("lugar de atencion") ||
+    n.includes("infraestructura") ||
+    n.includes("educacion y formacion")
+  );
+}
+
+function detectarComponentesCasillas(ctx) {
+  const canvas = ctx.canvas;
+  const w = canvas.width;
+  const h = canvas.height;
+  const img = ctx.getImageData(0, 0, w, h);
+  const data = img.data;
+  const visited = new Uint8Array(w * h);
+
+  const esPixel = (x, y) => {
+    if (x < 0 || y < 0 || x >= w || y >= h) return false;
+    const i = (y * w + x) * 4;
+    const r = data[i], g = data[i + 1], b = data[i + 2];
+    const brillo = (r + g + b) / 3;
+    const sat = Math.max(r, g, b) - Math.min(r, g, b);
+
+    // Negro/gris de bordes + azul/verde de marcas.
+    return brillo < 120 || (sat > 35 && brillo < 210);
+  };
+
+  const comps = [];
+  const paso = Math.max(1, Math.floor(w / 900));
+
+  for (let y = Math.floor(h * 0.05); y < Math.floor(h * 0.92); y += paso) {
+    for (let x = Math.floor(w * 0.22); x < Math.floor(w * 0.94); x += paso) {
+      const idx = y * w + x;
+      if (visited[idx] || !esPixel(x, y)) continue;
+
+      const stack = [[x, y]];
+      visited[idx] = 1;
+
+      let minX = x, maxX = x, minY = y, maxY = y, count = 0;
+
+      while (stack.length) {
+        const [cx, cy] = stack.pop();
+        count++;
+        if (cx < minX) minX = cx;
+        if (cx > maxX) maxX = cx;
+        if (cy < minY) minY = cy;
+        if (cy > maxY) maxY = cy;
+
+        const vecinos = [
+          [cx + paso, cy],
+          [cx - paso, cy],
+          [cx, cy + paso],
+          [cx, cy - paso]
+        ];
+
+        for (const [nx, ny] of vecinos) {
+          if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+          const ni = ny * w + nx;
+          if (visited[ni] || !esPixel(nx, ny)) continue;
+          visited[ni] = 1;
+          stack.push([nx, ny]);
+        }
+      }
+
+      const bw = maxX - minX + 1;
+      const bh = maxY - minY + 1;
+      const ratio = bw / Math.max(1, bh);
+
+      if (bw >= 5 && bh >= 5 && bw <= w * 0.045 && bh <= h * 0.035 && ratio > 0.45 && ratio < 2.2) {
+        const cx = (minX + maxX) / 2;
+        const cy = (minY + maxY) / 2;
+
+        // Evita letras al inicio del texto: nos quedamos con zonas de casilleros.
+        if (cx > w * 0.28) {
+          comps.push({ x0: minX, y0: minY, x1: maxX, y1: maxY, cx, cy, w: bw, h: bh, count });
+        }
+      }
+    }
+  }
+
+  return comps;
+}
+
+function scoreMarcaCasilla(ctx, comp) {
+  const canvas = ctx.canvas;
+  const cx = comp.cx;
+  const cy = comp.cy;
+  const r = Math.max(5, Math.min(18, Math.max(comp.w, comp.h) * 0.65));
+
+  const sx = Math.max(0, Math.floor(cx - r));
+  const sy = Math.max(0, Math.floor(cy - r));
+  const sw = Math.min(canvas.width - sx, Math.floor(r * 2));
+  const sh = Math.min(canvas.height - sy, Math.floor(r * 2));
+
+  if (sw <= 0 || sh <= 0) return 0;
+
+  const data = ctx.getImageData(sx, sy, sw, sh).data;
+  let marca = 0;
+  let total = 0;
+
+  for (let i = 0; i < data.length; i += 4) {
+    const px = (i / 4) % sw;
+    const py = Math.floor((i / 4) / sw);
+
+    // Miramos centro, no borde.
+    if (px < sw * 0.22 || px > sw * 0.78 || py < sh * 0.22 || py > sh * 0.78) continue;
+
+    const rr = data[i], gg = data[i + 1], bb = data[i + 2];
+    const brillo = (rr + gg + bb) / 3;
+    const sat = Math.max(rr, gg, bb) - Math.min(rr, gg, bb);
+    const azul = bb > rr + 15 && bb > gg - 10;
+    const oscuro = brillo < 135;
+
+    if ((sat > 28 && brillo < 215) || azul || oscuro) marca++;
+    total++;
+  }
+
+  return total ? marca / total : 0;
+}
+
+function agruparCasillasPorFila(casillas) {
+  const ordenadas = [...casillas].sort((a, b) => a.cy - b.cy || a.cx - b.cx);
+  const filas = [];
+
+  ordenadas.forEach((c) => {
+    let fila = filas.find((f) => Math.abs(f.cy - c.cy) < Math.max(12, c.h * 1.8));
+
+    if (!fila) {
+      fila = { cy: c.cy, casillas: [] };
+      filas.push(fila);
+    }
+
+    fila.casillas.push(c);
+    fila.cy = (fila.cy * (fila.casillas.length - 1) + c.cy) / fila.casillas.length;
+  });
+
+  filas.forEach((f) => f.casillas.sort((a, b) => a.cx - b.cx));
+
+  return filas.sort((a, b) => a.cy - b.cy);
+}
+
+async function detectarPlantillaInfraestructuraPorImagen(dataUrl, preguntas) {
+  try {
+    if (!dataUrl || !Array.isArray(preguntas) || !preguntas.some(esPreguntaPlantillaInfra)) return preguntas;
+
+    const img = await cargarImagenParaCanvas(dataUrl);
+    const canvas = document.createElement("canvas");
+    const maxW = 1200;
+    const escala = Math.min(1, maxW / (img.naturalWidth || img.width));
+    canvas.width = Math.round((img.naturalWidth || img.width) * escala);
+    canvas.height = Math.round((img.naturalHeight || img.height) * escala);
+
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+    const comps = detectarComponentesCasillas(ctx)
+      .map((c) => ({ ...c, score: scoreMarcaCasilla(ctx, c) }))
+      .filter((c) => c.score > 0.012 || c.count > 8);
+
+    const filas = agruparCasillasPorFila(comps)
+      .filter((f) => f.casillas.length >= 1)
+      .sort((a, b) => a.cy - b.cy);
+
+    if (!filas.length) return preguntas;
+
+    const copia = preguntas.map((p) => ({ ...p }));
+
+    const setRespuesta = (patron, respuesta) => {
+      const item = copia.find((p) => normalizarPregunta(p.pregunta).includes(patron));
+      if (item) item.respuesta = respuesta;
+    };
+
+    // Tomamos filas con casillas ubicadas desde la zona superior del formulario.
+    // Mapea: 5 filas de Lugar de atención, 6 filas de Infraestructura, 1 fila de educación.
+    let idx = 0;
+
+    const lugar = [
+      ["caps", "Sí"],
+      ["hospital municipal", "Sí"],
+      ["hospital y caps", "Sí"],
+      ["privado", "Sí"],
+      ["otro", "Sí"]
+    ];
+
+    lugar.forEach(([pat]) => {
+      const fila = filas[idx++];
+      if (!fila) return;
+      const marcada = fila.casillas.some((c) => c.score > 0.055);
+      setRespuesta(`lugar de atencion ${pat}`, marcada ? "Sí" : "No");
+    });
+
+    const infra = [
+      "agua corriente",
+      "alumbrado publico",
+      "cloacas",
+      "estado de calles",
+      "limpieza y recoleccion de residuos",
+      "estado de espacios publicos"
+    ];
+
+    infra.forEach((pat) => {
+      const fila = filas[idx++];
+      if (!fila) return;
+
+      const casillas = fila.casillas.slice(-3).sort((a, b) => a.cx - b.cx);
+      let respuesta = "Bueno";
+
+      if (casillas.length >= 3) {
+        const scores = casillas.map((c, i) => ({ i, score: c.score })).sort((a, b) => b.score - a.score);
+        if (scores[0].i === 0) respuesta = "Bueno";
+        if (scores[0].i === 1) respuesta = "Regular";
+        if (scores[0].i === 2) respuesta = "Malo";
+      } else {
+        const marcada = fila.casillas.sort((a, b) => b.score - a.score)[0];
+        if (marcada) {
+          const rel = marcada.cx / canvas.width;
+          respuesta = rel < 0.55 ? "Bueno" : rel < 0.72 ? "Regular" : "Malo";
+        }
+      }
+
+      setRespuesta(`infraestructura ${pat}`, respuesta);
+    });
+
+    // Educación: fila con Sí/No.
+    const filaEdu = filas[idx];
+    if (filaEdu) {
+      const casillas = filaEdu.casillas.slice(-2).sort((a, b) => a.cx - b.cx);
+      if (casillas.length >= 2) {
+        setRespuesta("educacion y formacion", casillas[0].score >= casillas[1].score ? "Sí" : "No");
+      }
+    }
+
+    return copia;
+  } catch (e) {
+    return preguntas;
+  }
+}
+
+function svgPieMulticolor(opciones, conteos, total) {
+  const cx = 90;
+  const cy = 90;
+  const r = 70;
+  const circ = 2 * Math.PI * r;
+  let offset = 0;
+  const colores = ["#2563eb", "#ef4444", "#22c55e", "#f97316", "#8b5cf6", "#14b8a6"];
+
+  const partes = opciones.map((op, i) => {
+    const key = claveRespuesta(op);
+    const val = conteos[key] || 0;
+    const len = total ? (val / total) * circ : 0;
+    const stroke = colores[i % colores.length];
+    const el = `
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${stroke}" stroke-width="34"
+        stroke-dasharray="${len} ${circ - len}"
+        stroke-dashoffset="${-offset}"
+        transform="rotate(-90 ${cx} ${cy})"
+        stroke-linecap="butt"></circle>
+    `;
+    offset += len;
+    return el;
+  }).join("");
+
+  return `
+    <svg class="pie-svg-app" width="150" height="150" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="${cx}" cy="${cy}" r="${r + 10}" fill="#f8fafc" stroke="#e5e7eb" stroke-width="2"></circle>
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#e5e7eb" stroke-width="34"></circle>
+      ${partes}
+      <circle cx="${cx}" cy="${cy}" r="42" fill="#ffffff" stroke="#e5e7eb" stroke-width="2"></circle>
+    </svg>
+  `;
+}
+
+
+function preguntasPlantillaInfraestructura() {
+  return [
+    "Lugar de atención - CAPS",
+    "Lugar de atención - Hospital Municipal",
+    "Lugar de atención - Hospital y CAPS",
+    "Lugar de atención - Privado",
+    "Lugar de atención - Otro",
+    "Infraestructura - Agua corriente",
+    "Infraestructura - Alumbrado público",
+    "Infraestructura - Cloacas",
+    "Infraestructura - Estado de calles",
+    "Infraestructura - Limpieza y recolección de residuos",
+    "Infraestructura - Estado de espacios públicos"
+  ];
+}
+
+function crearPreguntaRevisionRapida(tipo = "sino") {
+  if (!encuestaPendienteRevision) return;
+
+  const opciones = tipo === "brm"
+    ? ["Bueno", "Regular", "Malo"]
+    : tipo === "atencion"
+      ? ["CAPS", "Hospital Municipal", "Hospital y CAPS", "Privado", "Otro"]
+      : ["Sí", "No"];
+
+  encuestaPendienteRevision.preguntas.push({
+    pregunta: tipo === "brm" ? "Infraestructura - Nueva pregunta?" : "Nueva pregunta?",
+    opciones,
+    respuesta: opciones[0],
+    detectado: false,
+    metodo: "Manual multiple choice"
+  });
+
+  renderBarrio();
+}
+
+function cargarPlantillaInfraestructuraRevision() {
+  if (!encuestaPendienteRevision) return;
+
+  const existentes = new Set((encuestaPendienteRevision.preguntas || []).map((p) => normalizarPregunta(p.pregunta)));
+
+  const nuevas = [
+    ...["CAPS", "Hospital Municipal", "Hospital y CAPS", "Privado", "Otro"].map((x) => ({
+      pregunta: `Lugar de atención - ${x}`,
+      opciones: ["Sí", "No"],
+      respuesta: "No",
+      detectado: false,
+      metodo: "Plantilla lugar de atención"
+    })),
+    ...["Agua corriente", "Alumbrado público", "Cloacas", "Estado de calles", "Limpieza y recolección de residuos", "Estado de espacios públicos"].map((x) => ({
+      pregunta: `Infraestructura - ${x}`,
+      opciones: ["Bueno", "Regular", "Malo"],
+      respuesta: "Bueno",
+      detectado: false,
+      metodo: "Plantilla infraestructura"
+    })),
+    {
+      pregunta: "Educación y formación - ¿Conoce el Centro Regional Educativo Universitario Suarense?",
+      opciones: ["Sí", "No"],
+      respuesta: "Sí",
+      detectado: false,
+      metodo: "Plantilla educación"
+    }
+  ].filter((p) => !existentes.has(normalizarPregunta(p.pregunta)));
+
+  encuestaPendienteRevision.preguntas.push(...nuevas);
+
+  const archivo = encuestaPendienteRevision.archivo || encuestaPendienteRevision.imagen || "";
+
+  if (archivo && !dataUrlEsWord(archivo, encuestaPendienteRevision.nombreArchivo)) {
+    detectarPlantillaInfraestructuraPorImagen(archivo, encuestaPendienteRevision.preguntas).then((preguntas) => {
+      if (!encuestaPendienteRevision) return;
+      encuestaPendienteRevision.preguntas = preguntas;
+      renderBarrio();
+    });
+  }
+
+  renderBarrio();
+}
+
+
+function reconstruirFilasTablaPorColumnasOCR(filas) {
+  const preguntas = [];
+  let seccionActual = "";
+  let headersTabla = null;
+
+  filas.forEach((fila) => {
+    const texto = textoFilaOCR(fila);
+    const n = normalizarOCR(texto);
+    const palabras = fila.palabras || [];
+
+    if (!texto) return;
+
+    if (esTituloSeccionOCR(texto)) {
+      seccionActual = texto.replace(/[:]+$/g, "").trim();
+      headersTabla = null;
+      return;
+    }
+
+    const tieneBuenoRegularMalo =
+      n.includes("bueno") && n.includes("regular") && (n.includes("malo") || n.includes("mala"));
+
+    const tieneSiNo =
+      (n.includes("si") && n.includes("no")) &&
+      (n.includes("tema") || n.includes("aspecto") || n === "sino");
+
+    if (tieneBuenoRegularMalo || tieneSiNo) {
+      const opts = detectarOpcionesFilaOCR(palabras);
+
+      if (opts.length >= 2) {
+        headersTabla = opts.map((h) => ({ ...h, tipo: "tabla" }));
+      } else if (tieneBuenoRegularMalo) {
+        headersTabla = [
+          { label: "Bueno", bbox: { x0: 0, x1: 0 }, tipo: "tabla" },
+          { label: "Regular", bbox: { x0: 0, x1: 0 }, tipo: "tabla" },
+          { label: "Malo", bbox: { x0: 0, x1: 0 }, tipo: "tabla" }
+        ];
+      } else {
+        headersTabla = [
+          { label: "Sí", bbox: { x0: 0, x1: 0 }, tipo: "tabla" },
+          { label: "No", bbox: { x0: 0, x1: 0 }, tipo: "tabla" }
+        ];
+      }
+
+      return;
+    }
+
+    if (!headersTabla || !palabras.length) return;
+
+    const textoFila = texto
+      .replace(/\b(bueno|regular|malo|mala|si|sí|no)\b/gi, "")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    if (!textoFila || textoFila.length < 3) return;
+    if (esTituloSeccionOCR(textoFila)) return;
+
+    const preguntaFinal = seccionActual ? `${seccionActual} - ${textoFila}` : textoFila;
+
+    const bbox = {
+      x0: Math.min(...palabras.map((w) => w.bbox.x0)),
+      y0: Math.min(...palabras.map((w) => w.bbox.y0)),
+      x1: Math.max(...palabras.map((w) => w.bbox.x1)),
+      y1: Math.max(...palabras.map((w) => w.bbox.y1))
+    };
+
+    agregarPreguntaOCRLista(preguntas, crearPreguntaOCRConOpciones({
+      pregunta: preguntaFinal,
+      bbox,
+      opciones: headersTabla,
+      tipoOpciones: "tabla",
+      metodo: "OCR tabla por columnas"
+    }));
+  });
+
+  return ordenarPreguntasOCR(preguntas);
+}
+
+async function mejorarImagenParaOCR(dataUrl, maxWidth = 1600) {
+  const img = await cargarImagenParaCanvas(dataUrl);
+
+  const escala = Math.min(1, maxWidth / (img.naturalWidth || img.width));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round((img.naturalWidth || img.width) * escala);
+  canvas.height = Math.round((img.naturalHeight || img.height) * escala);
+
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+  const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const data = imgData.data;
+
+  for (let i = 0; i < data.length; i += 4) {
+    const gris = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
+    const contraste = gris < 175 ? Math.max(0, gris - 45) : Math.min(255, gris + 25);
+    data[i] = data[i + 1] = data[i + 2] = contraste;
+  }
+
+  ctx.putImageData(imgData, 0, 0);
+  return canvas.toDataURL("image/jpeg", 0.92);
+}
+
+
+function normalizarTextoPreguntaOCR(texto) {
+  let t = String(texto || "")
+    .replace(/\s+/g, " ")
+    .replace(/[“”]/g, '"')
+    .replace(/[‘’]/g, "'")
+    .replace(/[|]/g, "I")
+    .trim();
+
+  // Quita basura inicial común de OCR, pero conserva signo de apertura.
+  t = t.replace(/^[\s:;,.·•°_\-–—]+/g, "");
+
+  // Corrige signos de apertura mal leídos.
+  t = t
+    .replace(/^([iI!¡;:])\s*(hay|tiene|se|el|la|los|las|existe|cuenta|posee|dispone|recibe|hay)/i, "¿$2")
+    .replace(/^\?\s*/, "¿")
+    .replace(/^([Hh]ay|[Tt]iene|[Ss]e|[Ee]l|[Ll]a|[Ee]xiste|[Cc]uenta|[Pp]osee|[Dd]ispone|[Rr]ecibe)\b/, "¿$1");
+
+  // Corrige cierre de pregunta mal leído al final.
+  t = t
+    .replace(/[¿?]+/g, "?")
+    .replace(/\s+\?/g, "?")
+    .replace(/[;:!¡]\s*$/g, "?")
+    .replace(/[2]\s*$/g, "?")
+    .trim();
+
+  // Si quedó "?Hay", lo volvemos "¿Hay".
+  t = t.replace(/^\?([A-Za-zÁÉÍÓÚÑáéíóúñ])/, "¿$1");
+
+  return t;
+}
+
+function limpiarPreguntaOCR(linea) {
+  let texto = normalizarTextoPreguntaOCR(linea);
+
+  // Si OCR mezcló la pregunta con opciones Sí / No,
+  // cortamos donde aparece la opción, pero nunca antes del cierre ?.
+  texto = texto
+    .replace(/\s+(o|0|O)?\s*(si|sí)\s+(o|0|O)?\s*no\b.*$/i, "")
+    .replace(/\s+(si|sí)\s+no\b.*$/i, "")
+    .replace(/\s+(si|sí|no)\s*$/i, "")
+    .trim();
+
   const idxPregunta = texto.indexOf("?");
   if (idxPregunta !== -1) {
     texto = texto.slice(0, idxPregunta + 1);
   }
 
   texto = texto
-    .replace(/\s*[oO0]\s+(si|sí|no)\s*[oO0]?\s*$/i, "")
-    .replace(/\s+(si|sí|no)\s*$/i, "")
-    .replace(/\s*[oO0]\s*$/i, "")
+    .replace(/\s*[oO0]\s+(si|sí|no).*$/i, "?")
+    .replace(/\s+(si|sí|no).*$/i, "?")
+    .replace(/\?+$/, "?")
     .trim();
+
+  if (texto && !texto.startsWith("¿")) {
+    texto = "¿" + texto.replace(/^¿+/, "");
+  }
 
   if (texto && !texto.endsWith("?")) {
     texto += "?";
@@ -1871,6 +3339,93 @@ function limpiarPreguntaOCR(linea) {
 
   return texto;
 }
+
+function esPalabraSiNoOCR(w) {
+  const t = normalizarOCR(w?.texto || w || "");
+  return t === "si" || t === "s" || t === "no" || t === "n";
+}
+
+function agruparPalabrasPorRenglonOCR(palabrasOCR) {
+  const palabras = (palabrasOCR || [])
+    .filter((w) => w?.bbox)
+    .map((w) => ({
+      ...w,
+      cx: (w.bbox.x0 + w.bbox.x1) / 2,
+      cy: (w.bbox.y0 + w.bbox.y1) / 2,
+      h: Math.max(8, w.bbox.y1 - w.bbox.y0)
+    }))
+    .sort((a, b) => a.cy - b.cy || a.cx - b.cx);
+
+  const filas = [];
+
+  palabras.forEach((w) => {
+    let fila = filas.find((f) => Math.abs(f.cy - w.cy) <= Math.max(18, w.h * 0.9));
+
+    if (!fila) {
+      fila = { cy: w.cy, palabras: [] };
+      filas.push(fila);
+    }
+
+    fila.palabras.push(w);
+    fila.cy = (fila.cy * (fila.palabras.length - 1) + w.cy) / fila.palabras.length;
+  });
+
+  filas.forEach((f) => f.palabras.sort((a, b) => a.bbox.x0 - b.bbox.x0));
+
+  return filas;
+}
+
+function construirPreguntasDesdePalabrasOCR(palabrasOCR) {
+  const filas = agruparPalabrasPorRenglonOCR(palabrasOCR);
+  const preguntas = [];
+
+  // Primero intentamos tablas y multiple choice general.
+  construirPreguntasMultipleChoiceDesdePalabrasOCR(palabrasOCR).forEach((p) => agregarPreguntaOCRLista(preguntas, p));
+
+  filas.forEach((fila) => {
+    const palabras = fila.palabras || [];
+    if (!palabras.length) return;
+
+    const idxOpcion = palabras.findIndex((w) => esPalabraSiNoOCR(w));
+    const palabrasPregunta = idxOpcion >= 0 ? palabras.slice(0, idxOpcion) : palabras;
+
+    const textoCompleto = palabras.map((w) => w.texto).join(" ");
+    const textoPreguntaCrudo = palabrasPregunta.map((w) => w.texto).join(" ");
+
+    if (!textoParecePreguntaOCR(textoCompleto) && !textoParecePreguntaOCR(textoPreguntaCrudo)) {
+      return;
+    }
+
+    let pregunta = limpiarPreguntaOCR(textoPreguntaCrudo);
+
+    if (pregunta.length < 8) {
+      pregunta = limpiarPreguntaOCR(textoCompleto);
+    }
+
+    if (!pregunta || pregunta.length < 6) return;
+
+    const baseBbox = palabrasPregunta.length ? palabrasPregunta : palabras;
+
+    const bbox = {
+      x0: Math.min(...baseBbox.map((w) => w.bbox.x0)),
+      y0: Math.min(...palabras.map((w) => w.bbox.y0)),
+      x1: Math.max(...baseBbox.map((w) => w.bbox.x1)),
+      y1: Math.max(...palabras.map((w) => w.bbox.y1))
+    };
+
+    agregarPreguntaOCRLista(preguntas, {
+      pregunta,
+      bbox,
+      opciones: ["Sí", "No"],
+      respuesta: "Sí",
+      detectado: true,
+      metodo: "OCR palabras rápido"
+    });
+  });
+
+  return ordenarPreguntasOCR(preguntas);
+}
+
 
 
 function extraerPreguntasDesdeTextoOCR(texto) {
@@ -1882,17 +3437,11 @@ function extraerPreguntasDesdeTextoOCR(texto) {
   const preguntas = [];
 
   lineas.forEach((linea) => {
-    // Solo detectamos preguntas reales con signo.
-    if (!linea.includes("?") && !linea.includes("¿")) return;
+    if (!textoParecePreguntaOCR(linea)) return;
 
     let pregunta = limpiarPreguntaOCR(linea);
 
-    const idxPregunta = pregunta.indexOf("?");
-    if (idxPregunta !== -1) {
-      pregunta = pregunta.slice(0, idxPregunta + 1);
-    }
-
-    if (!pregunta.endsWith("?")) pregunta += "?";
+    if (!pregunta || pregunta.length < 6) return;
 
     const repetida = preguntas.some(
       (p) => normalizarPregunta(p.pregunta) === normalizarPregunta(pregunta)
@@ -1910,6 +3459,7 @@ function extraerPreguntasDesdeTextoOCR(texto) {
 
   return preguntas;
 }
+
 
 
 function obtenerLineasOCR(resultado) {
@@ -1949,17 +3499,17 @@ function buscarOpcionesSiNoEnLinea(palabrasOCR, y) {
   const cerca = palabrasOCR.filter((w) => {
     if (!w.bbox) return false;
     const cy = (w.bbox.y0 + w.bbox.y1) / 2;
-    return Math.abs(cy - y) < 38;
+    return Math.abs(cy - y) < 42;
   });
 
   const siWords = cerca.filter((w) => {
     const t = normalizarOCR(w.texto);
-    return t === "si" || t === "s";
+    return t === "si" || t === "s" || t === "sl" || t === "sí";
   });
 
   const noWords = cerca.filter((w) => {
     const t = normalizarOCR(w.texto);
-    return t === "no" || t === "n";
+    return t === "no" || t === "n" || t === "n0";
   });
 
   if (!siWords.length || !noWords.length) return null;
@@ -1971,33 +3521,22 @@ function buscarOpcionesSiNoEnLinea(palabrasOCR, y) {
 }
 
 
+
 function detectarPreguntaDesdeLinea(linea) {
   const textoOriginal = String(linea.texto || "").replace(/\s+/g, " ").trim();
 
-  // IMPORTANTE:
-  // Solo aceptamos líneas que tengan signo de pregunta.
-  // Así no toma títulos como "Barrio Cristo Redentor" como pregunta.
-  if (!textoOriginal.includes("?") && !textoOriginal.includes("¿")) {
+  if (!textoParecePreguntaOCR(textoOriginal)) {
     return null;
   }
 
-  let pregunta = limpiarPreguntaOCR(textoOriginal);
+  const pregunta = limpiarPreguntaOCR(textoOriginal);
 
-  const idxPregunta = pregunta.indexOf("?");
-  if (idxPregunta !== -1) {
-    pregunta = pregunta.slice(0, idxPregunta + 1);
-  }
-
-  pregunta = pregunta
-    .replace(/\s*[oO0]\s+(si|sí|no).*$/i, "?")
-    .replace(/\s+(si|sí|no).*$/i, "?")
-    .replace(/\?+$/, "?")
-    .trim();
-
-  if (!pregunta.endsWith("?")) pregunta += "?";
+  if (!pregunta || pregunta.length < 6) return null;
 
   return pregunta;
 }
+
+
 
 
 
@@ -2063,13 +3602,49 @@ async function detectarRespuestasSiNoPorImagen(dataUrl, preguntasOCR, palabrasOC
         y = alto * (0.18 + index * 0.085);
       }
 
+      const radio = Math.max(10, Math.min(26, ancho * 0.017));
+
+      // Multiple choice general: Bueno/Regular/Malo, Sí/No, etc.
+      if (Array.isArray(p.opcionesBoxes) && p.opcionesBoxes.length >= 2) {
+        const puntajes = p.opcionesBoxes.map((op) => {
+          let x = op.boxX;
+
+          if (typeof x !== "number" && op.bbox) {
+            x = xCheckboxParaOpcion(op, op.tipo || "inline");
+          }
+
+          const score = typeof x === "number"
+            ? promedioMarcaEnZona(ctx, x, y, radio)
+            : 0;
+
+          return {
+            label: etiquetaRespuesta(op.label),
+            x,
+            score
+          };
+        });
+
+        puntajes.sort((a, b) => b.score - a.score);
+
+        const mejor = puntajes[0];
+        const respuesta = mejor?.label || etiquetaRespuesta(p.respuesta || p.opciones?.[0] || "Sí");
+
+        return {
+          ...p,
+          opciones: opcionesRespuestaPregunta(p),
+          respuesta,
+          puntajes,
+          confianza: mejor && mejor.score > 0.018 ? "media" : "baja",
+          metodo: `${p.metodo || "OCR"} + detector multiple choice`
+        };
+      }
+
       const opciones = buscarOpcionesSiNoEnLinea(palabrasOCR, y);
 
       let yesX;
       let noX;
 
       if (opciones?.si?.bbox && opciones?.no?.bbox) {
-        // En la imagen los círculos están a la izquierda del texto Sí / No.
         const siBox = opciones.si.bbox;
         const noBox = opciones.no.bbox;
         const distanciaSi = Math.max(28, Math.min(70, (noBox.x0 - siBox.x0) * 0.35));
@@ -2077,35 +3652,31 @@ async function detectarRespuestasSiNoPorImagen(dataUrl, preguntasOCR, palabrasOC
         yesX = siBox.x0 - distanciaSi;
         noX = noBox.x0 - distanciaSi;
       } else {
-        // Respaldo para formularios estándar
         yesX = ancho * 0.64;
         noX = ancho * 0.83;
       }
 
-      const radio = Math.max(11, Math.min(28, ancho * 0.018));
-
       const yesScore = promedioMarcaEnZona(ctx, yesX, y, radio);
       const noScore = promedioMarcaEnZona(ctx, noX, y, radio);
 
-      let respuesta = "si";
+      let respuesta = "Sí";
       let confianza = "baja";
 
-      // Si un círculo tiene marca de color, cruz, tick o trazo oscuro,
-      // su score tiene que ser mayor que el otro.
       if (yesScore > noScore * 1.10 && yesScore > 0.025) {
-        respuesta = "si";
+        respuesta = "Sí";
         confianza = "media";
       } else if (noScore > yesScore * 1.10 && noScore > 0.025) {
-        respuesta = "no";
+        respuesta = "No";
         confianza = "media";
       } else if (noScore > yesScore) {
-        respuesta = "no";
+        respuesta = "No";
       } else {
-        respuesta = "si";
+        respuesta = "Sí";
       }
 
       return {
         ...p,
+        opciones: opcionesRespuestaPregunta(p),
         respuesta,
         yesScore,
         noScore,
@@ -2119,7 +3690,8 @@ async function detectarRespuestasSiNoPorImagen(dataUrl, preguntasOCR, palabrasOC
 }
 
 
-function crearEncuestaManualDesdeArchivo({ nombre, nombreArchivo, tipo, dataUrl, barrio_id, barrio_nombre }) {
+
+function crearEncuestaManualDesdeArchivo({ nombre, informe = "", datos = {}, nombreArchivo, tipo, dataUrl, barrio_id, barrio_nombre }) {
   encuestaOCRTrabajando = false;
 
   const idBarrio = barrio_id || catActiva?.id;
@@ -2134,6 +3706,8 @@ function crearEncuestaManualDesdeArchivo({ nombre, nombreArchivo, tipo, dataUrl,
     barrio_id: idBarrio,
     barrio_nombre: nombreBarrio,
     nombre,
+    informe: String(informe || "").trim(),
+    datos: datos || {},
     telefono: "",
     direccion: "",
     observaciones: "",
@@ -2157,7 +3731,8 @@ function crearEncuestaManualDesdeArchivo({ nombre, nombreArchivo, tipo, dataUrl,
 
 
 
-async function leerEncuestaDesdeImagen({ nombre, nombreArchivo, tipo, dataUrl }) {
+
+async function leerEncuestaDesdeImagen({ nombre, nombreArchivo, tipo, dataUrl, informe = "", datos = {} }) {
   encuestaOCRTrabajando = true;
   renderBarrio();
 
@@ -2173,13 +3748,21 @@ async function leerEncuestaDesdeImagen({ nombre, nombreArchivo, tipo, dataUrl })
       nombreArchivo,
       tipo,
       dataUrl,
+      informe,
+      datos,
       barrio_id: barrioCreacionId,
       barrio_nombre: categorias.find((c) => Number(c.id) === Number(barrioCreacionId))?.nombre || catActiva?.nombre || ""
     });
+
+    // En vez de dejar una sola pregunta, cargamos una base útil para estas planillas.
+    if (encuestaPendienteRevision && encuestaPendienteRevision.preguntas.length === 1) {
+      encuestaPendienteRevision.preguntas = [];
+      cargarPlantillaInfraestructuraRevision();
+    }
   };
 
   try {
-    if (tipo === "pdf") {
+    if (tipo === "pdf" || tipo === "word") {
       fallbackManual();
       return;
     }
@@ -2189,18 +3772,20 @@ async function leerEncuestaDesdeImagen({ nombre, nombreArchivo, tipo, dataUrl })
       return;
     }
 
-    const dataUrlOCR = await reducirImagenParaOCR(dataUrl, 1200);
+    let dataUrlOCR = await mejorarImagenParaOCR(dataUrl, 1600);
 
     const tareaOCR = window.Tesseract.recognize(
       dataUrlOCR,
       "spa",
       {
-        logger: () => {}
+        logger: () => {},
+        tessedit_pageseg_mode: "6",
+        preserve_interword_spaces: "1"
       }
     );
 
     const timeoutOCR = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error("OCR_TIMEOUT")), 6000);
+      setTimeout(() => reject(new Error("OCR_TIMEOUT")), 12000);
     });
 
     const resultado = await Promise.race([tareaOCR, timeoutOCR]);
@@ -2211,23 +3796,27 @@ async function leerEncuestaDesdeImagen({ nombre, nombreArchivo, tipo, dataUrl })
     const lineasOCR = obtenerLineasOCR(resultado);
     const palabrasOCR = obtenerPalabrasOCR(resultado);
 
-    let preguntas = lineasOCR
-      .map((linea) => ({
-        pregunta: detectarPreguntaDesdeLinea(linea),
-        bbox: linea.bbox,
-        respuesta: "si",
-        detectado: true,
-        metodo: "OCR rápido"
-      }))
-      .filter((p) => p.pregunta)
-      .map((p) => ({
-        ...p,
-        pregunta: limpiarPreguntaOCR(p.pregunta)
-      }));
+    let preguntas = [];
 
-    if (!preguntas.length) {
-      preguntas = extraerPreguntasDesdeTextoOCR(textoOCR);
-    }
+    construirPreguntasDesdePalabrasOCR(palabrasOCR).forEach((p) => agregarPreguntaOCRLista(preguntas, p));
+
+    lineasOCR.forEach((linea) => {
+      const pregunta = detectarPreguntaDesdeLinea(linea);
+      if (!pregunta) return;
+
+      agregarPreguntaOCRLista(preguntas, {
+        pregunta,
+        bbox: linea.bbox,
+        opciones: ["Sí", "No"],
+        respuesta: "Sí",
+        detectado: true,
+        metodo: "OCR línea rápido"
+      });
+    });
+
+    extraerPreguntasDesdeTextoOCR(textoOCR).forEach((p) => agregarPreguntaOCRLista(preguntas, p));
+
+    preguntas = ordenarPreguntasOCR(preguntas);
 
     if (!preguntas.length) {
       fallbackManual();
@@ -2235,6 +3824,7 @@ async function leerEncuestaDesdeImagen({ nombre, nombreArchivo, tipo, dataUrl })
     }
 
     preguntas = await detectarRespuestasSiNoPorImagen(dataUrl, preguntas, palabrasOCR);
+    preguntas = await detectarPlantillaInfraestructuraPorImagen(dataUrl, preguntas);
 
     encuestaOCRTrabajando = false;
 
@@ -2243,6 +3833,8 @@ async function leerEncuestaDesdeImagen({ nombre, nombreArchivo, tipo, dataUrl })
       barrio_id: barrioCreacionId,
       barrio_nombre: categorias.find((c) => Number(c.id) === Number(barrioCreacionId))?.nombre || catActiva?.nombre || "",
       nombre,
+      informe: String(informe || "").trim(),
+      datos: datos || {},
       telefono: "",
       direccion: "",
       observaciones: "",
@@ -2254,7 +3846,6 @@ async function leerEncuestaDesdeImagen({ nombre, nombreArchivo, tipo, dataUrl })
       fecha: new Date().toLocaleDateString("es-AR")
     };
 
-    // Render inmediato: ya no queda en "Analizando" hasta que cambies de barrio.
     renderBarrio();
   } catch (error) {
     fallbackManual();
@@ -2267,8 +3858,87 @@ async function leerEncuestaDesdeImagen({ nombre, nombreArchivo, tipo, dataUrl })
 
 
 
-function iniciarRevisionEncuestaBarrio({ nombre, archivo, nombreArchivo, tipo, dataUrl }) {
-  leerEncuestaDesdeImagen({ nombre, nombreArchivo, tipo, dataUrl });
+
+
+
+function iniciarRevisionEncuestaBarrio({ nombre, archivo, nombreArchivo, tipo, dataUrl, informe = "", datos = {} }) {
+  if (tipo === "word") {
+    leerEncuestaDesdeWord({ nombre, nombreArchivo, tipo, dataUrl, informe, datos, archivo });
+    return;
+  }
+
+  leerEncuestaDesdeImagen({ nombre, nombreArchivo, tipo, dataUrl, informe, datos });
+}
+
+
+
+
+
+function modoConfigPreguntasActivo() {
+  return !!(encuestaPendienteRevision && encuestaPendienteRevision.configPreguntasActiva);
+}
+
+
+function agregarTablaSeguimientoRevision() {
+  if (!encuestaPendienteRevision) return;
+
+  encuestaPendienteRevision.configPreguntasActiva = true;
+
+  [
+    {
+      pregunta: "Seguimiento de problemáticas barriales - Problemática detectada",
+      opciones: ["Cloacas", "Alumbrado", "Calles", "Limpieza", "Seguridad", "Salud", "Otro"],
+      respuesta: "Cloacas"
+    },
+    {
+      pregunta: "Seguimiento de problemáticas barriales - Estado",
+      opciones: ["Pendiente", "En tratamiento", "Resuelto"],
+      respuesta: "Pendiente"
+    },
+    {
+      pregunta: "Seguimiento de problemáticas barriales - Derivación realizada",
+      opciones: ["Sí", "No"],
+      respuesta: "No"
+    }
+  ].forEach((p) => encuestaPendienteRevision.preguntas.push({
+    ...p,
+    detectado: false,
+    metodo: "Tabla manual seguimiento"
+  }));
+
+  renderBarrio();
+}
+
+
+function configurarPreguntasRespuestas() {
+  if (!encuestaPendienteRevision) return;
+
+  encuestaPendienteRevision.configPreguntasActiva = !encuestaPendienteRevision.configPreguntasActiva;
+  renderBarrio();
+}
+
+function actualizarOpcionesRevision(index) {
+  if (!encuestaPendienteRevision) return;
+
+  const inputOpciones = $(`revOpciones-${index}`);
+  const select = $(`revRespuesta-${index}`);
+  if (!inputOpciones || !select) return;
+
+  const opciones = String(inputOpciones.value || "Sí, No")
+    .split(",")
+    .map((x) => etiquetaRespuesta(x))
+    .filter(Boolean);
+
+  const opcionesFinales = opciones.length ? opciones : ["Sí", "No"];
+  const valorActual = etiquetaRespuesta(select.value || opcionesFinales[0]);
+
+  select.innerHTML = opcionesFinales.map((op) => `
+    <option value="${escapeHtml(op)}" ${claveRespuesta(valorActual) === claveRespuesta(op) ? "selected" : ""}>${escapeHtml(op)}</option>
+  `).join("");
+
+  if (!opcionesFinales.some((op) => claveRespuesta(op) === claveRespuesta(select.value))) {
+    select.value = opcionesFinales[0];
+  }
 }
 
 
@@ -2286,12 +3956,11 @@ function renderRevisionEncuestaPendiente() {
     return `
       <div class="revision-encuesta-box">
         <h2>🤖 Analizando encuesta...</h2>
-        <p>La aplicación está intentando leer las preguntas y detectar las marcas de Sí / No.</p>
+        <p>La aplicación está intentando leer las preguntas y detectar las marcas de la encuesta.</p>
         <div class="loader-ocr"></div>
 
         <div class="actions" style="margin-top:14px">
-          <button class="secondary" onclick="crearEncuestaManualBarrio()">Crear encuesta manual</button>
-          <button class="secondary danger" onclick="cancelarRevisionEncuesta()">Cancelar análisis</button>
+          <button class="secondary danger" onclick="cancelarRevisionEncuesta()">Cancelar</button>
         </div>
       </div>
     `;
@@ -2299,12 +3968,14 @@ function renderRevisionEncuestaPendiente() {
 
   if (!encuestaPendienteRevision) return "";
 
+  const configActiva = modoConfigPreguntasActivo();
+
   return `
     <div class="revision-encuesta-box">
       <h2>🤖 Revisión inteligente de encuesta</h2>
       <p>
         La aplicación detectó estas preguntas y respuestas desde la imagen.
-        Revisá, modificá o confirmá antes de crear los gráficos.
+        Revisá y confirmá para crear los gráficos.
       </p>
 
       ${
@@ -2318,39 +3989,71 @@ function renderRevisionEncuestaPendiente() {
         Método: ${escapeHtml(encuestaPendienteRevision.preguntas?.[0]?.metodo || "Detección automática")}
       </div>
 
-      <div class="revision-grid">
+      <div class="datos-encuesta-form revision-datos-form">
+        <label>Nombre <input id="revDatoNombre" value="${escapeHtml(encuestaPendienteRevision.datos?.nombre_persona || "")}" /></label>
+        <label>Teléfono <input id="revDatoTelefono" value="${escapeHtml(encuestaPendienteRevision.datos?.telefono || "")}" /></label>
+        <label>DNI <input id="revDatoDni" value="${escapeHtml(encuestaPendienteRevision.datos?.dni || "")}" /></label>
+        <label>Fecha <input id="revDatoFecha" type="date" value="${escapeHtml(encuestaPendienteRevision.datos?.fecha || "")}" /></label>
+        <label>Barrio <input id="revDatoBarrio" value="${escapeHtml(encuestaPendienteRevision.datos?.barrio || encuestaPendienteRevision.barrio_nombre || "")}" /></label>
+        <label>Dirección y número <input id="revDatoDireccion" value="${escapeHtml(encuestaPendienteRevision.datos?.direccion_numero || "")}" /></label>
+      </div>
+${
+        configActiva
+          ? `<div class="config-tablas-tools">
+              <button type="button" class="secondary" onclick="agregarTablaSeguimientoRevision()">+ Tipo tabla seguimiento</button>
+              <small>También podés escribir opciones separadas por coma en cada pregunta.</small>
+            </div>`
+          : ""
+      }
+
+      <div class="revision-grid ${configActiva ? "config-activa" : "config-cerrada"}">
         ${
           encuestaPendienteRevision.preguntas.map((p, index) => `
             <div class="revision-row">
               <label>
-                Pregunta ${index + 1}
-                <input id="revPregunta-${index}" value="${escapeHtml(limpiarPreguntaOCR(p.pregunta))}" />
+                Pregunta ${index + 1} ${p.metodo && p.metodo.toLowerCase().includes("tabla") ? "· Tabla" : ""}
+                <input
+                  id="revPregunta-${index}"
+                  value="${escapeHtml(limpiarPreguntaOCR(p.pregunta))}"
+                  ${configActiva ? "" : "readonly"}
+                />
               </label>
 
               <label>
                 Respuesta detectada
                 <select id="revRespuesta-${index}">
-                  <option value="si" ${p.respuesta === "si" ? "selected" : ""}>Sí</option>
-                  <option value="no" ${p.respuesta === "no" ? "selected" : ""}>No</option>
+                  ${opcionesRespuestaPregunta(p).map((op) => `
+                    <option value="${escapeHtml(op)}" ${claveRespuesta(p.respuesta) === claveRespuesta(op) ? "selected" : ""}>${escapeHtml(op)}</option>
+                  `).join("")}
                 </select>
+
+                ${
+                  configActiva
+                    ? `<input id="revOpciones-${index}" class="opciones-extra-input" value="${escapeHtml(opcionesRespuestaPregunta(p).join(", "))}" placeholder="Opciones separadas por coma. Ej: Sí, No" oninput="actualizarOpcionesRevision(${index})" />`
+                    : `<small class="opciones-resumen">Opciones: ${escapeHtml(opcionesRespuestaPregunta(p).join(", "))}</small>`
+                }
               </label>
 
-              <button type="button" class="icon-btn danger" onclick="quitarPreguntaRevision(${index})">🗑️</button>
+              ${
+                configActiva
+                  ? `<button type="button" class="icon-btn danger" onclick="quitarPreguntaRevision(${index})">🗑️</button>`
+                  : `<span></span>`
+              }
             </div>
           `).join("")
         }
       </div>
 
-      <div class="actions">
+      <div class="actions revision-actions-final">
+        <button class="secondary danger" onclick="cancelarRevisionEncuesta()">Cancelar</button>
+        <button class="secondary" onclick="configurarPreguntasRespuestas()">⚙️ Configurar preguntas/respuestas</button>
         <button class="secondary" onclick="agregarPreguntaRevision()">+ Agregar pregunta</button>
         <button class="primary" onclick="confirmarRevisionEncuesta()">Confirmar</button>
-        <button class="secondary" onclick="modificarApartadoRevisionEncuesta()">Modificar apartado</button>
-        <button class="secondary" onclick="crearEncuestaManualActual()">Crear encuesta manual</button>
-        <button class="secondary danger" onclick="cancelarRevisionEncuesta()">Cancelar</button>
       </div>
     </div>
   `;
 }
+
 
 
 
@@ -2379,26 +4082,50 @@ function crearEncuestaManualActual() {
 function leerPreguntasRevision() {
   if (!encuestaPendienteRevision) return [];
 
-  return encuestaPendienteRevision.preguntas.map((_, index) => ({
-    pregunta: limpiarPreguntaOCR($(`revPregunta-${index}`)?.value.trim() || ""),
-    respuesta: $(`revRespuesta-${index}`)?.value || "si",
-    detectado: true
-  })).filter((p) => p.pregunta);
+  return encuestaPendienteRevision.preguntas.map((original, index) => {
+    const inputOpciones = $(`revOpciones-${index}`);
+
+    const opciones = inputOpciones
+      ? String(inputOpciones.value || "Sí, No")
+          .split(",")
+          .map((x) => etiquetaRespuesta(x))
+          .filter(Boolean)
+      : opcionesRespuestaPregunta(original);
+
+    const opcionesFinales = opciones.length ? opciones : ["Sí", "No"];
+    const respuestaRaw = $(`revRespuesta-${index}`)?.value || original.respuesta || opcionesFinales[0] || "Sí";
+    const respuesta = etiquetaRespuesta(respuestaRaw);
+
+    return {
+      pregunta: limpiarPreguntaOCR($(`revPregunta-${index}`)?.value.trim() || original.pregunta || ""),
+      opciones: opcionesFinales,
+      respuesta,
+      detectado: true
+    };
+  }).filter((p) => p.pregunta);
 }
+
+
+
 
 
 function agregarPreguntaRevision() {
   if (!encuestaPendienteRevision) return;
 
-  encuestaPendienteRevision.preguntas = leerPreguntasRevision();
+  encuestaPendienteRevision.configPreguntasActiva = true;
+
   encuestaPendienteRevision.preguntas.push({
     pregunta: "Nueva pregunta?",
-    respuesta: "si",
-    detectado: false
+    opciones: ["Sí", "No"],
+    respuesta: "Sí",
+    detectado: false,
+    metodo: "Manual"
   });
 
   renderBarrio();
 }
+
+
 
 function quitarPreguntaRevision(index) {
   if (!encuestaPendienteRevision) return;
@@ -2501,22 +4228,27 @@ function obtenerRespuestasEncuestas() {
     respuestas.forEach((r) => {
       if (!r || !r.pregunta) return;
 
+      const respuesta = etiquetaRespuesta(r.respuesta || "Sí");
+
       filas.push({
         barrio_id: encuesta.barrio_id,
         barrio_nombre: encuesta.barrio_nombre || "Sin barrio",
         encuesta_id: encuesta.id,
         encuesta_nombre: encuesta.nombre || "Encuesta",
-        familia: encuesta.nombre || "Sin nombre",
+        familia: encuesta.datos?.nombre_persona || encuesta.nombre || "Sin nombre",
         archivo: encuesta.nombreArchivo || "",
         pregunta: r.pregunta,
         preguntaKey: normalizarPregunta(r.pregunta),
-        respuesta: String(r.respuesta || "").toLowerCase() === "no" ? "no" : "si"
+        opciones: opcionesRespuestaPregunta(r),
+        respuesta,
+        respuestaKey: claveRespuesta(respuesta)
       });
     });
   });
 
   return filas;
 }
+
 
 
 function agruparGraficosPorPregunta() {
@@ -2527,29 +4259,47 @@ function agruparGraficosPorPregunta() {
     if (!grupos[fila.preguntaKey]) {
       grupos[fila.preguntaKey] = {
         pregunta: fila.pregunta,
-        si: 0,
-        no: 0,
+        opciones: [],
+        total: 0,
+        conteos: {},
         barrios: {},
         detalleFamilias: {}
       };
     }
 
-    grupos[fila.preguntaKey][fila.respuesta]++;
+    const grupo = grupos[fila.preguntaKey];
 
-    if (!grupos[fila.preguntaKey].barrios[fila.barrio_nombre]) {
-      grupos[fila.preguntaKey].barrios[fila.barrio_nombre] = { si: 0, no: 0 };
+    fila.opciones.forEach((op) => {
+      const label = etiquetaRespuesta(op);
+      if (!grupo.opciones.some((x) => claveRespuesta(x) === claveRespuesta(label))) {
+        grupo.opciones.push(label);
+      }
+    });
+
+    if (!grupo.opciones.some((x) => claveRespuesta(x) === fila.respuestaKey)) {
+      grupo.opciones.push(fila.respuesta);
     }
 
-    if (!grupos[fila.preguntaKey].detalleFamilias[fila.barrio_nombre]) {
-      grupos[fila.preguntaKey].detalleFamilias[fila.barrio_nombre] = {
-        si: [],
-        no: []
-      };
+    grupo.total++;
+    grupo.conteos[fila.respuestaKey] = (grupo.conteos[fila.respuestaKey] || 0) + 1;
+
+    if (!grupo.barrios[fila.barrio_nombre]) {
+      grupo.barrios[fila.barrio_nombre] = { total: 0, conteos: {} };
     }
 
-    grupos[fila.preguntaKey].barrios[fila.barrio_nombre][fila.respuesta]++;
+    if (!grupo.detalleFamilias[fila.barrio_nombre]) {
+      grupo.detalleFamilias[fila.barrio_nombre] = {};
+    }
 
-    grupos[fila.preguntaKey].detalleFamilias[fila.barrio_nombre][fila.respuesta].push({
+    grupo.barrios[fila.barrio_nombre].total++;
+    grupo.barrios[fila.barrio_nombre].conteos[fila.respuestaKey] =
+      (grupo.barrios[fila.barrio_nombre].conteos[fila.respuestaKey] || 0) + 1;
+
+    if (!grupo.detalleFamilias[fila.barrio_nombre][fila.respuestaKey]) {
+      grupo.detalleFamilias[fila.barrio_nombre][fila.respuestaKey] = [];
+    }
+
+    grupo.detalleFamilias[fila.barrio_nombre][fila.respuestaKey].push({
       nombre: fila.familia || fila.encuesta_nombre || "Sin nombre",
       encuesta: fila.encuesta_nombre || "",
       archivo: fila.archivo || ""
@@ -2558,6 +4308,7 @@ function agruparGraficosPorPregunta() {
 
   return Object.values(grupos);
 }
+
 
 
 
@@ -2610,45 +4361,53 @@ function svgGraficoTortaPDF(si, no) {
 
 
 function htmlGraficoPregunta(grupo) {
-  const total = grupo.si + grupo.no;
-  const porcentajeSi = total ? Math.round((grupo.si / total) * 100) : 0;
-  const porcentajeNo = 100 - porcentajeSi;
+  const opciones = grupo.opciones.length ? grupo.opciones : ["Sí", "No"];
+  const total = grupo.total || 0;
+
+  const resumenOpciones = opciones.map((op) => {
+    const key = claveRespuesta(op);
+    const cantidad = grupo.conteos[key] || 0;
+    const pct = total ? Math.round((cantidad / total) * 100) : 0;
+
+    return `
+      <p><b>${escapeHtml(op)}:</b> ${cantidad} (${pct}%)</p>
+      <div class="barra-pdf"><span style="width:${pct}%"></span></div>
+    `;
+  }).join("");
 
   const filasBarrios = Object.entries(grupo.barrios).map(([barrio, datos]) => {
-    const totalBarrio = datos.si + datos.no;
-    const pctSiBarrio = totalBarrio ? Math.round((datos.si / totalBarrio) * 100) : 0;
-    const pctNoBarrio = totalBarrio ? Math.round((datos.no / totalBarrio) * 100) : 0;
+    const celdas = opciones.map((op) => {
+      const key = claveRespuesta(op);
+      return `<td>${datos.conteos[key] || 0}</td>`;
+    }).join("");
 
-    const detalle = grupo.detalleFamilias?.[barrio] || { si: [], no: [] };
-
-    const familiasSi = detalle.si.length
-      ? detalle.si.map((f) => `<li>${escapeHtml(f.nombre)}${f.archivo ? ` <small>(${escapeHtml(f.archivo)})</small>` : ""}</li>`).join("")
-      : `<li><em>Sin familias.</em></li>`;
-
-    const familiasNo = detalle.no.length
-      ? detalle.no.map((f) => `<li>${escapeHtml(f.nombre)}${f.archivo ? ` <small>(${escapeHtml(f.archivo)})</small>` : ""}</li>`).join("")
-      : `<li><em>Sin familias.</em></li>`;
+    const familias = opciones.map((op) => {
+      const key = claveRespuesta(op);
+      const lista = grupo.detalleFamilias?.[barrio]?.[key] || [];
+      return `
+        <div>
+          <h4>Familias que respondieron ${escapeHtml(op)}</h4>
+          <ul>
+            ${
+              lista.length
+                ? lista.map((f) => `<li>${escapeHtml(f.nombre)}${f.archivo ? ` <small>(${escapeHtml(f.archivo)})</small>` : ""}</li>`).join("")
+                : `<li><em>Sin familias.</em></li>`
+            }
+          </ul>
+        </div>
+      `;
+    }).join("");
 
     return `
       <tr>
         <td>${escapeHtml(barrio)}</td>
-        <td>${datos.si}</td>
-        <td>${datos.no}</td>
-        <td>${pctSiBarrio}%</td>
-        <td>${pctNoBarrio}%</td>
+        ${celdas}
+        <td>${datos.total || 0}</td>
       </tr>
-
       <tr class="familias-pdf-row">
-        <td colspan="5">
-          <div class="familias-pdf-grid">
-            <div>
-              <h4>Familias que votaron Sí</h4>
-              <ul>${familiasSi}</ul>
-            </div>
-            <div>
-              <h4>Familias que votaron No</h4>
-              <ul>${familiasNo}</ul>
-            </div>
+        <td colspan="${opciones.length + 2}">
+          <div class="familias-pdf-grid familias-pdf-grid-multi">
+            ${familias}
           </div>
         </td>
       </tr>
@@ -2659,12 +4418,9 @@ function htmlGraficoPregunta(grupo) {
     <div class="grafico-pdf-card">
       <h1>${escapeHtml(grupo.pregunta)}</h1>
 
-      <div class="grafico-pdf-resumen">
-        ${svgGraficoTortaPDF(grupo.si, grupo.no)}
-
+      <div class="grafico-pdf-resumen grafico-pdf-resumen-multi">
         <div class="grafico-pdf-numeros">
-          <p><span class="leyenda-cuadro leyenda-si"></span><b>Sí:</b> ${grupo.si} (${porcentajeSi}%)</p>
-          <p><span class="leyenda-cuadro leyenda-no"></span><b>No:</b> ${grupo.no} (${porcentajeNo}%)</p>
+          ${resumenOpciones}
           <p><b>Total de respuestas:</b> ${total}</p>
         </div>
       </div>
@@ -2675,19 +4431,18 @@ function htmlGraficoPregunta(grupo) {
         <thead>
           <tr>
             <th>Barrio</th>
-            <th>Sí</th>
-            <th>No</th>
-            <th>% Sí</th>
-            <th>% No</th>
+            ${opciones.map((op) => `<th>${escapeHtml(op)}</th>`).join("")}
+            <th>Total</th>
           </tr>
         </thead>
         <tbody>
-          ${filasBarrios || `<tr><td colspan="5">Sin detalle por barrio.</td></tr>`}
+          ${filasBarrios || `<tr><td colspan="${opciones.length + 2}">Sin detalle por barrio.</td></tr>`}
         </tbody>
       </table>
     </div>
   `;
 }
+
 
 
 
@@ -2857,10 +4612,19 @@ async function descargarTodosGraficos() {
 
 
 function renderGraficoTortaSiNo(grupo) {
-  const total = grupo.si + grupo.no;
-  const porcentajeSi = total ? Math.round((grupo.si / total) * 100) : 0;
-  const porcentajeNo = 100 - porcentajeSi;
+  const opciones = grupo.opciones.length ? grupo.opciones : ["Sí", "No"];
+  const total = grupo.total || 0;
   const key = normalizarPregunta(grupo.pregunta);
+
+  const filas = opciones.map((op) => {
+    const opKey = claveRespuesta(op);
+    const cantidad = grupo.conteos[opKey] || 0;
+    const pct = total ? Math.round((cantidad / total) * 100) : 0;
+
+    return `
+      <p><b>${escapeHtml(op)}:</b> ${cantidad} (${pct}%)</p>
+    `;
+  }).join("");
 
   return `
     <div class="grafico-card">
@@ -2870,11 +4634,10 @@ function renderGraficoTortaSiNo(grupo) {
       </div>
 
       <div class="grafico-body">
-        <div class="pie-chart" style="--si:${porcentajeSi};"></div>
+        ${svgPieMulticolor(opciones, grupo.conteos, total)}
 
         <div class="grafico-info">
-          <p><b>Sí:</b> ${grupo.si} (${porcentajeSi}%)</p>
-          <p><b>No:</b> ${grupo.no} (${porcentajeNo}%)</p>
+          ${filas}
           <p><b>Total:</b> ${total}</p>
         </div>
       </div>
@@ -2883,9 +4646,9 @@ function renderGraficoTortaSiNo(grupo) {
         <h4>Detalle por barrio</h4>
         ${
           Object.entries(grupo.barrios).map(([barrio, datos]) => `
-            <div class="grafico-barrio-row">
+            <div class="grafico-barrio-row grafico-barrio-row-multi">
               <span>${escapeHtml(barrio)}</span>
-              <b> Sí ${datos.si} / No ${datos.no}</b>
+              <b>${opciones.map((op) => `${escapeHtml(op)} ${datos.conteos[claveRespuesta(op)] || 0}`).join(" / ")}</b>
             </div>
           `).join("")
         }
@@ -2893,6 +4656,8 @@ function renderGraficoTortaSiNo(grupo) {
     </div>
   `;
 }
+
+
 
 
 function renderGraficos() {
@@ -2931,6 +4696,25 @@ function renderGraficos() {
   `;
 }
 
+
+
+
+function valorInformeEncuesta() {
+  return String($("barrioEncuestaInforme")?.value || "").trim();
+}
+
+function htmlInformeEncuesta(informe) {
+  const texto = String(informe || "").trim();
+
+  if (!texto) return "";
+
+  return `
+    <div class="informe-encuesta-box">
+      <h4>📋 Informe</h4>
+      <div>${escapeHtml(texto).replace(/\n/g, "<br>")}</div>
+    </div>
+  `;
+}
 
 
 function renderBarrio() {
@@ -2976,7 +4760,7 @@ function renderBarrio() {
 
             <label>
               Imagen o PDF del plano *
-              <input id="barrioPlanoArchivo" type="file" accept="image/*,.pdf,application/pdf" />
+              <input id="barrioPlanoArchivo" type="file" accept="image/*,.pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
             </label>
           </div>
 
@@ -3002,10 +4786,9 @@ function renderBarrio() {
               Nombre de la encuesta *
               <input id="barrioEncuestaNombre" placeholder="Ej: Encuesta familia Pérez" />
             </label>
-
-            <label>
-              Foto o PDF de la encuesta *
-              <input id="barrioEncuestaArchivo" type="file" accept="image/*,.pdf,application/pdf" />
+<label>
+              Imagen, PDF o Word de la encuesta *
+              <input id="barrioEncuestaArchivo" type="file" accept="image/*,.pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
             </label>
           </div>
 
@@ -3078,6 +4861,7 @@ function renderArchivoBarrioCard(item, tipo) {
           <h3>${tipo === "plano" ? "🗺️" : "📝"} ${escapeHtml(item.nombre)}</h3>
           <p>📄 ${escapeHtml(item.nombreArchivo || "Archivo cargado")}</p>
           <p>📅 ${escapeHtml(item.fecha || "—")}</p>
+          
         </div>
 
         <div class="registro-actions">
@@ -3097,7 +4881,7 @@ function renderArchivoBarrioCard(item, tipo) {
               ${respuestas.map((r) => `
                 <div>
                   ${escapeHtml(r.pregunta)}:
-                  <strong class="${r.respuesta === "si" ? "resp-si" : "resp-no"}">${r.respuesta === "si" ? "Sí" : "No"}</strong>
+                  <strong class="${claveRespuesta(r.respuesta) === "si" ? "resp-si" : "resp-no"}">${escapeHtml(etiquetaRespuesta(r.respuesta))}</strong>
                 </div>
               `).join("")}
             </div>
@@ -3107,9 +4891,11 @@ function renderArchivoBarrioCard(item, tipo) {
 
       <div class="barrio-preview">
         ${
-          esPdf
-            ? `<iframe src="${archivo}" title="${titulo} PDF"></iframe>`
-            : `<img src="${archivo}" alt="${escapeHtml(item.nombre)}" />`
+          item.tipo === "word"
+            ? linkDescargaArchivo(item.nombreArchivo || item.nombre, archivo)
+            : esPdf
+              ? `<iframe src="${archivo}" title="${titulo} PDF"></iframe>`
+              : `<img src="${archivo}" alt="${escapeHtml(item.nombre)}" />`
         }
       </div>
     </div>
@@ -3165,6 +4951,8 @@ function crearEncuestaManualBarrio() {
   if (!catActiva || catActiva.tipo !== "barrio") return;
 
   const nombreInput = $("barrioEncuestaNombre");
+  const informe = "";
+  const datos = datosEncuestaDesdeFormulario();
   const archivoInput = $("barrioEncuestaArchivo");
 
   const nombre =
@@ -3179,6 +4967,8 @@ function crearEncuestaManualBarrio() {
   if (!archivo) {
     crearEncuestaManualDesdeArchivo({
       nombre: nombre.trim(),
+      informe,
+      datos,
       nombreArchivo: "Sin imagen",
       tipo: "manual",
       dataUrl: ""
@@ -3200,6 +4990,8 @@ function crearEncuestaManualBarrio() {
   reader.onload = function (e) {
     crearEncuestaManualDesdeArchivo({
       nombre: nombre.trim(),
+      informe,
+      datos,
       nombreArchivo: archivo.name,
       tipo: esPdf ? "pdf" : "imagen",
       dataUrl: e.target.result
@@ -3214,10 +5006,12 @@ function guardarEncuestaBarrio() {
   if (!catActiva || catActiva.tipo !== "barrio") return;
 
   const nombre = $("barrioEncuestaNombre").value.trim();
+  const informe = "";
+  const datos = datosEncuestaDesdeFormulario();
   const archivo = $("barrioEncuestaArchivo").files[0];
 
   if (!nombre || !archivo) {
-    alert("Completá el nombre y seleccioná una foto o PDF de la encuesta.");
+    alert("Completá el nombre y seleccioná una imagen, PDF o Word de la encuesta.");
     return;
   }
 
@@ -3230,14 +5024,17 @@ function guardarEncuestaBarrio() {
   }
 
   const esPdf = archivoEsPdf(archivo);
+  const esWord = archivoEsWord(archivo);
   const reader = new FileReader();
 
   reader.onload = function (e) {
     iniciarRevisionEncuestaBarrio({
       nombre,
+      informe,
+      datos,
       archivo,
       nombreArchivo: archivo.name,
-      tipo: esPdf ? "pdf" : "imagen",
+      tipo: esWord ? "word" : esPdf ? "pdf" : "imagen",
       dataUrl: e.target.result
     });
   };
@@ -3294,14 +5091,20 @@ async function editarArchivoBarrio(id, tipo) {
   }
 
   if (tipo === "encuesta") {
-    const editarPreguntas = confirm("¿Querés editar las preguntas y respuestas de esta encuesta?");
+    const nuevoInforme = prompt("Editar informe de la encuesta:", item.informe || "");
+    if (nuevoInforme !== null) {
+      item.informe = nuevoInforme.trim();
+    }
+
+    const editarPreguntas = confirm("¿Querés editar las preguntas, respuestas e informe de esta encuesta?");
 
     if (editarPreguntas) {
       encuestaPendienteRevision = {
         ...item,
         preguntas: (item.respuestas_detectadas || item.preguntas || []).map((r) => ({
           pregunta: r.pregunta || "Pregunta?",
-          respuesta: r.respuesta === "no" ? "no" : "si",
+          opciones: opcionesRespuestaPregunta(r),
+          respuesta: etiquetaRespuesta(r.respuesta || "Sí"),
           detectado: false,
           metodo: "Edición manual"
         })),
@@ -3331,7 +5134,7 @@ async function editarArchivoBarrio(id, tipo) {
   const reemplazar = confirm(`¿Querés reemplazar la imagen/PDF del ${tipo}?`);
 
   if (reemplazar) {
-    const archivo = await seleccionarArchivoWeb("image/*,.pdf");
+    const archivo = await seleccionarArchivoWeb("image/*,.pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document");
 
     if (archivo) {
       const pesoMaximoMB = 2;
@@ -3346,7 +5149,7 @@ async function editarArchivoBarrio(id, tipo) {
       item.archivo = dataUrl;
       item.imagen = dataUrl;
       item.nombreArchivo = archivo.name;
-      item.tipo = archivoEsPdf(archivo) ? "pdf" : "imagen";
+      item.tipo = archivoEsWord(archivo) ? "word" : archivoEsPdf(archivo) ? "pdf" : "imagen";
     }
   }
 
@@ -3372,20 +5175,9 @@ function imprimirArchivoBarrio(id, tipo) {
   const item = buscarArchivoBarrio(id, tipo);
   if (!item) return;
 
-  const archivo = item.archivo || item.imagen || "";
-  const esPdf = item.tipo === "pdf";
-
-  imprimirHTML(`${tipo} - ${item.nombre}`, `
-    <h1>${escapeHtml(item.nombre)}</h1>
-    <p><b>Barrio:</b> ${escapeHtml(item.barrio_nombre || catActiva?.nombre || "")}</p>
-    <p><b>Archivo:</b> ${escapeHtml(item.nombreArchivo || "Archivo cargado")}</p>
-    ${
-      esPdf
-        ? `<iframe src="${archivo}"></iframe>`
-        : `<img src="${archivo}" />`
-    }
-  `);
+  imprimirHTML(`${tipo} - ${item.nombre}`, htmlArchivoBarrioPDF(item, tipo));
 }
+
 
 function correoArchivoBarrio(id, tipo) {
   const item = buscarArchivoBarrio(id, tipo);
@@ -3397,6 +5189,7 @@ ${tipo === "plano" ? "Plano" : "Encuesta"}: ${item.nombre}
 Barrio: ${item.barrio_nombre || catActiva?.nombre || ""}
 Archivo: ${item.nombreArchivo || "Archivo cargado"}
 Fecha: ${item.fecha || ""}
+${tipo === "encuesta" && item.informe ? `Informe: ${item.informe}` : ""}
 `;
 
   const html = cuerpoHtmlCorreo(asunto, `
@@ -3404,6 +5197,7 @@ Fecha: ${item.fecha || ""}
       <h2>${escapeHtml(item.nombre)}</h2>
       <p><b>Barrio:</b> ${escapeHtml(item.barrio_nombre || catActiva?.nombre || "")}</p>
       <p><b>Archivo:</b> ${escapeHtml(item.nombreArchivo || "Archivo cargado")}</p>
+      
     </div>
   `);
 
@@ -3423,6 +5217,7 @@ function htmlArchivoBarrioPDF(item, tipo) {
 
   return `
     <h3>${escapeHtml(titulo)}: ${escapeHtml(item.nombre || "")}</h3>
+    
     <p><b>Barrio:</b> ${escapeHtml(item.barrio_nombre || catActiva?.nombre || "")}</p>
     <p><b>Archivo:</b> ${escapeHtml(item.nombreArchivo || "")}</p>
 
@@ -3441,7 +5236,7 @@ function htmlArchivoBarrioPDF(item, tipo) {
               ${respuestas.map((r) => `
                 <tr>
                   <td>${escapeHtml(r.pregunta || "")}</td>
-                  <td>${r.respuesta === "no" ? "No" : "Sí"}</td>
+                  <td>${escapeHtml(etiquetaRespuesta(r.respuesta))}</td>
                 </tr>
               `).join("")}
             </tbody>
@@ -3453,9 +5248,11 @@ function htmlArchivoBarrioPDF(item, tipo) {
     ${
       archivo
         ? (
-          item.tipo === "pdf"
-            ? `<iframe src="${archivo}"></iframe>`
-            : `<img src="${archivo}" alt="${escapeHtml(item.nombre || titulo)}" />`
+          item.tipo === "word"
+            ? linkDescargaArchivo(item.nombreArchivo || item.nombre, archivo)
+            : item.tipo === "pdf"
+              ? `<iframe src="${archivo}"></iframe>`
+              : `<img src="${archivo}" alt="${escapeHtml(item.nombre || titulo)}" />`
         )
         : `<p>Sin imagen cargada.</p>`
     }
@@ -3508,7 +5305,7 @@ Planos:
 ${planosBarrio.map((p, i) => `${i + 1}) ${p.nombre} - ${p.nombreArchivo || ""}`).join("\n") || "Sin planos."}
 
 Encuestas:
-${encuestasBarrio.map((e, i) => `${i + 1}) ${e.nombre} - ${e.nombreArchivo || ""}`).join("\n") || "Sin encuestas."}
+${encuestasBarrio.map((e, i) => `${i + 1}) ${e.nombre} - ${e.nombreArchivo || ""}${e.informe ? " - Informe: " + e.informe : ""}`).join("\n") || "Sin encuestas."}
 `;
 
   abrirCorreo(`Barrio - ${catActiva.nombre}`, cuerpo);
@@ -3537,6 +5334,688 @@ function descargarBarrio() {
   `);
 }
 
+
+
+
+
+function tablaHtmlDesdeMatriz(rows, titulo = "Cuadro") {
+  const filas = Array.isArray(rows) ? rows : [];
+  if (!filas.length) return "";
+
+  const header = filas[0] || [];
+  const body = filas.slice(1);
+
+  return `
+    <div class="tabla-seguimiento-box">
+      <h4>📊 ${escapeHtml(titulo)}</h4>
+      <div class="tabla-scroll">
+        <table>
+          <thead>
+            <tr>${header.map((h) => `<th>${escapeHtml(h || "")}</th>`).join("")}</tr>
+          </thead>
+          <tbody>
+            ${
+              body.length
+                ? body.map((row) => `
+                    <tr>${header.map((_, i) => `<td>${escapeHtml(row[i] || "")}</td>`).join("")}</tr>
+                  `).join("")
+                : `<tr><td colspan="${Math.max(1, header.length)}">Sin filas cargadas.</td></tr>`
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function tablasSeguimientoHtml(tablas) {
+  const lista = Array.isArray(tablas) ? tablas : [];
+  if (!lista.length) return "";
+
+  return lista.map((tabla, index) => tablaHtmlDesdeMatriz(tabla.rows || tabla, tabla.titulo || `Cuadro ${index + 1}`)).join("");
+}
+
+function textoCeldaDocxGenerico(celda) {
+  return Array.from(celda.getElementsByTagName("w:t"))
+    .map((n) => n.textContent || "")
+    .join("")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function normalizarFilasDocx(rows) {
+  return (rows || [])
+    .map((r) => (r || []).map((c) => String(c || "").replace(/\s+/g, " ").trim()))
+    .filter((r) => r.some((c) => c));
+}
+
+async function extraerTablasSeguimientoDesdeDocx(archivo) {
+  if (!window.JSZip) return [];
+
+  const zip = await window.JSZip.loadAsync(archivo);
+  const xmlText = await zip.file("word/document.xml")?.async("text");
+
+  if (!xmlText) return [];
+
+  const xml = new DOMParser().parseFromString(xmlText, "application/xml");
+  const tablas = Array.from(xml.getElementsByTagName("w:tbl"));
+
+  return tablas.map((tbl, idx) => {
+    const rows = Array.from(tbl.getElementsByTagName("w:tr")).map((tr) =>
+      Array.from(tr.getElementsByTagName("w:tc")).map((tc) => textoCeldaDocxGenerico(tc))
+    );
+
+    return {
+      titulo: idx === 0 ? "Cuadro de seguimiento" : `Cuadro ${idx + 1}`,
+      rows: normalizarFilasDocx(rows)
+    };
+  }).filter((t) => t.rows.length);
+}
+
+
+function seguimientoArchivoPreview(item) {
+  const archivo = item.archivo || "";
+  if (!archivo) return `<p>Sin archivo cargado.</p>`;
+
+  if (item.tipo === "word") {
+    return linkDescargaArchivo(item.nombreArchivo || item.titulo || "archivo.docx", archivo);
+  }
+
+  if (item.tipo === "pdf") {
+    return `<iframe src="${archivo}" title="PDF seguimiento"></iframe>`;
+  }
+
+  return `<img src="${archivo}" alt="${escapeHtml(item.titulo || "Seguimiento")}" />`;
+}
+
+function htmlSeguimientoPDF(item) {
+  return `
+    <div class="seguimiento-pdf">
+      <h2>${escapeHtml(item.titulo || "Seguimiento")}</h2>
+
+      <table>
+        <tbody>
+          <tr><th>Nombre y apellido</th><td>${escapeHtml(item.nombre_apellido || "")}</td></tr>
+          <tr><th>Fecha</th><td>${escapeHtml(item.fecha || "")}</td></tr>
+          <tr><th>DNI</th><td>${escapeHtml(item.dni || "")}</td></tr>
+          <tr><th>Barrio</th><td>${escapeHtml(item.barrio || "")}</td></tr>
+          <tr><th>Dirección y número</th><td>${escapeHtml(item.direccion_numero || "")}</td></tr>
+          <tr><th>Archivo</th><td>${escapeHtml(item.nombreArchivo || "")}</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Informe</h3>
+      <div class="informe-encuesta-box">
+        ${escapeHtml(item.informe || "").replace(/\n/g, "<br>") || "Sin informe."}
+      </div>
+
+      ${tablasSeguimientoHtml(item.tablas)}
+      ${preguntasSeguimientoHtml(item.preguntas)}
+      ${seguimientoArchivoPreview(item)}
+    </div>
+  `;
+}
+
+
+function columnasTablaSeguimiento(tabla) {
+  const rows = tabla?.rows || [];
+  const header = rows[0] || [];
+
+  return header.length ? header : ["Tema", "Descripción", "Estado", "Observaciones"];
+}
+
+function filasTablaSeguimiento(tabla) {
+  const rows = tabla?.rows || [];
+  return rows.length > 1 ? rows.slice(1) : [["", "", "", ""]];
+}
+
+function crearTablaSeguimientoVacia() {
+  return {
+    titulo: "Nuevo cuadro",
+    rows: [
+      ["Tema", "Descripción", "Estado", "Observaciones"],
+      ["", "", "", ""],
+      ["", "", "", ""],
+      ["", "", "", ""]
+    ]
+  };
+}
+
+function crearPreguntaSeguimientoVacia() {
+  return {
+    pregunta: "Nueva pregunta?",
+    opciones: ["Sí", "No"],
+    respuesta: "Sí"
+  };
+}
+
+function renderPreguntasSeguimientoEditor(preguntas) {
+  const lista = Array.isArray(preguntas) ? preguntas : [];
+
+  return `
+    <div class="seg-editor-preguntas">
+      <h3>Preguntas con opciones</h3>
+
+      ${
+        lista.length
+          ? lista.map((p, index) => `
+            <div class="seg-pregunta-row">
+              <label>
+                Pregunta ${index + 1}
+                <input id="segPreg-${index}" value="${escapeHtml(p.pregunta || "")}" />
+              </label>
+
+              <label>
+                Respuesta
+                <select id="segResp-${index}">
+                  ${opcionesRespuestaPregunta(p).map((op) => `
+                    <option value="${escapeHtml(op)}" ${claveRespuesta(p.respuesta) === claveRespuesta(op) ? "selected" : ""}>${escapeHtml(op)}</option>
+                  `).join("")}
+                </select>
+              </label>
+
+              <label>
+                Opciones
+                <input id="segOpciones-${index}" value="${escapeHtml(opcionesRespuestaPregunta(p).join(", "))}" oninput="actualizarOpcionesSeguimiento(${index})" />
+              </label>
+            </div>
+          `).join("")
+          : `<p class="muted">Sin preguntas agregadas.</p>`
+      }
+    </div>
+  `;
+}
+
+function renderTablasSeguimientoEditor(tablas) {
+  const lista = Array.isArray(tablas) ? tablas : [];
+
+  if (!lista.length) {
+    return `<div class="empty"><p>No hay cuadros detectados. Tocá <b>Agregar apartado</b> para crear uno.</p></div>`;
+  }
+
+  return lista.map((tabla, tIndex) => {
+    const columnas = columnasTablaSeguimiento(tabla);
+    const filas = filasTablaSeguimiento(tabla);
+
+    return `
+      <div class="seg-tabla-editor">
+        <label>
+          Título del apartado / cuadro
+          <input id="segTablaTitulo-${tIndex}" value="${escapeHtml(tabla.titulo || `Cuadro ${tIndex + 1}`)}" />
+        </label>
+
+        <div class="tabla-scroll">
+          <table>
+            <thead>
+              <tr>
+                ${columnas.map((col, cIndex) => `
+                  <th>
+                    <input id="segTablaHead-${tIndex}-${cIndex}" value="${escapeHtml(col)}" />
+                  </th>
+                `).join("")}
+              </tr>
+            </thead>
+            <tbody>
+              ${filas.map((row, rIndex) => `
+                <tr>
+                  ${columnas.map((_, cIndex) => `
+                    <td>
+                      <textarea id="segTablaCell-${tIndex}-${rIndex}-${cIndex}" rows="2">${escapeHtml(row[cIndex] || "")}</textarea>
+                    </td>
+                  `).join("")}
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function actualizarOpcionesSeguimiento(index) {
+  const input = $(`segOpciones-${index}`);
+  const select = $(`segResp-${index}`);
+  if (!input || !select) return;
+
+  const opciones = String(input.value || "Sí, No")
+    .split(",")
+    .map((x) => etiquetaRespuesta(x))
+    .filter(Boolean);
+
+  const valorActual = etiquetaRespuesta(select.value || opciones[0] || "Sí");
+
+  select.innerHTML = (opciones.length ? opciones : ["Sí", "No"]).map((op) => `
+    <option value="${escapeHtml(op)}" ${claveRespuesta(valorActual) === claveRespuesta(op) ? "selected" : ""}>${escapeHtml(op)}</option>
+  `).join("");
+}
+
+function leerTablasSeguimientoEditor() {
+  const tablas = seguimientoPendienteRevision?.tablas || [];
+
+  return tablas.map((tabla, tIndex) => {
+    const columnas = columnasTablaSeguimiento(tabla);
+    const filas = filasTablaSeguimiento(tabla);
+
+    const header = columnas.map((_, cIndex) =>
+      String($(`segTablaHead-${tIndex}-${cIndex}`)?.value || `Columna ${cIndex + 1}`).trim()
+    );
+
+    const body = filas.map((_, rIndex) =>
+      header.map((_, cIndex) =>
+        String($(`segTablaCell-${tIndex}-${rIndex}-${cIndex}`)?.value || "").trim()
+      )
+    );
+
+    return {
+      titulo: String($(`segTablaTitulo-${tIndex}`)?.value || tabla.titulo || `Cuadro ${tIndex + 1}`).trim(),
+      rows: [header, ...body]
+    };
+  });
+}
+
+function leerPreguntasSeguimientoEditor() {
+  const preguntas = seguimientoPendienteRevision?.preguntas || [];
+
+  return preguntas.map((p, index) => {
+    const opciones = String($(`segOpciones-${index}`)?.value || "Sí, No")
+      .split(",")
+      .map((x) => etiquetaRespuesta(x))
+      .filter(Boolean);
+
+    return {
+      pregunta: String($(`segPreg-${index}`)?.value || p.pregunta || "").trim(),
+      opciones: opciones.length ? opciones : ["Sí", "No"],
+      respuesta: etiquetaRespuesta($(`segResp-${index}`)?.value || p.respuesta || "Sí")
+    };
+  }).filter((p) => p.pregunta);
+}
+
+
+function preguntasSeguimientoHtml(preguntas) {
+  const lista = Array.isArray(preguntas) ? preguntas : [];
+  if (!lista.length) return "";
+
+  return `
+    <div class="preguntas-seguimiento-box">
+      <h4>❓ Preguntas y respuestas</h4>
+      <table>
+        <thead>
+          <tr>
+            <th>Pregunta</th>
+            <th>Respuesta</th>
+            <th>Opciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${lista.map((p) => `
+            <tr>
+              <td>${escapeHtml(p.pregunta || "")}</td>
+              <td>${escapeHtml(etiquetaRespuesta(p.respuesta || ""))}</td>
+              <td>${escapeHtml(opcionesRespuestaPregunta(p).join(", "))}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+
+function renderRevisionSeguimientoPendiente() {
+  if (!seguimientoPendienteRevision) return "";
+
+  return `
+    <div class="revision-seguimiento-box">
+      <h2>📋 Configurar seguimiento antes de confirmar</h2>
+      <p>Revisá el cuadro detectado, editá las celdas y agregá preguntas si necesitás.</p>
+
+      <div class="grid-form">
+        <label>
+          Título
+          <input id="revSegTitulo" value="${escapeHtml(seguimientoPendienteRevision.titulo || "")}" />
+        </label>
+
+        <label>
+          Nombre y apellido
+          <input id="revSegNombreApellido" value="${escapeHtml(seguimientoPendienteRevision.nombre_apellido || "")}" />
+        </label>
+
+        <label>
+          Fecha
+          <input id="revSegFecha" type="date" value="${escapeHtml(seguimientoPendienteRevision.fecha || "")}" />
+        </label>
+
+        <label>
+          DNI
+          <input id="revSegDni" value="${escapeHtml(seguimientoPendienteRevision.dni || "")}" />
+        </label>
+
+        <label>
+          Barrio
+          <input id="revSegBarrio" value="${escapeHtml(seguimientoPendienteRevision.barrio || "")}" />
+        </label>
+
+        <label>
+          Dirección y número
+          <input id="revSegDireccion" value="${escapeHtml(seguimientoPendienteRevision.direccion_numero || "")}" />
+        </label>
+
+        <label class="full">
+          Informe
+          <textarea id="revSegInforme" rows="5">${escapeHtml(seguimientoPendienteRevision.informe || "")}</textarea>
+        </label>
+      </div>
+
+      <div class="seg-editor-section">
+        <h3>Cuadros / apartados</h3>
+        ${renderTablasSeguimientoEditor(seguimientoPendienteRevision.tablas)}
+      </div>
+
+      ${renderPreguntasSeguimientoEditor(seguimientoPendienteRevision.preguntas)}
+
+      <div class="actions revision-actions-final">
+        <button class="secondary danger" onclick="cancelarSeguimientoRevision()">Cancelar</button>
+        <button class="secondary" onclick="agregarApartadoSeguimiento()">+ Agregar apartado</button>
+        <button class="secondary" onclick="agregarPreguntaSeguimiento()">+ Agregar pregunta</button>
+        <button class="primary" onclick="confirmarSeguimientoRevision()">Confirmar</button>
+      </div>
+    </div>
+  `;
+}
+
+function cancelarSeguimientoRevision() {
+  seguimientoPendienteRevision = null;
+  renderSeguimientos();
+}
+
+function agregarApartadoSeguimiento() {
+  if (!seguimientoPendienteRevision) return;
+
+  if (!Array.isArray(seguimientoPendienteRevision.tablas)) seguimientoPendienteRevision.tablas = [];
+
+  seguimientoPendienteRevision.tablas = leerTablasSeguimientoEditor();
+  seguimientoPendienteRevision.preguntas = leerPreguntasSeguimientoEditor();
+  seguimientoPendienteRevision.tablas.push(crearTablaSeguimientoVacia());
+
+  renderSeguimientos();
+}
+
+function agregarPreguntaSeguimiento() {
+  if (!seguimientoPendienteRevision) return;
+
+  seguimientoPendienteRevision.tablas = leerTablasSeguimientoEditor();
+  seguimientoPendienteRevision.preguntas = leerPreguntasSeguimientoEditor();
+  seguimientoPendienteRevision.preguntas.push(crearPreguntaSeguimientoVacia());
+
+  renderSeguimientos();
+}
+
+function confirmarSeguimientoRevision() {
+  if (!seguimientoPendienteRevision) return;
+
+  const item = {
+    ...seguimientoPendienteRevision,
+    titulo: String($("revSegTitulo")?.value || seguimientoPendienteRevision.titulo || "").trim(),
+    nombre_apellido: String($("revSegNombreApellido")?.value || "").trim(),
+    fecha: String($("revSegFecha")?.value || "").trim(),
+    dni: String($("revSegDni")?.value || "").trim(),
+    barrio: String($("revSegBarrio")?.value || "").trim(),
+    direccion_numero: String($("revSegDireccion")?.value || "").trim(),
+    informe: String($("revSegInforme")?.value || "").trim(),
+    tablas: leerTablasSeguimientoEditor(),
+    preguntas: leerPreguntasSeguimientoEditor()
+  };
+
+  if (!item.titulo) {
+    alert("Completá el título del seguimiento.");
+    return;
+  }
+
+  seguimientos.push(item);
+  seguimientoPendienteRevision = null;
+
+  guardarStorage();
+  renderSeguimientos();
+}
+
+
+function renderSeguimientos() {
+  cerrarFormPersona();
+  $("formPersona").classList.add("hidden");
+  $("busqueda").style.display = "block";
+
+  $("categoriaHeader").className = "cat-header bg-teal";
+  $("categoriaHeader").innerHTML = `
+    <div class="left">
+      <div class="emoji">📋</div>
+      <div>
+        <h2>Seguimientos</h2>
+        <p>Informes, datos personales y archivos de seguimiento barrial.</p>
+      </div>
+    </div>
+
+    <div class="cat-actions">
+      <button onclick="imprimirSeguimientos()">🖨️ Imprimir</button>
+      <button onclick="descargarSeguimientos()">⬇️ Descargar PDF</button>
+    </div>
+  `;
+
+  const texto = String($("busqueda")?.value || "").toLowerCase();
+
+  const lista = seguimientos
+    .filter((s) =>
+      !texto ||
+      String(s.titulo || "").toLowerCase().includes(texto) ||
+      String(s.nombre_apellido || "").toLowerCase().includes(texto) ||
+      String(s.barrio || "").toLowerCase().includes(texto) ||
+      String(s.dni || "").toLowerCase().includes(texto) ||
+      String(s.direccion_numero || "").toLowerCase().includes(texto) ||
+      String(s.informe || "").toLowerCase().includes(texto)
+    )
+    .sort((a, b) => Number(b.id) - Number(a.id));
+
+  $("personasLista").innerHTML = `
+    <div class="form-card seguimiento-form">
+      <h2>📋 Nuevo seguimiento</h2>
+
+      <div class="grid-form">
+        <label>
+          Título *
+          <input id="segTitulo" placeholder="Ej: Seguimiento problemática cloacas" />
+        </label>
+
+        <label>
+          Nombre y apellido
+          <input id="segNombreApellido" placeholder="Nombre y apellido" />
+        </label>
+
+        <label>
+          Fecha
+          <input id="segFecha" type="date" />
+        </label>
+
+        <label>
+          DNI
+          <input id="segDni" placeholder="DNI" />
+        </label>
+
+        <label>
+          Barrio
+          <input id="segBarrio" placeholder="Barrio o localidad" />
+        </label>
+
+        <label>
+          Dirección y número
+          <input id="segDireccion" placeholder="Dirección y número" />
+        </label>
+
+        <label class="full">
+          Informe
+          <textarea id="segInforme" rows="6" placeholder="Escribí el informe, descripción, observaciones o seguimiento."></textarea>
+        </label>
+
+        <label class="full">
+          Seleccionar archivo
+          <input id="segArchivo" type="file" accept="image/*,.pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+        </label>
+      </div>
+
+      <div class="actions">
+        <button class="primary" onclick="guardarSeguimiento()">Guardar seguimiento</button>
+      </div>
+    </div>
+
+    ${renderRevisionSeguimientoPendiente()}
+
+    <div class="seguimientos-lista">
+      ${
+        lista.length
+          ? lista.map((s) => renderSeguimientoCard(s)).join("")
+          : `<div class="empty"><p>No hay seguimientos cargados.</p></div>`
+      }
+    </div>
+  `;
+}
+
+function renderSeguimientoCard(item) {
+  return `
+    <div class="barrio-archivo-card seguimiento-card">
+      <div class="persona-top">
+        <div>
+          <h3>📋 ${escapeHtml(item.titulo || "Seguimiento")}</h3>
+          <p>👤 ${escapeHtml(item.nombre_apellido || "Sin nombre")}</p>
+          <p>🪪 DNI: ${escapeHtml(item.dni || "—")}</p>
+          <p>🏘️ Barrio: ${escapeHtml(item.barrio || "—")}</p>
+          <p>📍 Dirección: ${escapeHtml(item.direccion_numero || "—")}</p>
+          <p>📅 ${escapeHtml(item.fecha || "—")}</p>
+          <p>📄 ${escapeHtml(item.nombreArchivo || "Sin archivo")}</p>
+        </div>
+
+        <div class="registro-actions">
+          <button class="icon-btn" onclick="imprimirSeguimiento(${item.id})">🖨️</button>
+          <button class="icon-btn" onclick="descargarSeguimiento(${item.id})">⬇️</button>
+          <button class="icon-btn danger" onclick="eliminarSeguimiento(${item.id})">🗑️</button>
+        </div>
+      </div>
+
+      <div class="informe-encuesta-box">
+        <h4>📋 Informe</h4>
+        <div>${escapeHtml(item.informe || "Sin informe.").replace(/\n/g, "<br>")}</div>
+      </div>
+
+      ${tablasSeguimientoHtml(item.tablas)}
+
+      <div class="barrio-preview">
+        ${seguimientoArchivoPreview(item)}
+      </div>
+    </div>
+  `;
+}
+
+function guardarSeguimiento() {
+  const titulo = String($("segTitulo")?.value || "").trim();
+  const archivo = $("segArchivo")?.files?.[0] || null;
+
+  if (!titulo) {
+    alert("Completá el título del seguimiento.");
+    return;
+  }
+
+  const crearPendiente = (dataUrl = "", nombreArchivo = "", tipo = "", tablas = []) => {
+    seguimientoPendienteRevision = {
+      id: Date.now(),
+      titulo,
+      nombre_apellido: String($("segNombreApellido")?.value || "").trim(),
+      fecha: String($("segFecha")?.value || "").trim(),
+      dni: String($("segDni")?.value || "").trim(),
+      barrio: String($("segBarrio")?.value || "").trim(),
+      direccion_numero: String($("segDireccion")?.value || "").trim(),
+      informe: String($("segInforme")?.value || "").trim(),
+      archivo: dataUrl,
+      nombreArchivo,
+      tipo,
+      tablas: Array.isArray(tablas) && tablas.length ? tablas : [],
+      preguntas: [],
+      fecha_carga: new Date().toLocaleDateString("es-AR")
+    };
+
+    if (!seguimientoPendienteRevision.tablas.length) {
+      seguimientoPendienteRevision.tablas.push(crearTablaSeguimientoVacia());
+    }
+
+    renderSeguimientos();
+  };
+
+  if (!archivo) {
+    crearPendiente("", "", "", [crearTablaSeguimientoVacia()]);
+    return;
+  }
+
+  const pesoMB = archivo.size / 1024 / 1024;
+  if (pesoMB > 5) {
+    alert("El archivo es muy pesado. Usá archivos de hasta 5 MB.");
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = async (e) => {
+    const tipo = archivoEsWord(archivo) ? "word" : archivoEsPdf(archivo) ? "pdf" : "imagen";
+    let tablas = [];
+
+    if (tipo === "word") {
+      try {
+        tablas = await extraerTablasSeguimientoDesdeDocx(archivo);
+      } catch (error) {
+        tablas = [];
+      }
+    }
+
+    crearPendiente(e.target.result, archivo.name, tipo, tablas);
+  };
+
+  reader.readAsDataURL(archivo);
+}
+
+
+
+function buscarSeguimiento(id) {
+  return seguimientos.find((s) => Number(s.id) === Number(id));
+}
+
+function eliminarSeguimiento(id) {
+  if (!confirm("¿Eliminar este seguimiento?")) return;
+  seguimientos = seguimientos.filter((s) => Number(s.id) !== Number(id));
+  guardarStorage();
+  renderSeguimientos();
+}
+
+function imprimirSeguimiento(id) {
+  const item = buscarSeguimiento(id);
+  if (!item) return;
+  imprimirHTML(`Seguimiento - ${item.titulo}`, htmlSeguimientoPDF(item));
+}
+
+function descargarSeguimiento(id) {
+  const item = buscarSeguimiento(id);
+  if (!item) return;
+  descargarHTML(`seguimiento-${item.titulo}`, htmlSeguimientoPDF(item));
+}
+
+function imprimirSeguimientos() {
+  imprimirHTML("Seguimientos", `
+    <h1>Seguimientos</h1>
+    ${seguimientos.map((s) => `<div class="card">${htmlSeguimientoPDF(s)}</div>`).join("") || "<p>Sin seguimientos.</p>"}
+  `);
+}
+
+function descargarSeguimientos() {
+  descargarHTML("seguimientos", `
+    <h1>Seguimientos</h1>
+    ${seguimientos.map((s) => `<div class="card">${htmlSeguimientoPDF(s)}</div>`).join("") || "<p>Sin seguimientos.</p>"}
+  `);
+}
 
 
 function renderPlanos() {
@@ -3577,7 +6056,7 @@ function renderPlanos() {
 
         <label>
           Imagen o PDF *
-          <input id="planoArchivo" type="file" accept="image/*,.pdf,application/pdf" />
+          <input id="planoArchivo" type="file" accept="image/*,.pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
         </label>
 
         <label class="full">
@@ -3654,7 +6133,7 @@ function renderPlanoCard(plano) {
 
                 <label>
                   Reemplazar imagen o PDF
-                  <input id="editPlanoArchivo-${plano.id}" type="file" accept="image/*,.pdf,application/pdf" />
+                  <input id="editPlanoArchivo-${plano.id}" type="file" accept="image/*,.pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
                 </label>
 
                 <label class="full">
