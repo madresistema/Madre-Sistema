@@ -1803,3 +1803,379 @@ body.modo-libro .container {
     filter: brightness(1.08);
   }
 }
+
+
+/* =====================================================
+   EDITAR / SUBIR / BAJAR / ELIMINAR BASES DE DATOS
+===================================================== */
+
+.edit-db-toggle.activo {
+  color: #facc15 !important;
+  font-weight: 900 !important;
+}
+
+.cat-row.editando-base {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.base-edit-actions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  padding: 0 8px 6px 20px;
+}
+
+.base-edit-actions button {
+  background: #374151;
+  color: white;
+  border-radius: 7px;
+  padding: 7px 4px;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.base-edit-actions button:hover {
+  background: #4b5563;
+}
+
+.base-edit-actions button.danger {
+  background: #7f1d1d;
+  color: white;
+}
+
+.base-edit-actions button.danger:hover {
+  background: #b91c1c;
+}
+
+.tipo-base-box {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.tipo-base-btn {
+  width: 100%;
+  background: #1f2937;
+  color: #d1d5db;
+  border: 1px solid #4b5563;
+  border-radius: 8px;
+  padding: 9px;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.tipo-base-btn.active {
+  background: #4f46e5;
+  color: white;
+  border-color: #818cf8;
+}
+
+
+/* =====================================================
+   FIX BOTONES EDITAR BASES / POSICIÓN
+===================================================== */
+
+.base-edit-actions button {
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tipo-base-box {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 8px !important;
+  margin-bottom: 10px !important;
+}
+
+.tipo-base-btn {
+  width: 100% !important;
+  background: #1f2937 !important;
+  color: #d1d5db !important;
+  border: 1px solid #4b5563 !important;
+  border-radius: 8px !important;
+  padding: 9px !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+}
+
+.tipo-base-btn.active {
+  background: #4f46e5 !important;
+  color: white !important;
+  border-color: #818cf8 !important;
+}
+
+
+/* =====================================================
+   IA ENCUESTAS + GRÁFICOS
+===================================================== */
+
+.revision-encuesta-box {
+  background: #fff7ed;
+  border: 2px solid #fdba74;
+  border-radius: 16px;
+  padding: 18px;
+  margin: 18px 0;
+  box-shadow: 0 4px 14px #0001;
+}
+
+.revision-encuesta-box h2 {
+  margin: 0 0 8px;
+  color: #9a3412;
+}
+
+.revision-grid {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.revision-row {
+  display: grid;
+  grid-template-columns: 1fr 150px 44px;
+  gap: 10px;
+  align-items: end;
+  background: white;
+  border: 1px solid #fed7aa;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.respuestas-detectadas-mini {
+  margin-top: 12px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.resp-si {
+  color: #15803d;
+}
+
+.resp-no {
+  color: #b91c1c;
+}
+
+.graficos-layout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.grafico-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 2px 10px #0001;
+}
+
+.grafico-card h3 {
+  margin: 0 0 14px;
+  color: #111827;
+}
+
+.grafico-body {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+
+.pie-chart {
+  width: 145px;
+  height: 145px;
+  border-radius: 999px;
+  background:
+    conic-gradient(
+      #22c55e 0 calc(var(--si) * 1%),
+      #ef4444 calc(var(--si) * 1%) 100%
+    );
+  border: 8px solid #f3f4f6;
+  box-shadow: inset 0 0 0 2px #e5e7eb;
+  flex-shrink: 0;
+}
+
+.grafico-info p {
+  margin: 6px 0;
+  font-size: 15px;
+}
+
+.grafico-barrios {
+  margin-top: 14px;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 12px;
+}
+
+.grafico-barrios h4 {
+  margin: 0 0 8px;
+}
+
+.grafico-barrio-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 13px;
+}
+
+@media (max-width: 1000px) {
+  .graficos-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .revision-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+.metodo-deteccion-mini {
+  display: inline-block;
+  background: #ffedd5;
+  color: #9a3412;
+  border: 1px solid #fdba74;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 900;
+  margin-top: 8px;
+}
+
+
+/* =====================================================
+   OCR ENCUESTAS + DESCARGA DE GRÁFICOS
+===================================================== */
+
+.loader-ocr {
+  width: 100%;
+  height: 10px;
+  margin-top: 14px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #fed7aa;
+  position: relative;
+}
+
+.loader-ocr::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -40%;
+  width: 40%;
+  height: 100%;
+  background: #f97316;
+  animation: ocrCargando 1s infinite linear;
+}
+
+@keyframes ocrCargando {
+  from { left: -40%; }
+  to { left: 100%; }
+}
+
+.ocr-alerta {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-weight: 800;
+  margin: 10px 0;
+}
+
+.grafico-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.grafico-card-head h3 {
+  margin: 0;
+}
+
+.mini-download {
+  padding: 8px 10px !important;
+  font-size: 12px !important;
+  white-space: nowrap;
+}
+
+
+/* =====================================================
+   BOTÓN ENCUESTA MANUAL JUNTO A GUARDAR
+===================================================== */
+
+.barrio-encuestas .actions {
+  display: flex !important;
+  gap: 10px !important;
+  flex-wrap: wrap !important;
+}
+
+.barrio-encuestas .actions .secondary {
+  background: #e5e7eb !important;
+  color: #111827 !important;
+  font-weight: 900 !important;
+}
+
+
+/* =====================================================
+   OCR RÁPIDO + ENCUESTA PENDIENTE POR BARRIO
+===================================================== */
+
+.revision-encuesta-box .metodo-deteccion-mini {
+  max-width: 100%;
+  white-space: normal;
+}
+
+
+/* =====================================================
+   DESCARGAS PDF DE GRÁFICOS
+===================================================== */
+
+.grafico-card-head .mini-download {
+  background: #e5e7eb !important;
+  color: #111827 !important;
+  font-weight: 900 !important;
+}
+
+
+/* =====================================================
+   COLOR LÁPIZ REAL - RESPETA SPAN Y NO ROMPE RESALTADOR
+===================================================== */
+
+.libro-editor .texto-color-lapiz-libro {
+  color: inherit;
+}
+
+.libro-editor span.texto-color-lapiz-libro[style] {
+  color: var(--color-lapiz-activo, inherit);
+}
+
+.libro-editor .texto-resaltado-libro {
+  color: inherit;
+}
+
+
+/* =====================================================
+   WEB/GITHUB PDF + EDITAR PLANOS/ENCUESTAS
+===================================================== */
+
+.registro-actions .icon-btn {
+  min-width: 34px;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
