@@ -599,30 +599,37 @@ async function descargarHTML(nombre, contenidoHtml) {
   const html = documentoHTMLParaPDF(nombre, contenidoHtml);
   const nombrePdf = `${nombreArchivoSeguro(nombre)}.pdf`;
 
-  // Modo Electron: guarda PDF directo si la app está abierta como .exe/npm run dev.
+  // Si está en Electron y funciona, guarda PDF directo.
+  // Si está en Chrome/GitHub, abre la ventana de impresión para guardar como PDF.
   if (window.api && typeof window.api.guardarPdfHTML === "function") {
-    const resultado = await window.api.guardarPdfHTML({
-      nombre: nombrePdf,
-      html
-    });
+    try {
+      const resultado = await window.api.guardarPdfHTML({
+        nombre: nombrePdf,
+        html
+      });
 
-    if (resultado?.cancelado) return;
+      if (resultado?.cancelado) return;
 
-    if (resultado?.ok) {
-      alert(`PDF guardado correctamente en:
+      if (resultado?.ok) {
+        alert(`PDF guardado correctamente en:
 ${resultado.ruta}`);
+        return;
+      }
+
+      // Si Electron falla, no mostramos error: usamos el modo web.
+      abrirVentanaPDFWeb(nombre, html);
+      return;
+    } catch (e) {
+      abrirVentanaPDFWeb(nombre, html);
       return;
     }
-
-    alert(resultado?.error || "No se pudo guardar el PDF.");
-    return;
   }
 
-  // Modo web/GitHub/Chrome:
-  // Chrome no permite guardar un PDF directo desde una página estática sin backend.
-  // Por eso abrimos la vista lista para "Guardar como PDF".
+  // Modo web / Chrome / GitHub Pages.
+  // No muestra error: abre directo para guardar como PDF.
   abrirVentanaPDFWeb(nombre, html);
 }
+
 
 function documentoHTMLParaPDF(nombre, contenidoHtml) {
   return `
@@ -660,7 +667,7 @@ function documentoHTMLParaPDF(nombre, contenidoHtml) {
         }
 
         pre {
-          white-space: pre-wrap;
+          white-space: break-spaces;
           font-size: 14px;
         }
 
@@ -680,6 +687,8 @@ function documentoHTMLParaPDF(nombre, contenidoHtml) {
           height: 760px;
           border: 1px solid #ddd;
         }
+
+        .espacio-libro { display:inline; width:auto; min-width:0; height:auto; background:transparent; white-space:break-spaces; }
 
         table {
           width: 100%;
@@ -709,6 +718,7 @@ function documentoHTMLParaPDF(nombre, contenidoHtml) {
           min-height: 700px;
           background: white;
           page-break-inside: avoid;
+          white-space: break-spaces;
         }
 
         .pagina-print.lined {
@@ -742,7 +752,21 @@ function abrirVentanaPDFWeb(nombre, html) {
   const ventana = window.open("", "_blank");
 
   if (!ventana) {
-    alert("Chrome bloqueó la ventana. Permití ventanas emergentes para descargar/imprimir PDF.");
+    // Respaldo si Chrome bloquea ventanas emergentes:
+    // descarga un HTML listo para abrir e imprimir como PDF.
+    const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+
+    a.href = url;
+    a.download = `${nombreArchivoSeguro(nombre)}-abrir-y-guardar-como-pdf.html`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 1200);
+
+    alert("Chrome bloqueó la ventana de PDF. Se descargó un archivo HTML. Abrilo y elegí Imprimir → Guardar como PDF.");
     return;
   }
 
@@ -751,13 +775,14 @@ function abrirVentanaPDFWeb(nombre, html) {
     "<body>",
     `<body>
       <div class="aviso-web-pdf no-print">
-        Para descargar en PDF desde Google Chrome: elegí destino "Guardar como PDF" y tocá Guardar.
+        PDF listo. En destino elegí “Guardar como PDF” y tocá Guardar.
       </div>`
   ));
   ventana.document.close();
 
   esperarImagenesYPrint(ventana);
 }
+
 
 function esperarImagenesYPrint(ventana) {
   const lanzarPrint = () => {
@@ -818,12 +843,13 @@ function imprimirHTML(titulo, contenidoHtml) {
         .card { border: 1px solid #ddd; border-radius: 12px; padding: 18px; margin-bottom: 16px; page-break-inside: avoid; }
         img { max-width: 100%; max-height: 760px; object-fit: contain; display:block; margin:10px 0; }
         iframe { width: 100%; height: 760px; border: 1px solid #ddd; }
-        pre { white-space: pre-wrap; font-size: 14px; }
+        pre { white-space: break-spaces; font-size: 14px; }
+        .espacio-libro{display:inline;width:auto;min-width:0;height:auto;background:transparent;white-space:break-spaces;}
         table { width:100%; border-collapse:collapse; }
         th, td { border: 1px solid #999; padding: 8px; vertical-align: top; }
         th { background: #818cf8; }
         .print-doble{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-        .pagina-print{border:1px solid #d1d5db;padding:25px;min-height:700px;background:white;page-break-inside:avoid}
+        .pagina-print{border:1px solid #d1d5db;padding:25px;min-height:700px;background:white;page-break-inside:avoid;white-space:pre-wrap}
         .pagina-print.lined{background-image:linear-gradient(#ffffff 39px,#dbeafe 40px);background-size:100% 40px}
         @media print { button { display:none; } img { break-inside: avoid; page-break-inside: avoid; } }
       </style>
@@ -2480,6 +2506,8 @@ function obtenerRespuestasEncuestas() {
         barrio_nombre: encuesta.barrio_nombre || "Sin barrio",
         encuesta_id: encuesta.id,
         encuesta_nombre: encuesta.nombre || "Encuesta",
+        familia: encuesta.nombre || "Sin nombre",
+        archivo: encuesta.nombreArchivo || "",
         pregunta: r.pregunta,
         preguntaKey: normalizarPregunta(r.pregunta),
         respuesta: String(r.respuesta || "").toLowerCase() === "no" ? "no" : "si"
@@ -2489,6 +2517,7 @@ function obtenerRespuestasEncuestas() {
 
   return filas;
 }
+
 
 function agruparGraficosPorPregunta() {
   const filas = obtenerRespuestasEncuestas();
@@ -2500,7 +2529,8 @@ function agruparGraficosPorPregunta() {
         pregunta: fila.pregunta,
         si: 0,
         no: 0,
-        barrios: {}
+        barrios: {},
+        detalleFamilias: {}
       };
     }
 
@@ -2510,12 +2540,73 @@ function agruparGraficosPorPregunta() {
       grupos[fila.preguntaKey].barrios[fila.barrio_nombre] = { si: 0, no: 0 };
     }
 
+    if (!grupos[fila.preguntaKey].detalleFamilias[fila.barrio_nombre]) {
+      grupos[fila.preguntaKey].detalleFamilias[fila.barrio_nombre] = {
+        si: [],
+        no: []
+      };
+    }
+
     grupos[fila.preguntaKey].barrios[fila.barrio_nombre][fila.respuesta]++;
+
+    grupos[fila.preguntaKey].detalleFamilias[fila.barrio_nombre][fila.respuesta].push({
+      nombre: fila.familia || fila.encuesta_nombre || "Sin nombre",
+      encuesta: fila.encuesta_nombre || "",
+      archivo: fila.archivo || ""
+    });
   });
 
   return Object.values(grupos);
 }
 
+
+
+
+
+function svgGraficoTortaPDF(si, no) {
+  const total = Number(si || 0) + Number(no || 0);
+  const pctSi = total ? Number(si || 0) / total : 0;
+  const pctNo = total ? Number(no || 0) / total : 0;
+
+  const radio = 70;
+  const cx = 90;
+  const cy = 90;
+  const circ = 2 * Math.PI * radio;
+  const siLen = circ * pctSi;
+  const noLen = circ * pctNo;
+
+  // Se usan stroke-dasharray en SVG, imprime bien en Chrome y en PDF aunque no se activen fondos.
+  return `
+    <svg class="grafico-svg-pdf" width="190" height="190" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="${cx}" cy="${cy}" r="${radio + 10}" fill="#f8fafc" stroke="#e5e7eb" stroke-width="2"></circle>
+      <circle cx="${cx}" cy="${cy}" r="${radio}" fill="#ffffff" stroke="#e5e7eb" stroke-width="12"></circle>
+
+      ${
+        total === 0
+          ? `<circle cx="${cx}" cy="${cy}" r="${radio}" fill="none" stroke="#e5e7eb" stroke-width="34"></circle>`
+          : `
+            <circle cx="${cx}" cy="${cy}" r="${radio}" fill="none"
+              stroke="#ef4444" stroke-width="34"
+              stroke-dasharray="${noLen} ${circ - noLen}"
+              stroke-dashoffset="0"
+              transform="rotate(-90 ${cx} ${cy})"
+              stroke-linecap="butt"></circle>
+
+            <circle cx="${cx}" cy="${cy}" r="${radio}" fill="none"
+              stroke="#22c55e" stroke-width="34"
+              stroke-dasharray="${siLen} ${circ - siLen}"
+              stroke-dashoffset="${-noLen}"
+              transform="rotate(-90 ${cx} ${cy})"
+              stroke-linecap="butt"></circle>
+          `
+      }
+
+      <circle cx="${cx}" cy="${cy}" r="43" fill="#ffffff" stroke="#e5e7eb" stroke-width="2"></circle>
+      <text x="${cx}" y="${cy - 4}" text-anchor="middle" font-family="Arial" font-size="16" font-weight="800" fill="#111827">${Math.round(pctSi * 100)}%</text>
+      <text x="${cx}" y="${cy + 18}" text-anchor="middle" font-family="Arial" font-size="12" fill="#374151">Sí</text>
+    </svg>
+  `;
+}
 
 
 function htmlGraficoPregunta(grupo) {
@@ -2528,6 +2619,16 @@ function htmlGraficoPregunta(grupo) {
     const pctSiBarrio = totalBarrio ? Math.round((datos.si / totalBarrio) * 100) : 0;
     const pctNoBarrio = totalBarrio ? Math.round((datos.no / totalBarrio) * 100) : 0;
 
+    const detalle = grupo.detalleFamilias?.[barrio] || { si: [], no: [] };
+
+    const familiasSi = detalle.si.length
+      ? detalle.si.map((f) => `<li>${escapeHtml(f.nombre)}${f.archivo ? ` <small>(${escapeHtml(f.archivo)})</small>` : ""}</li>`).join("")
+      : `<li><em>Sin familias.</em></li>`;
+
+    const familiasNo = detalle.no.length
+      ? detalle.no.map((f) => `<li>${escapeHtml(f.nombre)}${f.archivo ? ` <small>(${escapeHtml(f.archivo)})</small>` : ""}</li>`).join("")
+      : `<li><em>Sin familias.</em></li>`;
+
     return `
       <tr>
         <td>${escapeHtml(barrio)}</td>
@@ -2535,6 +2636,21 @@ function htmlGraficoPregunta(grupo) {
         <td>${datos.no}</td>
         <td>${pctSiBarrio}%</td>
         <td>${pctNoBarrio}%</td>
+      </tr>
+
+      <tr class="familias-pdf-row">
+        <td colspan="5">
+          <div class="familias-pdf-grid">
+            <div>
+              <h4>Familias que votaron Sí</h4>
+              <ul>${familiasSi}</ul>
+            </div>
+            <div>
+              <h4>Familias que votaron No</h4>
+              <ul>${familiasNo}</ul>
+            </div>
+          </div>
+        </td>
       </tr>
     `;
   }).join("");
@@ -2544,11 +2660,11 @@ function htmlGraficoPregunta(grupo) {
       <h1>${escapeHtml(grupo.pregunta)}</h1>
 
       <div class="grafico-pdf-resumen">
-        <div class="pie-chart-export" style="--si:${porcentajeSi};"></div>
+        ${svgGraficoTortaPDF(grupo.si, grupo.no)}
 
         <div class="grafico-pdf-numeros">
-          <p><b>Sí:</b> ${grupo.si} (${porcentajeSi}%)</p>
-          <p><b>No:</b> ${grupo.no} (${porcentajeNo}%)</p>
+          <p><span class="leyenda-cuadro leyenda-si"></span><b>Sí:</b> ${grupo.si} (${porcentajeSi}%)</p>
+          <p><span class="leyenda-cuadro leyenda-no"></span><b>No:</b> ${grupo.no} (${porcentajeNo}%)</p>
           <p><b>Total de respuestas:</b> ${total}</p>
         </div>
       </div>
@@ -2573,9 +2689,16 @@ function htmlGraficoPregunta(grupo) {
   `;
 }
 
+
+
 function estilosGraficosPDF() {
   return `
     <style>
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
       .grafico-pdf-card {
         page-break-inside: avoid;
         border: 1px solid #e5e7eb;
@@ -2604,23 +2727,33 @@ function estilosGraficosPDF() {
         margin: 12px 0 18px;
       }
 
-      .pie-chart-export {
-        width: 170px;
-        height: 170px;
-        border-radius: 999px;
-        background:
-          conic-gradient(
-            #22c55e 0 calc(var(--si) * 1%),
-            #ef4444 calc(var(--si) * 1%) 100%
-          );
-        border: 8px solid #f3f4f6;
-        box-shadow: inset 0 0 0 2px #e5e7eb;
+      .grafico-svg-pdf {
+        width: 190px;
+        height: 190px;
         flex-shrink: 0;
       }
 
       .grafico-pdf-numeros p {
         font-size: 17px;
         margin: 8px 0;
+      }
+
+      .leyenda-cuadro {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border-radius: 3px;
+        margin-right: 7px;
+        vertical-align: -2px;
+        border: 1px solid #11182722;
+      }
+
+      .leyenda-si {
+        background: #22c55e;
+      }
+
+      .leyenda-no {
+        background: #ef4444;
       }
 
       table {
@@ -2635,15 +2768,55 @@ function estilosGraficosPDF() {
         padding: 10px;
         text-align: left;
         font-size: 13px;
+        vertical-align: top;
       }
 
       th {
         background: #eef2ff;
         color: #111827;
       }
+
+      .familias-pdf-row td {
+        background: #f8fafc;
+      }
+
+      .familias-pdf-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+      }
+
+      .familias-pdf-grid h4 {
+        margin: 0 0 6px;
+        font-size: 13px;
+        color: #111827;
+      }
+
+      .familias-pdf-grid ul {
+        margin: 0;
+        padding-left: 18px;
+      }
+
+      .familias-pdf-grid li {
+        margin: 3px 0;
+      }
+
+      .familias-pdf-grid small {
+        color: #6b7280;
+      }
+
+      @media print {
+        .familias-pdf-row,
+        .grafico-pdf-card {
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
+      }
     </style>
   `;
 }
+
+
 
 async function descargarGraficoPregunta(key) {
   const grupos = agruparGraficosPorPregunta();
@@ -4736,10 +4909,10 @@ function renderLibro() {
       <button onclick="guardarPaginasLibro()">💾 Guardar</button>
       <button onclick="imprimirPaginaLibro()">🖨️ Imprimir página</button>
       <button onclick="correoPaginaLibro()">📧 Correo página</button>
-      <button onclick="descargarPaginaLibro()">⬇️ Descargar PDF</button>
+      <button onclick="descargarPaginaLibro()">⬇️ Descargar página</button>
       <button onclick="imprimirLibro()">🖨️ Imprimir libro</button>
       <button onclick="correoLibro()">📧 Correo libro</button>
-      <button onclick="descargarLibro()">⬇️ Descargar PDF</button>
+      <button onclick="descargarLibro()">⬇️ Descargar libro</button>
     </div>
   `;
 
@@ -4888,12 +5061,96 @@ function renderPaginaLibro(pagina, index, lado) {
 
 
 
+
+function cambiarColorLapiz(color) {
+  libroColorLapiz = colorCssSeguro(color);
+
+  const input = $("libroColor");
+  if (input) input.value = libroColorLapiz;
+
+  const editor = obtenerEditorLibroActual() || libroEditorActivo;
+  if (editor) {
+    libroEditorActivo = editor;
+    editor.style.setProperty("--color-lapiz-activo", libroColorLapiz);
+    editor.style.caretColor = libroColorLapiz;
+
+    try {
+      editor.focus();
+      restaurarRangoLibro();
+      document.execCommand("styleWithCSS", false, true);
+      document.execCommand("foreColor", false, libroColorLapiz);
+    } catch (e) {}
+  }
+
+  guardarRangoLibro();
+}
+
+function colorCssSeguro(color) {
+  const valor = String(color || "").trim();
+  return /^#[0-9a-fA-F]{6}$/.test(valor) ? valor : "#111827";
+}
+
+function aplicarColorLapizAlEditor(editor) {
+  if (!editor) return;
+
+  editor.style.setProperty("--color-lapiz-activo", colorCssSeguro(libroColorLapiz));
+  editor.style.caretColor = colorCssSeguro(libroColorLapiz);
+
+  try {
+    document.execCommand("styleWithCSS", false, true);
+    document.execCommand("foreColor", false, colorCssSeguro(libroColorLapiz));
+  } catch (e) {}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+function textoLibroSeguro(texto) {
+  return String(texto || "");
+}
+
+function crearContenidoTextoLibro(texto) {
+  // Usamos texto normal. El CSS "break-spaces" conserva 2+ espacios
+  // y permite bajar de renglón sin empujar la página derecha.
+  return document.createTextNode(String(texto || ""));
+}
+
+
+function insertarTextoColorLapiz(texto) {
+  const color = colorCssSeguro(libroColorLapiz);
+  const span = document.createElement("span");
+
+  span.className = "texto-color-lapiz-libro";
+  span.setAttribute("data-color-lapiz", color);
+  span.style.setProperty("color", color, "important");
+  span.appendChild(crearContenidoTextoLibro(texto));
+
+  insertarNodoEnCursorLibro(span);
+}
+
+
+
+
+function insertarSaltoLineaColorLapiz() {
+  insertarNodoEnCursorLibro(document.createElement("br"));
+}
+
+
 function activarEventosLibro() {
   ["izq", "der"].forEach((lado) => {
     const editor = document.getElementById(`libroContenido-${lado}`);
     if (!editor) return;
 
     editor.style.setProperty("--color-lapiz-activo", colorCssSeguro(libroColorLapiz));
+    editor.style.caretColor = colorCssSeguro(libroColorLapiz);
 
     editor.addEventListener("focus", () => {
       libroEditorActivo = editor;
@@ -4947,7 +5204,7 @@ function activarEventosLibro() {
 
       // FIX CLAVE DEL SPAN:
       // Si el botón está apagado pero el cursor quedó dentro de un span resaltado,
-      // escribimos afuera normal, sin amarillo y con el color de lápiz elegido.
+      // escribimos afuera normal, sin amarillo y con color lápiz.
       if (cursorEstaDentroDeResaltadoLibro()) {
         if (e.inputType === "insertText") {
           e.preventDefault();
@@ -4964,8 +5221,7 @@ function activarEventosLibro() {
         }
       }
 
-      // Color lápiz real:
-      // insertamos el texto dentro de un span con color inline !important.
+      // Color lápiz real: texto nuevo siempre en span con color inline !important.
       if (e.inputType === "insertText") {
         e.preventDefault();
         insertarTextoColorLapiz(e.data || "");
@@ -5009,6 +5265,7 @@ function activarEventosLibro() {
 
 
 
+
 function lapizNormal() {
   libroResaltadorActivo = false;
   libroColorLapiz = "#111827";
@@ -5019,13 +5276,15 @@ function lapizNormal() {
 
   salirDelResaltadoActivo();
 
-  const editor = obtenerEditorLibroActual();
+  const editor = obtenerEditorLibroActual() || libroEditorActivo;
   if (editor) {
+    libroEditorActivo = editor;
     aplicarColorLapizAlEditor(editor);
   }
 
   actualizarBotonResaltador();
 }
+
 
 
 
@@ -5237,10 +5496,13 @@ function insertarTextoConResaltador(texto) {
 
   span.className = "texto-resaltado-libro";
   span.style.backgroundColor = libroColorResaltado;
-  span.textContent = texto || "";
+  span.appendChild(crearContenidoTextoLibro(texto));
 
   insertarNodoEnCursorLibro(span);
 }
+
+
+
 
 function insertarSaltoLineaLibro() {
   insertarNodoEnCursorLibro(document.createElement("br"));
@@ -5297,7 +5559,7 @@ function insertarTextoNormalFueraDelResaltado(texto) {
     nodoNuevo.className = "texto-color-lapiz-libro";
     nodoNuevo.setAttribute("data-color-lapiz", colorCssSeguro(libroColorLapiz));
     nodoNuevo.style.setProperty("color", colorCssSeguro(libroColorLapiz), "important");
-    nodoNuevo.textContent = texto || "";
+    nodoNuevo.appendChild(crearContenidoTextoLibro(texto));
   }
 
   if (spanResaltado.nextSibling) {
@@ -5317,6 +5579,10 @@ function insertarTextoNormalFueraDelResaltado(texto) {
 
   return true;
 }
+
+
+
+
 
 
 
@@ -5545,8 +5811,8 @@ function agregarImagenLibro() {
 
   const pesoMB = archivo.size / 1024 / 1024;
 
-  if (pesoMB > 1) {
-    alert("La imagen es muy pesada. Usá una imagen de hasta 1 MB.");
+  if (pesoMB > 5) {
+    alert("La imagen es muy pesada. Usá una imagen de hasta 5 MB.");
     input.value = "";
     return;
   }
@@ -5592,8 +5858,8 @@ function guardarReemplazoImagenLibro(index) {
   if (!archivo || !libroPaginas[index]) return;
 
   const pesoMB = archivo.size / 1024 / 1024;
-  if (pesoMB > 1) {
-    alert("La imagen es muy pesada. Usá una imagen de hasta 1 MB.");
+  if (pesoMB > 5) {
+    alert("La imagen es muy pesada. Usá una imagen de hasta 5 MB.");
     return;
   }
 
@@ -5786,35 +6052,10 @@ document.addEventListener("DOMContentLoaded", init);
 
 
 
-function colorCssSeguro(color) {
-  const valor = String(color || "").trim();
-  return /^#[0-9a-fA-F]{6}$/.test(valor) ? valor : "#111827";
-}
 
-function aplicarColorLapizAlEditor(editor) {
-  if (!editor) return;
 
-  editor.style.setProperty("--color-lapiz-activo", colorCssSeguro(libroColorLapiz));
-  editor.style.caretColor = colorCssSeguro(libroColorLapiz);
 
-  try {
-    document.execCommand("styleWithCSS", false, true);
-    document.execCommand("foreColor", false, colorCssSeguro(libroColorLapiz));
-  } catch (e) {}
-}
 
-function insertarTextoColorLapiz(texto) {
-  const color = colorCssSeguro(libroColorLapiz);
-  const span = document.createElement("span");
 
-  span.className = "texto-color-lapiz-libro";
-  span.setAttribute("data-color-lapiz", color);
-  span.style.setProperty("color", color, "important");
-  span.textContent = texto || "";
 
-  insertarNodoEnCursorLibro(span);
-}
 
-function insertarSaltoLineaColorLapiz() {
-  insertarNodoEnCursorLibro(document.createElement("br"));
-}
