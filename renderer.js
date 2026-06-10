@@ -7,8 +7,37 @@ const CATEGORIAS_DEFAULT = [
   { id: 6, nombre: "Desarrollo Social", icono: "🤝", color: "orange", total: 0 },
   { id: 7, nombre: "Mujer", icono: "👩", color: "pink", total: 0 },
   { id: 8, nombre: "Legales", icono: "⚖️", color: "gray", total: 0 },
-  { id: 10, nombre: "Planos", icono: "🗺️", color: "indigo", total: 0, parent: "Barrios", tipo: "planos" },
-  { id: 11, nombre: "Encuesta", icono: "📝", color: "orange", total: 0, parent: "Barrios", tipo: "encuesta" }
+  { id: 100, nombre: "Centro", icono: "🏘️", color: "indigo", total: 0, parent: "Barrios", tipo: "barrio" },
+  { id: 101, nombre: "Villa Belgrano", icono: "🏘️", color: "blue", total: 0, parent: "Barrios", tipo: "barrio" },
+  { id: 102, nombre: "Barrio Rosario", icono: "🏘️", color: "green", total: 0, parent: "Barrios", tipo: "barrio" },
+  { id: 103, nombre: "Barrio San Martín", icono: "🏘️", color: "purple", total: 0, parent: "Barrios", tipo: "barrio" },
+  { id: 104, nombre: "Barrio San Cayetano", icono: "🏘️", color: "orange", total: 0, parent: "Barrios", tipo: "barrio" },
+  { id: 105, nombre: "Puente Chico", icono: "🏘️", color: "pink", total: 0, parent: "Barrios", tipo: "barrio" },
+  { id: 106, nombre: "Barrio Boca / Boca Juniors", icono: "🏘️", color: "gray", total: 0, parent: "Barrios", tipo: "barrio" },
+  { id: 107, nombre: "Tres Repúblicas", icono: "🏘️", color: "yellow", total: 0, parent: "Barrios", tipo: "barrio" },
+  { id: 108, nombre: "Domingo Moccero", icono: "🏘️", color: "indigo", total: 0, parent: "Barrios", tipo: "barrio" },
+  { id: 109, nombre: "Miguel de Güemes", icono: "🏘️", color: "blue", total: 0, parent: "Barrios", tipo: "barrio" },
+  { id: 110, nombre: "Barrio Mar del Plata", icono: "🏘️", color: "green", total: 0, parent: "Barrios", tipo: "barrio" },
+  { id: 111, nombre: "Lovecchio / Julio César Lovecchio", icono: "🏘️", color: "purple", total: 0, parent: "Barrios", tipo: "barrio" },
+  { id: 112, nombre: "Altos Balcarce", icono: "🏘️", color: "orange", total: 0, parent: "Barrios", tipo: "barrio" },
+  { id: 113, nombre: "Teodosio Alaniz / Alaniz", icono: "🏘️", color: "pink", total: 0, parent: "Barrios", tipo: "barrio" },
+  { id: 114, nombre: "Cristo Redentor", icono: "🏘️", color: "gray", total: 0, parent: "Barrios", tipo: "barrio" },
+  { id: 115, nombre: "Barrio Cristo", icono: "🏘️", color: "yellow", total: 0, parent: "Barrios", tipo: "barrio" },
+  { id: 116, nombre: "Barrio Puente", icono: "🏘️", color: "indigo", total: 0, parent: "Barrios", tipo: "barrio" },
+  { id: 117, nombre: "Barrio Familia", icono: "🏘️", color: "blue", total: 0, parent: "Barrios", tipo: "barrio" },
+  { id: 118, nombre: "Brandenberg", icono: "🏘️", color: "green", total: 0, parent: "Barrios", tipo: "barrio" },
+  { id: 119, nombre: "Remedios de Escalada", icono: "🏘️", color: "purple", total: 0, parent: "Barrios", tipo: "barrio" },
+  { id: 120, nombre: "Islas Malvinas", icono: "🏘️", color: "orange", total: 0, parent: "Barrios", tipo: "barrio" },
+  { id: 121, nombre: "Etchegaray", icono: "🏘️", color: "pink", total: 0, parent: "Barrios", tipo: "barrio" },
+  { id: 122, nombre: "Fátima", icono: "🏘️", color: "gray", total: 0, parent: "Barrios", tipo: "barrio" },
+  { id: 123, nombre: "René Favaloro", icono: "🏘️", color: "yellow", total: 0, parent: "Barrios", tipo: "barrio" },
+  { id: 124, nombre: "Bonifacino", icono: "🏘️", color: "indigo", total: 0, parent: "Barrios", tipo: "barrio" },
+  { id: 125, nombre: "Pueblo Santa Trinidad / Colonia I", icono: "🏘️", color: "blue", total: 0, parent: "Barrios", tipo: "barrio" },
+  { id: 126, nombre: "Pueblo San José / Colonia II", icono: "🏘️", color: "green", total: 0, parent: "Barrios", tipo: "barrio" },
+  { id: 127, nombre: "Pueblo Santa María / Colonia III", icono: "🏘️", color: "purple", total: 0, parent: "Barrios", tipo: "barrio" },
+  { id: 128, nombre: "PROCREAR Santa Trinidad", icono: "🏘️", color: "orange", total: 0, parent: "Barrios", tipo: "barrio" },
+  { id: 129, nombre: "Los Manantiales, en Santa Trinidad", icono: "🏘️", color: "pink", total: 0, parent: "Barrios", tipo: "barrio" },
+  { id: 130, nombre: "Sector nuevo / loteo nuevo Santa Trinidad", icono: "🏘️", color: "gray", total: 0, parent: "Barrios", tipo: "barrio" }
 ];
 
 let categorias = [];
@@ -43,6 +72,29 @@ let libroPaginaSeleccionada = 0;
 
 const $ = (id) => document.getElementById(id);
 
+
+function limpiarCategoriasBarriosViejas() {
+  const nombresViejos = ["planos", "encuesta"];
+
+  categorias = categorias.filter((cat) => {
+    const esVieja =
+      Number(cat.id) === 10 ||
+      Number(cat.id) === 11 ||
+      (
+        cat.parent === "Barrios" &&
+        nombresViejos.includes(String(cat.nombre || "").toLowerCase())
+      );
+
+    return !esVieja;
+  });
+
+  categoriasEliminadas = categoriasEliminadas.filter((x) => {
+    const sx = String(x || "").toLowerCase();
+    return sx !== "10" && sx !== "11" && sx !== "planos" && sx !== "encuesta";
+  });
+}
+
+
 // ===============================
 // STORAGE
 // ===============================
@@ -69,6 +121,8 @@ function cargarStorage() {
   agendas = JSON.parse(localStorage.getItem("agendas")) || [];
   notasCalcular = JSON.parse(localStorage.getItem("notasCalcular")) || [];
   libroPaginas = JSON.parse(localStorage.getItem("libroPaginas")) || [];
+
+  limpiarCategoriasBarriosViejas();
 
   let huboCambios = false;
 
@@ -143,10 +197,20 @@ function formatPersonas(n) {
 }
 
 function totalEnCategoria(catId) {
+  const cat = categorias.find((c) => Number(c.id) === Number(catId));
+
+  if (cat?.tipo === "barrio") {
+    const totalPlanos = planos.filter((p) => Number(p.barrio_id) === Number(catId)).length;
+    const totalEncuestas = encuestas.filter((e) => Number(e.barrio_id) === Number(catId)).length;
+    return totalPlanos + totalEncuestas;
+  }
+
   if (Number(catId) === 10) return planos.length;
   if (Number(catId) === 11) return encuestas.length;
+
   return personas.filter((p) => Number(p.categoria_id) === Number(catId)).length;
 }
+
 
 function escapeHtml(str) {
   return String(str || "").replace(/[&<>'"]/g, (c) => ({
@@ -740,7 +804,7 @@ function mostrarCategoria(catId) {
   $("busqueda").value = "";
   registrosAbiertos = null;
 
-  if (catActiva?.tipo === "planos" || catActiva?.tipo === "encuesta") {
+  if (catActiva?.tipo === "planos" || catActiva?.tipo === "encuesta" || catActiva?.tipo === "barrio") {
     cerrarFormPersona();
     $("formPersona").classList.add("hidden");
     renderTodo();
@@ -752,6 +816,7 @@ function mostrarCategoria(catId) {
   renderTodo();
 }
 
+
 // ===============================
 // CATEGORÍAS NORMALES
 // ===============================
@@ -761,6 +826,11 @@ function renderCategoria() {
 
   catActiva = categorias.find((c) => Number(c.id) === Number(catActiva.id));
   if (!catActiva) return;
+
+  if (catActiva.tipo === "barrio") {
+    renderBarrio();
+    return;
+  }
 
   if (catActiva.tipo === "planos") {
     renderPlanos();
@@ -902,6 +972,7 @@ function renderCategoria() {
 
   bindPersonaButtons(personasFiltradas);
 }
+
 
 function bindPersonaButtons(personasFiltradas) {
   document.querySelectorAll(".edit").forEach((btn) => {
@@ -1086,6 +1157,9 @@ function borrarCategoriaCompleta(catId) {
   } else if (cat.tipo === "encuesta") {
     encuestas = [];
     preguntasEncuesta = [];
+  } else if (cat.tipo === "barrio") {
+    planos = planos.filter((p) => Number(p.barrio_id) !== Number(catId));
+    encuestas = encuestas.filter((e) => Number(e.barrio_id) !== Number(catId));
   } else {
     personas = personas.filter((p) => Number(p.categoria_id) !== Number(catId));
     registros = registros.filter((r) => Number(r.categoria_id) !== Number(catId));
@@ -1164,6 +1238,423 @@ function guardarRegistro(personaId) {
 // ===============================
 // PLANOS
 // ===============================
+
+
+// ===============================
+// BARRIOS: PLANOS + ENCUESTAS POR BARRIO
+// ===============================
+
+function archivosPlanosDelBarrio() {
+  if (!catActiva) return [];
+  return planos.filter((p) => Number(p.barrio_id) === Number(catActiva.id));
+}
+
+function archivosEncuestasDelBarrio() {
+  if (!catActiva) return [];
+  return encuestas.filter((e) => Number(e.barrio_id) === Number(catActiva.id));
+}
+
+function archivoEsPdf(archivo) {
+  if (!archivo) return false;
+  return archivo.type === "application/pdf" || String(archivo.name || "").toLowerCase().endsWith(".pdf");
+}
+
+function renderBarrio() {
+  cerrarFormPersona();
+  $("formPersona").classList.add("hidden");
+  $("busqueda").style.display = "none";
+
+  const planosBarrio = archivosPlanosDelBarrio();
+  const encuestasBarrio = archivosEncuestasDelBarrio();
+
+  $("categoriaHeader").className = `cat-header bg-${catActiva.color}`;
+  $("categoriaHeader").innerHTML = `
+    <div class="left">
+      <div class="emoji">${catActiva.icono}</div>
+      <div>
+        <h2>${catActiva.nombre}</h2>
+        <p>${planosBarrio.length} plano${planosBarrio.length !== 1 ? "s" : ""} y ${encuestasBarrio.length} encuesta${encuestasBarrio.length !== 1 ? "s" : ""}</p>
+      </div>
+    </div>
+
+    <div class="cat-actions">
+      <button onclick="imprimirBarrio()">🖨️ Imprimir barrio</button>
+      <button onclick="correoBarrio()">📧 Correo barrio</button>
+      <button onclick="descargarBarrio()">⬇️ Descargar barrio</button>
+    </div>
+  `;
+
+  $("personasLista").innerHTML = `
+    <div class="barrio-doble-layout">
+
+      <section class="barrio-columna barrio-planos">
+        <div class="barrio-section-head">
+          <h2>🗺️ Planos</h2>
+          <input id="buscarPlanoBarrio" class="search" placeholder="🔍 Buscar plano..." oninput="renderListaPlanosBarrio()" />
+        </div>
+
+        <div class="form-card compact">
+          <div class="grid-form una-columna">
+            <label>
+              Nombre del plano *
+              <input id="barrioPlanoNombre" placeholder="Ej: Plano manzana 12" />
+            </label>
+
+            <label>
+              Imagen o PDF del plano *
+              <input id="barrioPlanoArchivo" type="file" accept="image/*,.pdf,application/pdf" />
+            </label>
+          </div>
+
+          <div class="actions">
+            <button class="primary" onclick="guardarPlanoBarrio()">Guardar plano</button>
+          </div>
+        </div>
+
+        <div id="listaPlanosBarrio"></div>
+      </section>
+
+      <div class="barrio-separador"></div>
+
+      <section class="barrio-columna barrio-encuestas">
+        <div class="barrio-section-head">
+          <h2>📝 Encuestas</h2>
+          <input id="buscarEncuestaBarrio" class="search" placeholder="🔍 Buscar encuesta..." oninput="renderListaEncuestasBarrio()" />
+        </div>
+
+        <div class="form-card compact">
+          <div class="grid-form una-columna">
+            <label>
+              Nombre de la encuesta *
+              <input id="barrioEncuestaNombre" placeholder="Ej: Encuesta familia Pérez" />
+            </label>
+
+            <label>
+              Foto o PDF de la encuesta *
+              <input id="barrioEncuestaArchivo" type="file" accept="image/*,.pdf,application/pdf" />
+            </label>
+          </div>
+
+          <div class="actions">
+            <button class="primary" onclick="guardarEncuestaBarrio()">Guardar encuesta</button>
+          </div>
+        </div>
+
+        <div id="listaEncuestasBarrio"></div>
+      </section>
+
+    </div>
+  `;
+
+  renderListaPlanosBarrio();
+  renderListaEncuestasBarrio();
+}
+
+function renderListaPlanosBarrio() {
+  const cont = $("listaPlanosBarrio");
+  if (!cont || !catActiva) return;
+
+  const texto = String($("buscarPlanoBarrio")?.value || "").toLowerCase();
+
+  const lista = archivosPlanosDelBarrio()
+    .filter((plano) =>
+      !texto ||
+      String(plano.nombre || "").toLowerCase().includes(texto) ||
+      String(plano.nombreArchivo || "").toLowerCase().includes(texto)
+    )
+    .sort((a, b) => Number(b.id) - Number(a.id));
+
+  cont.innerHTML = lista.length
+    ? lista.map((plano) => renderArchivoBarrioCard(plano, "plano")).join("")
+    : `<div class="empty barrio-empty"><p>No hay planos cargados en este barrio.</p></div>`;
+}
+
+function renderListaEncuestasBarrio() {
+  const cont = $("listaEncuestasBarrio");
+  if (!cont || !catActiva) return;
+
+  const texto = String($("buscarEncuestaBarrio")?.value || "").toLowerCase();
+
+  const lista = archivosEncuestasDelBarrio()
+    .filter((encuesta) =>
+      !texto ||
+      String(encuesta.nombre || "").toLowerCase().includes(texto) ||
+      String(encuesta.nombreArchivo || "").toLowerCase().includes(texto)
+    )
+    .sort((a, b) => Number(b.id) - Number(a.id));
+
+  cont.innerHTML = lista.length
+    ? lista.map((encuesta) => renderArchivoBarrioCard(encuesta, "encuesta")).join("")
+    : `<div class="empty barrio-empty"><p>No hay encuestas cargadas en este barrio.</p></div>`;
+}
+
+function renderArchivoBarrioCard(item, tipo) {
+  const archivo = item.archivo || item.imagen || "";
+  const esPdf = item.tipo === "pdf";
+  const titulo = tipo === "plano" ? "Plano" : "Encuesta";
+
+  return `
+    <div class="barrio-archivo-card">
+      <div class="persona-top">
+        <div>
+          <h3>${tipo === "plano" ? "🗺️" : "📝"} ${escapeHtml(item.nombre)}</h3>
+          <p>📄 ${escapeHtml(item.nombreArchivo || "Archivo cargado")}</p>
+          <p>📅 ${escapeHtml(item.fecha || "—")}</p>
+        </div>
+
+        <div class="registro-actions">
+          <button class="icon-btn" onclick="imprimirArchivoBarrio(${item.id}, '${tipo}')">🖨️</button>
+          <button class="icon-btn" onclick="correoArchivoBarrio(${item.id}, '${tipo}')">📧</button>
+          <button class="icon-btn" onclick="descargarArchivoBarrio(${item.id}, '${tipo}')">⬇️</button>
+          <button class="icon-btn danger" onclick="eliminarArchivoBarrio(${item.id}, '${tipo}')">🗑️</button>
+        </div>
+      </div>
+
+      <div class="barrio-preview">
+        ${
+          esPdf
+            ? `<iframe src="${archivo}" title="${titulo} PDF"></iframe>`
+            : `<img src="${archivo}" alt="${escapeHtml(item.nombre)}" />`
+        }
+      </div>
+    </div>
+  `;
+}
+
+function guardarPlanoBarrio() {
+  if (!catActiva || catActiva.tipo !== "barrio") return;
+
+  const nombre = $("barrioPlanoNombre").value.trim();
+  const archivo = $("barrioPlanoArchivo").files[0];
+
+  if (!nombre || !archivo) {
+    alert("Completá el nombre y seleccioná una imagen o PDF del plano.");
+    return;
+  }
+
+  const pesoMaximoMB = 2;
+  const pesoMB = archivo.size / 1024 / 1024;
+
+  if (pesoMB > pesoMaximoMB) {
+    alert(`El archivo es muy pesado. Usá archivos de hasta ${pesoMaximoMB} MB.`);
+    return;
+  }
+
+  const esPdf = archivoEsPdf(archivo);
+  const reader = new FileReader();
+
+  reader.onload = function (e) {
+    planos.push({
+      id: Date.now(),
+      barrio_id: catActiva.id,
+      barrio_nombre: catActiva.nombre,
+      nombre,
+      observaciones: "",
+      archivo: e.target.result,
+      nombreArchivo: archivo.name,
+      tipo: esPdf ? "pdf" : "imagen",
+      estado: "pendiente",
+      fecha: new Date().toLocaleDateString("es-AR")
+    });
+
+    guardarStorage();
+    renderBarrio();
+  };
+
+  reader.readAsDataURL(archivo);
+}
+
+function guardarEncuestaBarrio() {
+  if (!catActiva || catActiva.tipo !== "barrio") return;
+
+  const nombre = $("barrioEncuestaNombre").value.trim();
+  const archivo = $("barrioEncuestaArchivo").files[0];
+
+  if (!nombre || !archivo) {
+    alert("Completá el nombre y seleccioná una foto o PDF de la encuesta.");
+    return;
+  }
+
+  const pesoMaximoMB = 2;
+  const pesoMB = archivo.size / 1024 / 1024;
+
+  if (pesoMB > pesoMaximoMB) {
+    alert(`El archivo es muy pesado. Usá archivos de hasta ${pesoMaximoMB} MB.`);
+    return;
+  }
+
+  const esPdf = archivoEsPdf(archivo);
+  const reader = new FileReader();
+
+  reader.onload = function (e) {
+    encuestas.push({
+      id: Date.now(),
+      barrio_id: catActiva.id,
+      barrio_nombre: catActiva.nombre,
+      nombre,
+      telefono: "",
+      direccion: "",
+      observaciones: "",
+      preguntas: [],
+      archivo: e.target.result,
+      nombreArchivo: archivo.name,
+      tipo: esPdf ? "pdf" : "imagen",
+      fecha: new Date().toLocaleDateString("es-AR")
+    });
+
+    guardarStorage();
+    renderBarrio();
+  };
+
+  reader.readAsDataURL(archivo);
+}
+
+function buscarArchivoBarrio(id, tipo) {
+  const lista = tipo === "plano" ? planos : encuestas;
+  return lista.find((x) => Number(x.id) === Number(id));
+}
+
+function eliminarArchivoBarrio(id, tipo) {
+  if (!confirm(`¿Eliminar este ${tipo}?`)) return;
+
+  if (tipo === "plano") {
+    planos = planos.filter((x) => Number(x.id) !== Number(id));
+  } else {
+    encuestas = encuestas.filter((x) => Number(x.id) !== Number(id));
+  }
+
+  guardarStorage();
+  renderBarrio();
+}
+
+function imprimirArchivoBarrio(id, tipo) {
+  const item = buscarArchivoBarrio(id, tipo);
+  if (!item) return;
+
+  const archivo = item.archivo || item.imagen || "";
+  const esPdf = item.tipo === "pdf";
+
+  imprimirHTML(`${tipo} - ${item.nombre}`, `
+    <h1>${escapeHtml(item.nombre)}</h1>
+    <p><b>Barrio:</b> ${escapeHtml(item.barrio_nombre || catActiva?.nombre || "")}</p>
+    <p><b>Archivo:</b> ${escapeHtml(item.nombreArchivo || "Archivo cargado")}</p>
+    ${
+      esPdf
+        ? `<iframe src="${archivo}"></iframe>`
+        : `<img src="${archivo}" />`
+    }
+  `);
+}
+
+function correoArchivoBarrio(id, tipo) {
+  const item = buscarArchivoBarrio(id, tipo);
+  if (!item) return;
+
+  const asunto = `${tipo === "plano" ? "Plano" : "Encuesta"} - ${item.nombre}`;
+  const cuerpo = `
+${tipo === "plano" ? "Plano" : "Encuesta"}: ${item.nombre}
+Barrio: ${item.barrio_nombre || catActiva?.nombre || ""}
+Archivo: ${item.nombreArchivo || "Archivo cargado"}
+Fecha: ${item.fecha || ""}
+`;
+
+  const html = cuerpoHtmlCorreo(asunto, `
+    <div class="card">
+      <h2>${escapeHtml(item.nombre)}</h2>
+      <p><b>Barrio:</b> ${escapeHtml(item.barrio_nombre || catActiva?.nombre || "")}</p>
+      <p><b>Archivo:</b> ${escapeHtml(item.nombreArchivo || "Archivo cargado")}</p>
+    </div>
+  `);
+
+  abrirCorreoComputadora({
+    asunto,
+    cuerpo,
+    html,
+    adjuntos: [crearAdjuntoDesdeDataUrl(item.nombreArchivo || item.nombre, item.archivo || item.imagen)]
+  });
+}
+
+function descargarArchivoBarrio(id, tipo) {
+  const item = buscarArchivoBarrio(id, tipo);
+  if (!item) return;
+
+  descargarHTML(`${tipo}-${item.nombre}`, `
+    <h1>${escapeHtml(tipo === "plano" ? "Plano" : "Encuesta")}: ${escapeHtml(item.nombre)}</h1>
+    <p><b>Barrio:</b> ${escapeHtml(item.barrio_nombre || catActiva?.nombre || "")}</p>
+    <p><b>Archivo:</b> ${escapeHtml(item.nombreArchivo || "Archivo cargado")}</p>
+    ${
+      item.tipo === "pdf"
+        ? `<iframe src="${item.archivo || item.imagen}"></iframe>`
+        : `<img src="${item.archivo || item.imagen}" />`
+    }
+  `);
+}
+
+function imprimirBarrio() {
+  if (!catActiva) return;
+
+  const planosBarrio = archivosPlanosDelBarrio();
+  const encuestasBarrio = archivosEncuestasDelBarrio();
+
+  imprimirHTML(`Barrio - ${catActiva.nombre}`, `
+    <h1>${escapeHtml(catActiva.nombre)}</h1>
+    <h2>Planos</h2>
+    ${
+      planosBarrio.length
+        ? planosBarrio.map((p) => `<div class="card"><h3>${escapeHtml(p.nombre)}</h3><p>${escapeHtml(p.nombreArchivo || "")}</p></div>`).join("")
+        : `<p>Sin planos.</p>`
+    }
+    <h2>Encuestas</h2>
+    ${
+      encuestasBarrio.length
+        ? encuestasBarrio.map((e) => `<div class="card"><h3>${escapeHtml(e.nombre)}</h3><p>${escapeHtml(e.nombreArchivo || "")}</p></div>`).join("")
+        : `<p>Sin encuestas.</p>`
+    }
+  `);
+}
+
+function correoBarrio() {
+  if (!catActiva) return;
+
+  const planosBarrio = archivosPlanosDelBarrio();
+  const encuestasBarrio = archivosEncuestasDelBarrio();
+
+  const cuerpo = `
+Barrio: ${catActiva.nombre}
+
+Planos:
+${planosBarrio.map((p, i) => `${i + 1}) ${p.nombre} - ${p.nombreArchivo || ""}`).join("\n") || "Sin planos."}
+
+Encuestas:
+${encuestasBarrio.map((e, i) => `${i + 1}) ${e.nombre} - ${e.nombreArchivo || ""}`).join("\n") || "Sin encuestas."}
+`;
+
+  abrirCorreo(`Barrio - ${catActiva.nombre}`, cuerpo);
+}
+
+function descargarBarrio() {
+  if (!catActiva) return;
+
+  const planosBarrio = archivosPlanosDelBarrio();
+  const encuestasBarrio = archivosEncuestasDelBarrio();
+
+  descargarHTML(`barrio-${catActiva.nombre}`, `
+    <h1>${escapeHtml(catActiva.nombre)}</h1>
+    <h2>Planos</h2>
+    ${
+      planosBarrio.length
+        ? planosBarrio.map((p) => `<div class="card"><h3>${escapeHtml(p.nombre)}</h3><p>${escapeHtml(p.nombreArchivo || "")}</p></div>`).join("")
+        : `<p>Sin planos.</p>`
+    }
+    <h2>Encuestas</h2>
+    ${
+      encuestasBarrio.length
+        ? encuestasBarrio.map((e) => `<div class="card"><h3>${escapeHtml(e.nombre)}</h3><p>${escapeHtml(e.nombreArchivo || "")}</p></div>`).join("")
+        : `<p>Sin encuestas.</p>`
+    }
+  `);
+}
+
 
 function renderPlanos() {
   cerrarFormPersona();
@@ -2739,8 +3230,8 @@ function activarEventosLibro() {
       }
 
       // FIX CLAVE:
-      // Si el resaltador está apagado pero el cursor quedó dentro de un span resaltado,
-      // evitamos que el navegador siga escribiendo dentro del resaltado.
+      // Si el botón está apagado pero el cursor quedó dentro de un span resaltado,
+      // no dejamos que el navegador siga escribiendo dentro del amarillo.
       if (cursorEstaDentroDeResaltadoLibro()) {
         if (e.inputType === "insertText") {
           e.preventDefault();
@@ -2761,7 +3252,6 @@ function activarEventosLibro() {
 
   actualizarBotonResaltador();
 }
-
 
 
 
@@ -3011,62 +3501,6 @@ function insertarSaltoLineaLibro() {
   insertarNodoEnCursorLibro(document.createElement("br"));
 }
 
-function salirDelResaltadoActivo() {
-  restaurarRangoLibro();
-
-  const editor = obtenerEditorLibroActual();
-  const sel = window.getSelection();
-
-  if (!editor || !sel || sel.rangeCount === 0) return;
-
-  let nodo = sel.anchorNode;
-
-  if (nodo && nodo.nodeType === Node.TEXT_NODE) {
-    nodo = nodo.parentNode;
-  }
-
-  let spanResaltado = null;
-
-  while (nodo && nodo !== editor && nodo !== document.body) {
-    if (
-      nodo.nodeType === 1 &&
-      nodo.classList &&
-      nodo.classList.contains("texto-resaltado-libro")
-    ) {
-      spanResaltado = nodo;
-      break;
-    }
-
-    nodo = nodo.parentNode;
-  }
-
-  const salida = document.createTextNode("\u200B");
-  const range = document.createRange();
-
-  if (spanResaltado) {
-    if (spanResaltado.nextSibling) {
-      spanResaltado.parentNode.insertBefore(salida, spanResaltado.nextSibling);
-    } else {
-      spanResaltado.parentNode.appendChild(salida);
-    }
-  } else {
-    const actual = sel.getRangeAt(0);
-    actual.collapse(false);
-    actual.insertNode(salida);
-  }
-
-  range.setStart(salida, 1);
-  range.setEnd(salida, 1);
-
-  sel.removeAllRanges();
-  sel.addRange(range);
-  libroUltimoRango = range.cloneRange();
-
-  editor.focus();
-}
-
-
-
 function obtenerSpanResaltadoActualLibro() {
   const sel = window.getSelection();
 
@@ -3134,6 +3568,60 @@ function insertarTextoNormalFueraDelResaltado(texto) {
   return true;
 }
 
+function salirDelResaltadoActivo() {
+  restaurarRangoLibro();
+
+  const editor = obtenerEditorLibroActual();
+  const sel = window.getSelection();
+
+  if (!editor || !sel || sel.rangeCount === 0) return;
+
+  let nodo = sel.anchorNode;
+
+  if (nodo && nodo.nodeType === Node.TEXT_NODE) {
+    nodo = nodo.parentNode;
+  }
+
+  let spanResaltado = null;
+
+  while (nodo && nodo !== editor && nodo !== document.body) {
+    if (
+      nodo.nodeType === 1 &&
+      nodo.classList &&
+      nodo.classList.contains("texto-resaltado-libro")
+    ) {
+      spanResaltado = nodo;
+      break;
+    }
+
+    nodo = nodo.parentNode;
+  }
+
+  const salida = document.createTextNode("\u200B");
+  const range = document.createRange();
+
+  if (spanResaltado) {
+    if (spanResaltado.nextSibling) {
+      spanResaltado.parentNode.insertBefore(salida, spanResaltado.nextSibling);
+    } else {
+      spanResaltado.parentNode.appendChild(salida);
+    }
+  } else {
+    const actual = sel.getRangeAt(0);
+    actual.collapse(false);
+    actual.insertNode(salida);
+  }
+
+  range.setStart(salida, 1);
+  range.setEnd(salida, 1);
+
+  sel.removeAllRanges();
+  sel.addRange(range);
+  libroUltimoRango = range.cloneRange();
+
+  editor.focus();
+}
+
 function toggleResaltadorLibro() {
   restaurarRangoLibro();
 
@@ -3149,7 +3637,6 @@ function toggleResaltadorLibro() {
   const editor = obtenerEditorLibroActual();
   if (editor) editor.focus();
 }
-
 
 function actualizarBotonResaltador() {
   const btn = $("btnResaltador");
