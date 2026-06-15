@@ -1,8 +1,3 @@
-/* =====================================================
-   GESTIÓN DE PERSONAS - STYLE.CSS COMPLETO CORREGIDO
-   Reemplazá TODO tu style.css por este archivo.
-===================================================== */
-
 /* ===============================
    BASE
 ================================ */
@@ -2892,5 +2887,1080 @@ body.modo-libro .container {
 @media (max-width: 900px) {
   .seg-pregunta-row {
     grid-template-columns: 1fr;
+  }
+}
+
+
+/* =====================================================
+   SEGUIMIENTOS - TABLA GRANDE EDITABLE Y COLUMNAS MOVIBLES
+===================================================== */
+
+.seg-tabla-editor-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 12px;
+}
+
+.seg-tabla-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tabla-scroll-grande {
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid #cbd5e1;
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+.tabla-editor-grande {
+  min-width: 1400px;
+  width: max-content;
+  border-collapse: collapse;
+}
+
+.tabla-editor-grande th,
+.tabla-editor-grande td {
+  min-width: 170px;
+  max-width: 260px;
+  padding: 8px;
+  border: 1px solid #cbd5e1;
+  vertical-align: top;
+}
+
+.tabla-editor-grande th {
+  background: #e0f2fe;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.tabla-editor-grande th textarea,
+.tabla-editor-grande td textarea {
+  width: 100%;
+  min-height: 72px;
+  resize: vertical;
+  border: 1px solid #94a3b8;
+  border-radius: 8px;
+  padding: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.35;
+  background: #ffffff;
+}
+
+.tabla-editor-grande th textarea {
+  min-height: 58px;
+  font-weight: 900;
+  background: #f8fafc;
+}
+
+.columna-controls {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 6px;
+  justify-content: center;
+}
+
+.columna-controls button {
+  border: 0;
+  border-radius: 7px;
+  background: #dbeafe;
+  color: #1e3a8a;
+  font-weight: 900;
+  padding: 4px 6px;
+  cursor: pointer;
+}
+
+.columna-controls button.danger {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.fila-control-head,
+.fila-control-cell {
+  min-width: 70px !important;
+  max-width: 80px !important;
+  text-align: center;
+  background: #f8fafc;
+}
+
+@media (max-width: 900px) {
+  .seg-tabla-editor-head {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* =====================================================
+   RESPONSIVE CELULAR FINAL
+===================================================== */
+
+.btn-menu-mobile {
+  display: none;
+}
+
+@media (max-width: 820px) {
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  body {
+    font-size: 14px;
+  }
+
+  .app,
+  .layout,
+  .main,
+  main {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .sidebar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 82vw !important;
+    max-width: 320px !important;
+    height: 100vh !important;
+    z-index: 9998;
+    transform: translateX(-105%);
+    transition: transform .22s ease;
+    box-shadow: 18px 0 40px #00000045;
+    overflow-y: auto !important;
+  }
+
+  body.sidebar-abierto .sidebar {
+    transform: translateX(0);
+  }
+
+  .btn-menu-mobile {
+    display: flex;
+    position: fixed;
+    left: 12px;
+    bottom: 14px;
+    z-index: 9999;
+    width: 52px;
+    height: 52px;
+    border: none;
+    border-radius: 999px;
+    align-items: center;
+    justify-content: center;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 24px;
+    font-weight: 900;
+    box-shadow: 0 12px 30px #00000035;
+  }
+
+  .content,
+  .main-content,
+  .page,
+  .panel,
+  #panelView,
+  #categoriaView {
+    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 10px !important;
+  }
+
+  .container {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 10px !important;
+  }
+
+  .cat-header {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    padding: 16px !important;
+    border-radius: 18px !important;
+    margin-top: 8px !important;
+  }
+
+  .cat-header .left {
+    align-items: flex-start !important;
+  }
+
+  .cat-header .emoji {
+    width: 46px !important;
+    height: 46px !important;
+    min-width: 46px !important;
+    font-size: 24px !important;
+  }
+
+  .cat-header h2 {
+    font-size: 21px !important;
+    line-height: 1.15 !important;
+  }
+
+  .cat-header p {
+    font-size: 13px !important;
+  }
+
+  .cat-actions,
+  .actions,
+  .mini-actions,
+  .registro-actions {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .cat-actions button,
+  .actions button,
+  .mini-actions button {
+    flex: 1 1 130px !important;
+    min-height: 42px !important;
+    font-size: 13px !important;
+    padding: 10px !important;
+  }
+
+  .grid-form,
+  .datos-encuesta-form,
+  .revision-datos-form {
+    grid-template-columns: 1fr !important;
+  }
+
+  input,
+  select,
+  textarea {
+    max-width: 100% !important;
+    font-size: 16px !important;
+  }
+
+  .cards,
+  #cardsCategorias,
+  .planos-lista,
+  .seguimientos-lista,
+  .crear-archivo-lista,
+  .crear-archivo-grupos,
+  .graficos-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .card,
+  .form-card,
+  .barrio-archivo-card,
+  .grafico-card,
+  .revision-encuesta-box,
+  .revision-seguimiento-box,
+  .crear-archivo-box {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 16px !important;
+    padding: 14px !important;
+  }
+
+  .persona-top {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .registro-actions {
+    justify-content: flex-start !important;
+  }
+
+  .registro-actions .icon-btn {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  .barrio-doble-layout {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .barrio-separador {
+    display: none !important;
+  }
+
+  .barrio-section-head {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .barrio-preview,
+  .preview-content {
+    max-width: 100% !important;
+    overflow: auto !important;
+  }
+
+  .barrio-preview iframe,
+  .preview-content iframe {
+    width: 100% !important;
+    height: 420px !important;
+  }
+
+  .barrio-preview img,
+  .preview-content img {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  .revision-row,
+  .seg-pregunta-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  .revision-actions-final {
+    grid-template-columns: 1fr !important;
+  }
+
+  .crear-archivo-toolbar {
+    grid-template-columns: 1fr !important;
+  }
+
+  .crear-archivo-item {
+    grid-template-columns: 26px 1fr !important;
+  }
+
+  .crear-archivo-grupo-head {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 6px !important;
+  }
+
+  .grafico-body {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    justify-items: center !important;
+  }
+
+  .grafico-info {
+    width: 100% !important;
+  }
+
+  .opcion-barra-row {
+    grid-template-columns: 1fr !important;
+    gap: 5px !important;
+  }
+
+  .tabla-scroll,
+  .tabla-scroll-grande {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tabla-editor-grande {
+    min-width: 1050px !important;
+  }
+
+  .tabla-editor-grande th,
+  .tabla-editor-grande td {
+    min-width: 150px !important;
+    max-width: 210px !important;
+  }
+
+  .seg-tabla-editor-head {
+    grid-template-columns: 1fr !important;
+  }
+
+  .seg-tabla-actions {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  .columna-controls {
+    flex-wrap: wrap !important;
+  }
+
+  .libro-wrap,
+  .libro-hojas,
+  .libro-pages {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+  }
+
+  .libro-page,
+  .pagina-libro {
+    min-width: 320px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .cat-header h2 {
+    font-size: 19px !important;
+  }
+
+  .cat-actions button,
+  .actions button {
+    flex: 1 1 100% !important;
+  }
+
+  .tabla-editor-grande {
+    min-width: 920px !important;
+  }
+
+  .tabla-editor-grande th,
+  .tabla-editor-grande td {
+    min-width: 135px !important;
+  }
+
+  .pie-svg-app {
+    width: 120px !important;
+    height: 120px !important;
+  }
+}
+
+
+/* =====================================================
+   FINAL - TABLAS Y CUADROS MÁS GRANDES
+===================================================== */
+
+/* Seguimientos: tabla editable más grande */
+.seg-tabla-editor {
+  padding: 18px !important;
+  border-radius: 20px !important;
+}
+
+.tabla-scroll-grande {
+  min-height: 420px !important;
+  border-radius: 18px !important;
+}
+
+.tabla-editor-grande {
+  min-width: 1900px !important;
+  font-size: 15px !important;
+}
+
+.tabla-editor-grande th,
+.tabla-editor-grande td {
+  min-width: 220px !important;
+  max-width: 340px !important;
+  padding: 12px !important;
+}
+
+.tabla-editor-grande th textarea,
+.tabla-editor-grande td textarea {
+  min-height: 110px !important;
+  font-size: 15px !important;
+  padding: 12px !important;
+  line-height: 1.45 !important;
+}
+
+.tabla-editor-grande th textarea {
+  min-height: 82px !important;
+  font-size: 14px !important;
+}
+
+/* Cuadros/cards más grandes */
+.barrio-archivo-card,
+.seguimiento-card,
+.form-card,
+.revision-seguimiento-box,
+.revision-encuesta-box,
+.crear-archivo-box,
+.grafico-card,
+.card {
+  border-radius: 22px !important;
+}
+
+.barrio-archivo-card,
+.seguimiento-card {
+  padding: 22px !important;
+}
+
+.informe-encuesta-box,
+.tabla-seguimiento-box,
+.preguntas-seguimiento-box {
+  padding: 18px !important;
+  border-radius: 18px !important;
+}
+
+/* Tablas ya guardadas también más grandes */
+.tabla-seguimiento-box table {
+  min-width: 1400px !important;
+  font-size: 14px !important;
+}
+
+.tabla-seguimiento-box th,
+.tabla-seguimiento-box td {
+  padding: 12px !important;
+  min-width: 150px !important;
+}
+
+/* Formularios de seguimiento más cómodos */
+.seguimiento-form textarea,
+#segInforme,
+#revSegInforme {
+  min-height: 180px !important;
+  font-size: 16px !important;
+}
+
+.seg-pregunta-row {
+  padding: 16px !important;
+  gap: 14px !important;
+}
+
+/* Celular: mantener grande, pero con scroll horizontal */
+@media (max-width: 820px) {
+  .tabla-scroll-grande {
+    min-height: 480px !important;
+  }
+
+  .tabla-editor-grande {
+    min-width: 1650px !important;
+  }
+
+  .tabla-editor-grande th,
+  .tabla-editor-grande td {
+    min-width: 210px !important;
+    max-width: 300px !important;
+    padding: 10px !important;
+  }
+
+  .tabla-editor-grande th textarea,
+  .tabla-editor-grande td textarea {
+    min-height: 120px !important;
+    font-size: 16px !important;
+  }
+
+  .tabla-seguimiento-box table {
+    min-width: 1300px !important;
+  }
+
+  .barrio-archivo-card,
+  .seguimiento-card,
+  .form-card,
+  .revision-seguimiento-box,
+  .revision-encuesta-box {
+    padding: 18px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .tabla-editor-grande {
+    min-width: 1550px !important;
+  }
+
+  .tabla-editor-grande th,
+  .tabla-editor-grande td {
+    min-width: 200px !important;
+  }
+
+  .tabla-editor-grande th textarea,
+  .tabla-editor-grande td textarea {
+    min-height: 125px !important;
+  }
+}
+
+
+/* =====================================================
+   SEGUIMIENTOS - EDITAR GUARDADO Y OCULTAR EDITOR
+===================================================== */
+
+.seguimiento-card .registro-actions {
+  display: flex !important;
+  gap: 8px !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  flex-wrap: wrap !important;
+}
+
+.seguimiento-card .registro-actions .icon-btn {
+  width: 42px !important;
+  height: 42px !important;
+  font-size: 17px !important;
+}
+
+.seguimiento-card .tabla-seguimiento-box {
+  margin-top: 16px !important;
+}
+
+.seguimiento-card .tabla-seguimiento-box table {
+  min-width: 1300px !important;
+}
+
+.seguimiento-card .tabla-scroll {
+  max-height: 520px;
+  overflow: auto !important;
+  border-radius: 14px;
+}
+
+.revision-seguimiento-box {
+  box-shadow: 0 12px 35px #0f766e22 !important;
+}
+
+@media (max-width: 820px) {
+  .seguimiento-card .registro-actions {
+    justify-content: flex-start !important;
+  }
+
+  .seguimiento-card .tabla-seguimiento-box table {
+    min-width: 1200px !important;
+  }
+}
+
+
+/* =====================================================
+   SEGUIMIENTOS GUARDADOS COMPACTOS CON ACCIONES VISIBLES
+===================================================== */
+
+.seguimiento-card-compacta {
+  padding: 20px !important;
+}
+
+.seguimiento-card-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: start;
+}
+
+.seguimiento-resumen h3 {
+  margin: 0 0 12px;
+  font-size: 22px;
+  color: #111827;
+}
+
+.seguimiento-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 18px;
+}
+
+.seguimiento-meta-grid p {
+  margin: 0;
+  color: #334155;
+  font-weight: 700;
+}
+
+.seguimiento-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.seguimiento-chips span {
+  background: #e0f2fe;
+  color: #075985;
+  border-radius: 999px;
+  padding: 7px 11px;
+  font-weight: 900;
+  font-size: 13px;
+}
+
+.seguimiento-actions-visibles {
+  display: flex !important;
+  gap: 9px !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  min-width: 245px;
+}
+
+.seguimiento-actions-visibles .icon-btn {
+  width: 44px !important;
+  height: 44px !important;
+  font-size: 18px !important;
+  box-shadow: 0 5px 14px #00000012;
+}
+
+.informe-compacto {
+  margin-top: 16px !important;
+}
+
+.seguimiento-aviso-compacto {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #f8fafc;
+  border: 1px dashed #94a3b8;
+  color: #334155;
+  font-weight: 800;
+}
+
+/* Oculta tablas grandes en la ficha guardada; se ven al editar, imprimir o descargar */
+.seguimiento-card-compacta > .tabla-seguimiento-box,
+.seguimiento-card-compacta > .preguntas-seguimiento-box,
+.seguimiento-card-compacta > .barrio-preview {
+  display: none !important;
+}
+
+@media (max-width: 900px) {
+  .seguimiento-card-head,
+  .seguimiento-meta-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .seguimiento-actions-visibles {
+    justify-content: flex-start !important;
+    min-width: 0;
+  }
+}
+
+
+/* =====================================================
+   RESPONSIVE FINAL COMPLETO CELULAR
+   Panel, bases, barrios, encuestas, seguimientos, crear archivo, gráficos y libro
+===================================================== */
+
+.btn-menu-mobile {
+  display: none;
+}
+
+@media (max-width: 860px) {
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    font-size: 14px;
+    background: #f3f4f6;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    font-size: 16px !important;
+  }
+
+  .app,
+  .layout,
+  .main,
+  main,
+  .content,
+  .main-content,
+  #panelView,
+  #categoriaView {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    padding: 10px !important;
+    box-sizing: border-box !important;
+  }
+
+  .sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 84vw !important;
+    max-width: 330px !important;
+    height: 100vh !important;
+    z-index: 9998 !important;
+    transform: translateX(-108%);
+    transition: transform .22s ease;
+    box-shadow: 20px 0 42px #00000055;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+
+  body.sidebar-abierto .sidebar {
+    transform: translateX(0);
+  }
+
+  body.sidebar-abierto::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: #00000055;
+    z-index: 9997;
+  }
+
+  .btn-menu-mobile {
+    display: flex;
+    position: fixed;
+    left: 14px;
+    bottom: 16px;
+    z-index: 10000;
+    width: 56px;
+    height: 56px;
+    border: none;
+    border-radius: 999px;
+    align-items: center;
+    justify-content: center;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 26px !important;
+    font-weight: 900;
+    box-shadow: 0 12px 30px #00000045;
+  }
+
+  .cat-header {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    padding: 16px !important;
+    border-radius: 18px !important;
+    margin-top: 8px !important;
+    width: 100% !important;
+  }
+
+  .cat-header .left {
+    align-items: flex-start !important;
+    gap: 10px !important;
+  }
+
+  .cat-header .emoji {
+    width: 46px !important;
+    height: 46px !important;
+    min-width: 46px !important;
+    font-size: 24px !important;
+  }
+
+  .cat-header h2 {
+    font-size: 21px !important;
+    line-height: 1.15 !important;
+  }
+
+  .cat-header p {
+    font-size: 13px !important;
+  }
+
+  .cat-actions,
+  .actions,
+  .mini-actions,
+  .registro-actions,
+  .seguimiento-actions-visibles {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    justify-content: flex-start !important;
+  }
+
+  .cat-actions button,
+  .actions button,
+  .mini-actions button {
+    flex: 1 1 135px !important;
+    min-height: 44px !important;
+    padding: 10px !important;
+    border-radius: 12px !important;
+  }
+
+  .grid-form,
+  .datos-encuesta-form,
+  .revision-datos-form,
+  .seguimiento-meta-grid,
+  .seg-pregunta-row,
+  .revision-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .cards,
+  #cardsCategorias,
+  .planos-lista,
+  .seguimientos-lista,
+  .crear-archivo-lista,
+  .crear-archivo-grupos,
+  .graficos-grid,
+  .barrio-doble-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .barrio-separador {
+    display: none !important;
+  }
+
+  .card,
+  .form-card,
+  .barrio-archivo-card,
+  .seguimiento-card,
+  .grafico-card,
+  .revision-encuesta-box,
+  .revision-seguimiento-box,
+  .crear-archivo-box,
+  .crear-archivo-grupo {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 18px !important;
+    padding: 16px !important;
+    box-sizing: border-box !important;
+  }
+
+  .persona-top,
+  .seguimiento-card-head,
+  .crear-archivo-toolbar,
+  .crear-archivo-grupo-head,
+  .seg-tabla-editor-head {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .registro-actions .icon-btn,
+  .seguimiento-actions-visibles .icon-btn {
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 18px !important;
+  }
+
+  .barrio-section-head {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .barrio-preview,
+  .preview-content {
+    max-width: 100% !important;
+    overflow: auto !important;
+  }
+
+  .barrio-preview iframe,
+  .preview-content iframe {
+    width: 100% !important;
+    height: 430px !important;
+  }
+
+  .barrio-preview img,
+  .preview-content img {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  .revision-actions-final {
+    grid-template-columns: 1fr !important;
+  }
+
+  .crear-archivo-item {
+    grid-template-columns: 28px 1fr !important;
+  }
+
+  .grafico-body {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    justify-items: center !important;
+  }
+
+  .grafico-info,
+  .grafico-info-multi {
+    width: 100% !important;
+  }
+
+  .opcion-barra-row {
+    grid-template-columns: 1fr !important;
+    gap: 5px !important;
+  }
+
+  .tabla-scroll,
+  .tabla-scroll-grande,
+  .tabla-seguimiento-box .tabla-scroll {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 14px !important;
+  }
+
+  .tabla-editor-grande {
+    min-width: 1650px !important;
+  }
+
+  .tabla-editor-grande th,
+  .tabla-editor-grande td {
+    min-width: 210px !important;
+    max-width: 320px !important;
+    padding: 10px !important;
+  }
+
+  .tabla-editor-grande th textarea,
+  .tabla-editor-grande td textarea {
+    min-height: 120px !important;
+    font-size: 16px !important;
+  }
+
+  .tabla-seguimiento-box table {
+    min-width: 1300px !important;
+  }
+
+  .seg-tabla-actions {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  .columna-controls {
+    flex-wrap: wrap !important;
+  }
+
+  .seguimiento-card-compacta > .tabla-seguimiento-box,
+  .seguimiento-card-compacta > .preguntas-seguimiento-box,
+  .seguimiento-card-compacta > .barrio-preview {
+    display: none !important;
+  }
+
+  .seguimiento-aviso-compacto {
+    font-size: 13px !important;
+  }
+
+  .libro-wrap,
+  .libro-hojas,
+  .libro-pages,
+  .libro-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+  }
+
+  .libro-page,
+  .pagina-libro {
+    min-width: 320px !important;
+  }
+
+  .pie-svg-app {
+    width: 125px !important;
+    height: 125px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .cat-header h2 {
+    font-size: 19px !important;
+  }
+
+  .cat-actions button,
+  .actions button {
+    flex: 1 1 100% !important;
+  }
+
+  .tabla-editor-grande {
+    min-width: 1550px !important;
+  }
+
+  .tabla-editor-grande th,
+  .tabla-editor-grande td {
+    min-width: 200px !important;
+  }
+
+  .tabla-editor-grande th textarea,
+  .tabla-editor-grande td textarea {
+    min-height: 125px !important;
+  }
+
+  .seguimiento-resumen h3 {
+    font-size: 19px !important;
+  }
+
+  .sidebar {
+    width: 88vw !important;
   }
 }
