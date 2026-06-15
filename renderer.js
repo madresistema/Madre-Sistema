@@ -1078,7 +1078,47 @@ function actualizarBotonEditarBases() {
 
 
 
+
+function cerrarSidebarMobile() {
+  if (window.innerWidth <= 820) {
+    document.body.classList.remove("sidebar-abierto");
+  }
+}
+
+function toggleSidebarMobile() {
+  document.body.classList.toggle("sidebar-abierto");
+}
+
+
+
+function asegurarBotonMobile() {
+  if ($("btnMenuMobile")) return;
+
+  const btn = document.createElement("button");
+  btn.id = "btnMenuMobile";
+  btn.className = "btn-menu-mobile";
+  btn.innerHTML = "☰";
+  btn.title = "Abrir menú";
+  btn.onclick = toggleSidebarMobile;
+
+  document.body.appendChild(btn);
+
+  document.addEventListener("click", (e) => {
+    if (window.innerWidth > 820) return;
+    if (!document.body.classList.contains("sidebar-abierto")) return;
+
+    const sidebar = document.querySelector(".sidebar");
+    const menuBtn = $("btnMenuMobile");
+
+    if (sidebar && !sidebar.contains(e.target) && menuBtn && !menuBtn.contains(e.target)) {
+      document.body.classList.remove("sidebar-abierto");
+    }
+  });
+}
+
+
 function bindEvents() {
+  asegurarBotonMobile();
   asegurarBotonEditarBases();
   actualizarBotonEditarBases();
   $("btnPanel").onclick = mostrarPanel;
@@ -1597,6 +1637,8 @@ function renderSidebar() {
 
   document.querySelectorAll(".cat-btn[data-cat]").forEach((btn) => {
     btn.onclick = () => mostrarCategoria(Number(btn.dataset.cat));
+      cerrarSidebarMobile();
+      cerrarSidebarMobile();
   });
 
   const btnBarrios = $("btnBarrios");
@@ -1646,6 +1688,8 @@ function renderPanel() {
 
   document.querySelectorAll(".card[data-cat]").forEach((card) => {
     card.onclick = () => mostrarCategoria(Number(card.dataset.cat));
+      cerrarSidebarMobile();
+      cerrarSidebarMobile();
   });
 
   const cardBarrios = $("cardBarrios");
@@ -5539,20 +5583,33 @@ function renderTablasSeguimientoEditor(tablas) {
 
     return `
       <div class="seg-tabla-editor">
-        <label>
-          Título del apartado / cuadro
-          <input id="segTablaTitulo-${tIndex}" value="${escapeHtml(tabla.titulo || `Cuadro ${tIndex + 1}`)}" />
-        </label>
+        <div class="seg-tabla-editor-head">
+          <label>
+            Título del apartado / cuadro
+            <input id="segTablaTitulo-${tIndex}" value="${escapeHtml(tabla.titulo || `Cuadro ${tIndex + 1}`)}" />
+          </label>
 
-        <div class="tabla-scroll">
-          <table>
+          <div class="seg-tabla-actions">
+            <button type="button" class="secondary" onclick="agregarColumnaSeguimiento(${tIndex})">+ Columna a la derecha</button>
+            <button type="button" class="secondary" onclick="agregarFilaSeguimiento(${tIndex})">+ Fila</button>
+          </div>
+        </div>
+
+        <div class="tabla-scroll tabla-scroll-grande">
+          <table class="tabla-editor-grande">
             <thead>
               <tr>
                 ${columnas.map((col, cIndex) => `
                   <th>
-                    <input id="segTablaHead-${tIndex}-${cIndex}" value="${escapeHtml(col)}" />
+                    <div class="columna-controls">
+                      <button type="button" title="Mover izquierda" onclick="moverColumnaSeguimiento(${tIndex}, ${cIndex}, -1)">⬅️</button>
+                      <button type="button" title="Mover derecha" onclick="moverColumnaSeguimiento(${tIndex}, ${cIndex}, 1)">➡️</button>
+                      <button type="button" class="danger" title="Eliminar columna" onclick="eliminarColumnaSeguimiento(${tIndex}, ${cIndex})">🗑️</button>
+                    </div>
+                    <textarea id="segTablaHead-${tIndex}-${cIndex}" rows="2">${escapeHtml(col)}</textarea>
                   </th>
                 `).join("")}
+                <th class="fila-control-head">Fila</th>
               </tr>
             </thead>
             <tbody>
@@ -5560,9 +5617,12 @@ function renderTablasSeguimientoEditor(tablas) {
                 <tr>
                   ${columnas.map((_, cIndex) => `
                     <td>
-                      <textarea id="segTablaCell-${tIndex}-${rIndex}-${cIndex}" rows="2">${escapeHtml(row[cIndex] || "")}</textarea>
+                      <textarea id="segTablaCell-${tIndex}-${rIndex}-${cIndex}" rows="4">${escapeHtml(row[cIndex] || "")}</textarea>
                     </td>
                   `).join("")}
+                  <td class="fila-control-cell">
+                    <button type="button" class="icon-btn danger" onclick="eliminarFilaSeguimiento(${tIndex}, ${rIndex})">🗑️</button>
+                  </td>
                 </tr>
               `).join("")}
             </tbody>
@@ -5662,13 +5722,121 @@ function preguntasSeguimientoHtml(preguntas) {
 }
 
 
+
+function preservarEdicionSeguimientoTemporal() {
+  if (!seguimientoPendienteRevision) return;
+
+  try {
+    seguimientoPendienteRevision.tablas = leerTablasSeguimientoEditor();
+    seguimientoPendienteRevision.preguntas = leerPreguntasSeguimientoEditor();
+    seguimientoPendienteRevision.titulo = String($("revSegTitulo")?.value || seguimientoPendienteRevision.titulo || "").trim();
+    seguimientoPendienteRevision.nombre_apellido = String($("revSegNombreApellido")?.value || seguimientoPendienteRevision.nombre_apellido || "").trim();
+    seguimientoPendienteRevision.fecha = String($("revSegFecha")?.value || seguimientoPendienteRevision.fecha || "").trim();
+    seguimientoPendienteRevision.dni = String($("revSegDni")?.value || seguimientoPendienteRevision.dni || "").trim();
+    seguimientoPendienteRevision.barrio = String($("revSegBarrio")?.value || seguimientoPendienteRevision.barrio || "").trim();
+    seguimientoPendienteRevision.direccion_numero = String($("revSegDireccion")?.value || seguimientoPendienteRevision.direccion_numero || "").trim();
+    seguimientoPendienteRevision.informe = String($("revSegInforme")?.value || seguimientoPendienteRevision.informe || "").trim();
+  } catch (e) {}
+}
+
+function agregarColumnaSeguimiento(tIndex) {
+  if (!seguimientoPendienteRevision) return;
+
+  preservarEdicionSeguimientoTemporal();
+
+  const tabla = seguimientoPendienteRevision.tablas[tIndex];
+  if (!tabla) return;
+
+  if (!Array.isArray(tabla.rows) || !tabla.rows.length) {
+    tabla.rows = [["Nueva columna"], [""]];
+  }
+
+  tabla.rows.forEach((row, idx) => {
+    row.push(idx === 0 ? "Nueva columna" : "");
+  });
+
+  renderSeguimientos();
+}
+
+function moverColumnaSeguimiento(tIndex, cIndex, direccion) {
+  if (!seguimientoPendienteRevision) return;
+
+  preservarEdicionSeguimientoTemporal();
+
+  const tabla = seguimientoPendienteRevision.tablas[tIndex];
+  if (!tabla || !Array.isArray(tabla.rows) || !tabla.rows.length) return;
+
+  const cols = tabla.rows[0].length;
+  const nuevo = cIndex + direccion;
+
+  if (nuevo < 0 || nuevo >= cols) return;
+
+  tabla.rows.forEach((row) => {
+    const temp = row[cIndex] || "";
+    row[cIndex] = row[nuevo] || "";
+    row[nuevo] = temp;
+  });
+
+  renderSeguimientos();
+}
+
+function eliminarColumnaSeguimiento(tIndex, cIndex) {
+  if (!seguimientoPendienteRevision) return;
+  if (!confirm("¿Eliminar esta columna del cuadro?")) return;
+
+  preservarEdicionSeguimientoTemporal();
+
+  const tabla = seguimientoPendienteRevision.tablas[tIndex];
+  if (!tabla || !Array.isArray(tabla.rows) || !tabla.rows.length) return;
+
+  if (tabla.rows[0].length <= 1) {
+    alert("El cuadro debe tener al menos una columna.");
+    return;
+  }
+
+  tabla.rows.forEach((row) => row.splice(cIndex, 1));
+  renderSeguimientos();
+}
+
+function agregarFilaSeguimiento(tIndex) {
+  if (!seguimientoPendienteRevision) return;
+
+  preservarEdicionSeguimientoTemporal();
+
+  const tabla = seguimientoPendienteRevision.tablas[tIndex];
+  if (!tabla) return;
+
+  const cols = Math.max(1, columnasTablaSeguimiento(tabla).length);
+  tabla.rows.push(Array(cols).fill(""));
+
+  renderSeguimientos();
+}
+
+function eliminarFilaSeguimiento(tIndex, rIndex) {
+  if (!seguimientoPendienteRevision) return;
+
+  preservarEdicionSeguimientoTemporal();
+
+  const tabla = seguimientoPendienteRevision.tablas[tIndex];
+  if (!tabla || !Array.isArray(tabla.rows)) return;
+
+  if (tabla.rows.length <= 2) {
+    alert("El cuadro debe tener al menos una fila editable.");
+    return;
+  }
+
+  tabla.rows.splice(rIndex + 1, 1);
+  renderSeguimientos();
+}
+
+
 function renderRevisionSeguimientoPendiente() {
   if (!seguimientoPendienteRevision) return "";
 
   return `
     <div class="revision-seguimiento-box">
-      <h2>📋 Configurar seguimiento antes de confirmar</h2>
-      <p>Revisá el cuadro detectado, editá las celdas y agregá preguntas si necesitás.</p>
+      <h2>${seguimientoPendienteRevision.editando ? "✏️ Editar seguimiento" : "📋 Configurar seguimiento antes de confirmar"}</h2>
+      <p>Revisá el cuadro, editá las celdas y guardá. Al confirmar, el editor se oculta y quedan las opciones de editar, imprimir, correo, descargar y eliminar.</p>
 
       <div class="grid-form">
         <label>
@@ -5772,12 +5940,28 @@ function confirmarSeguimientoRevision() {
     return;
   }
 
-  seguimientos.push(item);
+  const editando = !!item.editando;
+  const editandoId = item.editandoId || item.id;
+
+  delete item.editando;
+  delete item.editandoId;
+
+  if (editando) {
+    seguimientos = seguimientos.map((s) =>
+      Number(s.id) === Number(editandoId)
+        ? { ...item, id: editandoId }
+        : s
+    );
+  } else {
+    seguimientos.push(item);
+  }
+
   seguimientoPendienteRevision = null;
 
   guardarStorage();
   renderSeguimientos();
 }
+
 
 
 function renderSeguimientos() {
@@ -5797,6 +5981,7 @@ function renderSeguimientos() {
 
     <div class="cat-actions">
       <button onclick="imprimirSeguimientos()">🖨️ Imprimir</button>
+      <button onclick="correoSeguimientos()">📧 Correo base</button>
       <button onclick="descargarSeguimientos()">⬇️ Descargar PDF</button>
     </div>
   `;
@@ -5878,36 +6063,83 @@ function renderSeguimientos() {
   `;
 }
 
+
+function editarSeguimiento(id) {
+  const item = buscarSeguimiento(id);
+  if (!item) return;
+
+  seguimientoPendienteRevision = JSON.parse(JSON.stringify(item));
+  seguimientoPendienteRevision.editando = true;
+  seguimientoPendienteRevision.editandoId = item.id;
+
+  // Aseguramos que siempre haya al menos un cuadro editable.
+  if (!Array.isArray(seguimientoPendienteRevision.tablas) || !seguimientoPendienteRevision.tablas.length) {
+    seguimientoPendienteRevision.tablas = [crearTablaSeguimientoVacia()];
+  }
+
+  if (!Array.isArray(seguimientoPendienteRevision.preguntas)) {
+    seguimientoPendienteRevision.preguntas = [];
+  }
+
+  renderSeguimientos();
+
+  setTimeout(() => {
+    const box = document.querySelector(".revision-seguimiento-box");
+    if (box) box.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, 100);
+}
+
+function cancelarEdicionSeguimiento() {
+  seguimientoPendienteRevision = null;
+  renderSeguimientos();
+}
+
+
 function renderSeguimientoCard(item) {
+  const cantidadCuadros = Array.isArray(item.tablas) ? item.tablas.length : 0;
+  const cantidadPreguntas = Array.isArray(item.preguntas) ? item.preguntas.length : 0;
+
   return `
-    <div class="barrio-archivo-card seguimiento-card">
-      <div class="persona-top">
-        <div>
+    <div class="barrio-archivo-card seguimiento-card seguimiento-card-compacta">
+      <div class="seguimiento-card-head">
+        <div class="seguimiento-resumen">
           <h3>📋 ${escapeHtml(item.titulo || "Seguimiento")}</h3>
-          <p>👤 ${escapeHtml(item.nombre_apellido || "Sin nombre")}</p>
-          <p>🪪 DNI: ${escapeHtml(item.dni || "—")}</p>
-          <p>🏘️ Barrio: ${escapeHtml(item.barrio || "—")}</p>
-          <p>📍 Dirección: ${escapeHtml(item.direccion_numero || "—")}</p>
-          <p>📅 ${escapeHtml(item.fecha || "—")}</p>
-          <p>📄 ${escapeHtml(item.nombreArchivo || "Sin archivo")}</p>
+
+          <div class="seguimiento-meta-grid">
+            <p>👤 <b>Nombre:</b> ${escapeHtml(item.nombre_apellido || "Sin nombre")}</p>
+            <p>🪪 <b>DNI:</b> ${escapeHtml(item.dni || "—")}</p>
+            <p>🏘️ <b>Barrio:</b> ${escapeHtml(item.barrio || "—")}</p>
+            <p>📍 <b>Dirección:</b> ${escapeHtml(item.direccion_numero || "—")}</p>
+            <p>📅 <b>Fecha:</b> ${escapeHtml(item.fecha || "—")}</p>
+            <p>📄 <b>Archivo:</b> ${escapeHtml(item.nombreArchivo || "Sin archivo")}</p>
+          </div>
+
+          <div class="seguimiento-chips">
+            <span>${cantidadCuadros} cuadro${cantidadCuadros !== 1 ? "s" : ""}</span>
+            <span>${cantidadPreguntas} pregunta${cantidadPreguntas !== 1 ? "s" : ""}</span>
+          </div>
         </div>
 
-        <div class="registro-actions">
-          <button class="icon-btn" onclick="imprimirSeguimiento(${item.id})">🖨️</button>
-          <button class="icon-btn" onclick="descargarSeguimiento(${item.id})">⬇️</button>
-          <button class="icon-btn danger" onclick="eliminarSeguimiento(${item.id})">🗑️</button>
+        <div class="registro-actions seguimiento-actions-visibles">
+          <button class="icon-btn" title="Editar" onclick="editarSeguimiento(${item.id})">✏️</button>
+          <button class="icon-btn" title="Imprimir" onclick="imprimirSeguimiento(${item.id})">🖨️</button>
+          <button class="icon-btn" title="Correo" onclick="correoSeguimiento(${item.id})">📧</button>
+          <button class="icon-btn" title="Descargar PDF" onclick="descargarSeguimiento(${item.id})">⬇️</button>
+          <button class="icon-btn danger" title="Eliminar" onclick="eliminarSeguimiento(${item.id})">🗑️</button>
         </div>
       </div>
 
-      <div class="informe-encuesta-box">
-        <h4>📋 Informe</h4>
-        <div>${escapeHtml(item.informe || "Sin informe.").replace(/\n/g, "<br>")}</div>
-      </div>
+      ${
+        item.informe
+          ? `<div class="informe-encuesta-box informe-compacto">
+              <h4>📋 Informe</h4>
+              <div>${escapeHtml(item.informe).replace(/\n/g, "<br>")}</div>
+            </div>`
+          : ""
+      }
 
-      ${tablasSeguimientoHtml(item.tablas)}
-
-      <div class="barrio-preview">
-        ${seguimientoArchivoPreview(item)}
+      <div class="seguimiento-aviso-compacto">
+        La tabla está guardada. Tocá <b>✏️ Editar</b> para ver o modificar cuadros, columnas, filas y preguntas.
       </div>
     </div>
   `;
@@ -5997,6 +6229,33 @@ function imprimirSeguimiento(id) {
   imprimirHTML(`Seguimiento - ${item.titulo}`, htmlSeguimientoPDF(item));
 }
 
+async function correoSeguimiento(id) {
+  const item = buscarSeguimiento(id);
+  if (!item) return;
+
+  const archivo = item.archivo || "";
+  const adjunto = crearAdjuntoDesdeDataUrl(item.nombreArchivo || item.titulo || "seguimiento", archivo);
+
+  const cuerpo = `
+Seguimiento: ${item.titulo || ""}
+Nombre y apellido: ${item.nombre_apellido || ""}
+Fecha: ${item.fecha || ""}
+DNI: ${item.dni || ""}
+Barrio: ${item.barrio || ""}
+Dirección y número: ${item.direccion_numero || ""}
+Archivo: ${item.nombreArchivo || ""}
+Informe:
+${item.informe || "Sin informe."}
+`;
+
+  await abrirCorreoComputadora({
+    asunto: `Seguimiento - ${item.titulo || "Sin título"}`,
+    cuerpo,
+    html: cuerpoHtmlCorreo(`Seguimiento - ${item.titulo || "Sin título"}`, htmlSeguimientoPDF(item)),
+    adjuntos: adjunto ? [adjunto] : []
+  });
+}
+
 function descargarSeguimiento(id) {
   const item = buscarSeguimiento(id);
   if (!item) return;
@@ -6008,6 +6267,37 @@ function imprimirSeguimientos() {
     <h1>Seguimientos</h1>
     ${seguimientos.map((s) => `<div class="card">${htmlSeguimientoPDF(s)}</div>`).join("") || "<p>Sin seguimientos.</p>"}
   `);
+}
+
+async function correoSeguimientos() {
+  const cuerpo = seguimientos.length
+    ? seguimientos.map((s, i) => `
+${i + 1}) ${s.titulo || "Seguimiento"}
+Nombre y apellido: ${s.nombre_apellido || ""}
+Fecha: ${s.fecha || ""}
+DNI: ${s.dni || ""}
+Barrio: ${s.barrio || ""}
+Dirección y número: ${s.direccion_numero || ""}
+Archivo: ${s.nombreArchivo || ""}
+Informe: ${s.informe || "Sin informe."}
+`).join("\n----------------\n")
+    : "No hay seguimientos cargados.";
+
+  const adjuntos = seguimientos
+    .map((s) => crearAdjuntoDesdeDataUrl(s.nombreArchivo || s.titulo || "seguimiento", s.archivo || ""))
+    .filter(Boolean);
+
+  await abrirCorreoComputadora({
+    asunto: "Base de datos - Seguimientos",
+    cuerpo: `Base de datos: Seguimientos\n\n${cuerpo}`,
+    html: cuerpoHtmlCorreo(
+      "Base de datos - Seguimientos",
+      seguimientos.length
+        ? seguimientos.map((s) => `<div class="card">${htmlSeguimientoPDF(s)}</div>`).join("")
+        : "<p>No hay seguimientos cargados.</p>"
+    ),
+    adjuntos
+  });
 }
 
 function descargarSeguimientos() {
@@ -6725,6 +7015,12 @@ ${cuerpo}`,
     abrirCorreo("Base de datos - Encuesta", `Base de datos: Encuesta
 
 ${cuerpo}`);
+    return;
+  }
+
+  
+  if (catActiva.tipo === "seguimiento") {
+    correoSeguimientos();
     return;
   }
 
