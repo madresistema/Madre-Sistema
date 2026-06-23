@@ -3969,3 +3969,1732 @@ body.modo-libro .container {
     width: 88vw !important;
   }
 }
+
+
+/* =====================================================
+   SEGUIMIENTOS - SOLO TABLAS REALES + BORRAR CUADROS/ARCHIVOS
+===================================================== */
+
+.seg-tabla-actions .danger,
+.secondary.danger {
+  background: #fee2e2 !important;
+  color: #991b1b !important;
+}
+
+.seg-archivo-editor {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin: 14px 0;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #7c2d12;
+  font-weight: 800;
+}
+
+.seg-archivo-editor button {
+  margin-left: auto;
+}
+
+@media (max-width: 860px) {
+  .seg-archivo-editor {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .seg-archivo-editor button {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+
+/* =====================================================
+   SEGUIMIENTOS - CELDAS INDIVIDUALES Y LECTURA COMPLETA
+===================================================== */
+
+.celda-controls {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 6px;
+}
+
+.celda-controls button {
+  border: 0;
+  border-radius: 8px;
+  background: #e0f2fe;
+  color: #075985;
+  font-weight: 900;
+  padding: 5px 8px;
+  cursor: pointer;
+  font-size: 12px !important;
+}
+
+.celda-controls button:hover {
+  background: #bae6fd;
+}
+
+.tabla-editor-grande td textarea {
+  white-space: pre-wrap !important;
+}
+
+.tabla-editor-grande th textarea {
+  white-space: pre-wrap !important;
+}
+
+.columna-controls button[title="Vaciar este título"] {
+  background: #fef9c3;
+  color: #854d0e;
+}
+
+
+/* =====================================================
+   MODO VACÍAR CELDAS + TABLAS MÁS GRANDES
+===================================================== */
+
+.modo-vaciar-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 12px 0 16px;
+  padding: 12px 14px;
+  border: 1px dashed #93c5fd;
+  border-radius: 14px;
+  background: #eff6ff;
+}
+
+.modo-vaciar-toolbar button {
+  min-height: 44px;
+  border: 0;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.modo-vaciar-toolbar button.danger {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.modo-vaciar-toolbar small {
+  color: #334155;
+  font-weight: 800;
+}
+
+.celda-vaciar-activa {
+  background: #fff7ed !important;
+}
+
+.vaciar-activo-btn,
+.celda-controls button {
+  background: #fef3c7 !important;
+  color: #92400e !important;
+  border: 0;
+  border-radius: 8px;
+  font-weight: 900;
+  padding: 6px 8px;
+}
+
+/* Más grande todavía */
+.tabla-scroll-grande {
+  min-height: 520px !important;
+}
+
+.tabla-editor-grande {
+  min-width: 2100px !important;
+}
+
+.tabla-editor-grande th,
+.tabla-editor-grande td {
+  min-width: 245px !important;
+  max-width: 380px !important;
+  padding: 14px !important;
+}
+
+.tabla-editor-grande th textarea,
+.tabla-editor-grande td textarea {
+  min-height: 135px !important;
+  font-size: 16px !important;
+  padding: 13px !important;
+  line-height: 1.5 !important;
+}
+
+.tabla-editor-grande th textarea {
+  min-height: 95px !important;
+}
+
+@media (max-width: 860px) {
+  .modo-vaciar-toolbar {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .tabla-editor-grande {
+    min-width: 1850px !important;
+  }
+
+  .tabla-editor-grande th,
+  .tabla-editor-grande td {
+    min-width: 225px !important;
+  }
+}
+
+
+/* =====================================================
+   SEGUIMIENTOS - CREAR TABLA MANUALMENTE
+===================================================== */
+
+.seguimiento-form .primary {
+  min-height: 46px !important;
+  font-weight: 900 !important;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+}
+
+.seguimiento-form h2 {
+  color: #1d4ed8 !important;
+}
+
+
+
+
+/* =====================================================
+   VISTA COMPACTA SIN CORTAR
+   Se ve más chico que 100%, pero sin usar zoom ni ancho 125%.
+===================================================== */
+
+html,
+body {
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+/* Área principal más compacta */
+#panelView,
+#categoriaView,
+.content,
+.main-content,
+main {
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+/* Achica la interfaz sin romper el ancho */
+.cat-header,
+.panel-header,
+.form-card,
+.card,
+.barrio-archivo-card,
+.seguimiento-card,
+.grafico-card,
+.revision-encuesta-box,
+.revision-seguimiento-box,
+.crear-archivo-box,
+.crear-archivo-grupo {
+  transform: none !important;
+}
+
+/* Panel principal: cards más chicas y entran en pantalla */
+#cardsCategorias,
+.cards {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+  gap: 18px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.card {
+  min-height: 128px !important;
+  padding: 20px !important;
+}
+
+.card .emoji,
+.card-icon {
+  font-size: 34px !important;
+}
+
+.card h3,
+.card h2 {
+  font-size: 17px !important;
+}
+
+.card p,
+.card span,
+.badge {
+  font-size: 13px !important;
+}
+
+/* Header y botones más compactos */
+.cat-header {
+  padding: 18px 20px !important;
+  max-width: 100% !important;
+}
+
+.cat-header h2,
+.panel-title,
+#panelView h1 {
+  font-size: 28px !important;
+}
+
+.cat-header p,
+#panelView p {
+  font-size: 15px !important;
+}
+
+.cat-actions button,
+.actions button,
+.primary,
+.secondary {
+  min-height: 40px !important;
+  padding: 9px 14px !important;
+  font-size: 13px !important;
+}
+
+/* Formularios más compactos */
+.grid-form {
+  gap: 14px !important;
+}
+
+input,
+select,
+textarea {
+  min-height: 38px !important;
+}
+
+textarea {
+  line-height: 1.35 !important;
+}
+
+/* Evita corte horizontal por contenido ancho */
+.barrio-preview,
+.preview-content,
+.tabla-scroll,
+.tabla-scroll-grande,
+.tabla-seguimiento-box .tabla-scroll {
+  max-width: 100% !important;
+  overflow-x: auto !important;
+}
+
+/* Tablas siguen grandes, pero no empujan toda la página */
+.tabla-editor-grande {
+  width: max-content !important;
+}
+
+.tabla-seguimiento-box table {
+  width: max-content !important;
+}
+
+/* Desktop ancho medio: usar más columnas, sin salirse */
+@media (min-width: 861px) {
+  .main,
+  main,
+  #panelView,
+  #categoriaView {
+    padding-right: 24px !important;
+  }
+
+  #panelView,
+  #categoriaView {
+    box-sizing: border-box !important;
+  }
+}
+
+/* Celular queda normal responsive */
+@media (max-width: 860px) {
+  html,
+  body {
+    overflow-x: hidden !important;
+  }
+
+  #cardsCategorias,
+  .cards {
+    grid-template-columns: 1fr !important;
+  }
+
+  .card {
+    min-height: auto !important;
+  }
+
+  .cat-header h2,
+  .panel-title,
+  #panelView h1 {
+    font-size: 21px !important;
+  }
+}
+
+
+/* =====================================================
+   SEGUIMIENTOS - TABLAS ESTILO AGENDA Y SINCRONIZACIÓN
+===================================================== */
+
+.seg-tabla-editor {
+  border: 2px solid #c7d2fe !important;
+  background: #ffffff !important;
+  border-radius: 18px !important;
+  padding: 16px !important;
+}
+
+.tabla-scroll-grande,
+.tabla-seguimiento-box .tabla-scroll,
+.tabla-scroll {
+  border: 1px solid #94a3b8 !important;
+  background: #ffffff !important;
+  border-radius: 14px !important;
+  overflow: auto !important;
+}
+
+.tabla-editor-grande,
+.tabla-seguimiento-box table {
+  border-collapse: collapse !important;
+  min-width: 1500px !important;
+  width: max-content !important;
+  background: #ffffff !important;
+}
+
+.tabla-editor-grande th,
+.tabla-seguimiento-box th {
+  background: #4f46e5 !important;
+  color: #ffffff !important;
+  border: 1px solid #374151 !important;
+  font-weight: 900 !important;
+  text-align: center !important;
+}
+
+.tabla-editor-grande td,
+.tabla-seguimiento-box td {
+  border: 1px solid #9ca3af !important;
+  background: #ffffff !important;
+  min-height: 72px !important;
+}
+
+.tabla-editor-grande th textarea,
+.tabla-editor-grande td textarea {
+  border: 1px solid #94a3b8 !important;
+  border-radius: 8px !important;
+  background: #ffffff !important;
+  color: #111827 !important;
+  font-weight: 800 !important;
+}
+
+.tabla-editor-grande td textarea {
+  min-height: 110px !important;
+}
+
+.tabla-editor-grande tr:nth-child(even) td {
+  background: #eef2ff !important;
+}
+
+.tabla-editor-grande tr:nth-child(odd) td {
+  background: #ffffff !important;
+}
+
+.seguimiento-form .actions {
+  display: flex !important;
+  gap: 10px !important;
+  flex-wrap: wrap !important;
+}
+
+.seguimiento-form .actions button {
+  min-height: 46px !important;
+  font-weight: 900 !important;
+}
+
+@media (max-width: 860px) {
+  .tabla-editor-grande,
+  .tabla-seguimiento-box table {
+    min-width: 1300px !important;
+  }
+
+  .seguimiento-form .actions {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+  }
+}
+
+
+/* =====================================================
+   SEGUIMIENTOS - CAMPO N° CELULAR
+===================================================== */
+
+.seguimiento-meta-grid p {
+  overflow-wrap: anywhere;
+}
+
+
+/* =====================================================
+   LIMPIEZA FINAL LOGIN/SUPABASE
+===================================================== */
+
+#authScreen,
+.auth-screen,
+.auth-card,
+.auth-brand,
+.auth-theme-box,
+.auth-form,
+.auth-footer,
+.btn-cerrar-sesion {
+  display: none !important;
+}
+
+
+/* =====================================================
+   SEGUIMIENTOS - TABLAS MÁS ALTAS Y MÁS ANGOSTAS
+===================================================== */
+
+.tabla-scroll-grande {
+  min-height: 620px !important;
+  max-height: 78vh !important;
+  overflow: auto !important;
+}
+
+/* Menos ancho total: celdas más angostas */
+.tabla-editor-grande {
+  min-width: 1280px !important;
+  width: max-content !important;
+}
+
+.tabla-editor-grande th,
+.tabla-editor-grande td {
+  min-width: 145px !important;
+  max-width: 175px !important;
+  padding: 10px !important;
+}
+
+/* Más alto para escribir cómodo */
+.tabla-editor-grande th textarea {
+  min-height: 88px !important;
+  font-size: 14px !important;
+  line-height: 1.35 !important;
+}
+
+.tabla-editor-grande td textarea {
+  min-height: 155px !important;
+  font-size: 14px !important;
+  line-height: 1.45 !important;
+}
+
+/* Contenido guardado también más angosto y prolijo */
+.tabla-seguimiento-box table {
+  min-width: 1150px !important;
+  width: max-content !important;
+}
+
+.tabla-seguimiento-box th,
+.tabla-seguimiento-box td {
+  min-width: 130px !important;
+  max-width: 170px !important;
+  padding: 10px !important;
+  vertical-align: top !important;
+}
+
+/* Celdas largas que no rompan el ancho */
+.tabla-editor-grande textarea,
+.tabla-seguimiento-box td,
+.tabla-seguimiento-box th {
+  overflow-wrap: anywhere !important;
+  word-break: normal !important;
+}
+
+@media (max-width: 860px) {
+  .tabla-scroll-grande {
+    min-height: 680px !important;
+    max-height: 82vh !important;
+  }
+
+  .tabla-editor-grande {
+    min-width: 1180px !important;
+  }
+
+  .tabla-editor-grande th,
+  .tabla-editor-grande td {
+    min-width: 135px !important;
+    max-width: 165px !important;
+  }
+
+  .tabla-editor-grande td textarea {
+    min-height: 165px !important;
+  }
+
+  .tabla-seguimiento-box table {
+    min-width: 1050px !important;
+  }
+}
+
+
+/* =====================================================
+   SEGUIMIENTOS - PLANTILLA WORD / EXCEL
+===================================================== */
+
+.seg-tabla-editor {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 10px !important;
+  padding: 14px !important;
+  box-shadow: 0 10px 28px #00000012 !important;
+}
+
+.tabla-scroll-grande {
+  background: #ffffff !important;
+  border: 1px solid #94a3b8 !important;
+  border-radius: 6px !important;
+  min-height: 620px !important;
+  max-height: 78vh !important;
+  overflow: auto !important;
+}
+
+.tabla-editor-grande {
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+  min-width: 1250px !important;
+  width: max-content !important;
+  background: #ffffff !important;
+  font-family: Arial, Calibri, sans-serif !important;
+}
+
+.tabla-editor-grande th,
+.tabla-editor-grande td {
+  border: 1px solid #8b8b8b !important;
+  min-width: 135px !important;
+  max-width: 165px !important;
+  padding: 0 !important;
+  background: #ffffff !important;
+  vertical-align: top !important;
+}
+
+.tabla-editor-grande th {
+  background: #1f4e79 !important;
+  color: #ffffff !important;
+}
+
+.tabla-editor-grande th textarea,
+.tabla-editor-grande td textarea {
+  width: 100% !important;
+  border: none !important;
+  outline: none !important;
+  border-radius: 0 !important;
+  resize: vertical !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  font-family: Arial, Calibri, sans-serif !important;
+  font-size: 13px !important;
+  line-height: 1.3 !important;
+  padding: 9px !important;
+  white-space: pre-wrap !important;
+}
+
+.tabla-editor-grande th textarea {
+  min-height: 72px !important;
+  font-weight: 900 !important;
+  text-align: center !important;
+  color: #ffffff !important;
+}
+
+.tabla-editor-grande td textarea {
+  min-height: 150px !important;
+  color: #111827 !important;
+}
+
+.tabla-editor-grande tbody tr:nth-child(even) td {
+  background: #d9eaf7 !important;
+}
+
+.tabla-editor-grande tbody tr:nth-child(odd) td {
+  background: #fff2cc !important;
+}
+
+.tabla-editor-grande tbody tr:nth-child(3n) td {
+  background: #e2f0d9 !important;
+}
+
+.tabla-editor-grande td textarea:focus,
+.tabla-editor-grande th textarea:focus {
+  background: #ffffff !important;
+  box-shadow: inset 0 0 0 2px #2563eb !important;
+}
+
+.columna-controls,
+.celda-controls {
+  background: rgba(255,255,255,.35) !important;
+  padding: 4px !important;
+  margin: 0 !important;
+  display: flex !important;
+  gap: 4px !important;
+  justify-content: center !important;
+}
+
+.columna-controls button,
+.celda-controls button {
+  border: 0 !important;
+  border-radius: 5px !important;
+  padding: 4px 6px !important;
+  font-size: 11px !important;
+}
+
+.fila-control-head,
+.fila-control-cell {
+  min-width: 55px !important;
+  max-width: 65px !important;
+  text-align: center !important;
+}
+
+.tabla-seguimiento-box table {
+  border-collapse: collapse !important;
+  min-width: 1100px !important;
+  width: max-content !important;
+  font-family: Arial, Calibri, sans-serif !important;
+}
+
+.tabla-seguimiento-box th {
+  background: #1f4e79 !important;
+  color: #ffffff !important;
+  border: 1px solid #8b8b8b !important;
+  padding: 8px !important;
+}
+
+.tabla-seguimiento-box td {
+  border: 1px solid #8b8b8b !important;
+  padding: 8px !important;
+  min-width: 120px !important;
+  max-width: 170px !important;
+  vertical-align: top !important;
+}
+
+.tabla-seguimiento-box tbody tr:nth-child(even) td {
+  background: #d9eaf7 !important;
+}
+
+.tabla-seguimiento-box tbody tr:nth-child(odd) td {
+  background: #fff2cc !important;
+}
+
+@media (max-width: 860px) {
+  .tabla-editor-grande {
+    min-width: 1150px !important;
+  }
+
+  .tabla-editor-grande th,
+  .tabla-editor-grande td {
+    min-width: 125px !important;
+    max-width: 155px !important;
+  }
+
+  .tabla-editor-grande td textarea {
+    min-height: 165px !important;
+  }
+}
+
+
+/* =====================================================
+   SEGUIMIENTOS - PLANTILLA LIMPIA WORD/EXCEL
+   Encabezados azules, celdas de escritura blancas.
+===================================================== */
+
+.seg-tabla-editor {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 10px !important;
+  padding: 14px !important;
+  box-shadow: 0 10px 28px #00000012 !important;
+}
+
+.tabla-scroll-grande,
+.tabla-seguimiento-box .tabla-scroll,
+.tabla-scroll {
+  background: #ffffff !important;
+  border: 1px solid #94a3b8 !important;
+  border-radius: 6px !important;
+  overflow: auto !important;
+}
+
+.tabla-editor-grande,
+.tabla-seguimiento-box table {
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+  width: max-content !important;
+  background: #ffffff !important;
+  font-family: Arial, Calibri, sans-serif !important;
+}
+
+.tabla-editor-grande {
+  min-width: 1250px !important;
+}
+
+.tabla-editor-grande th,
+.tabla-editor-grande td,
+.tabla-seguimiento-box th,
+.tabla-seguimiento-box td {
+  border: 1px solid #8b8b8b !important;
+  min-width: 135px !important;
+  max-width: 165px !important;
+  padding: 0 !important;
+  vertical-align: top !important;
+}
+
+.tabla-editor-grande th,
+.tabla-seguimiento-box th {
+  background: #1f4e79 !important;
+  color: #ffffff !important;
+  text-align: center !important;
+  font-weight: 900 !important;
+}
+
+.tabla-editor-grande td,
+.tabla-seguimiento-box td {
+  background: #ffffff !important;
+  color: #111827 !important;
+}
+
+.tabla-editor-grande th textarea,
+.tabla-editor-grande td textarea {
+  width: 100% !important;
+  border: none !important;
+  outline: none !important;
+  border-radius: 0 !important;
+  resize: vertical !important;
+  box-shadow: none !important;
+  font-family: Arial, Calibri, sans-serif !important;
+  font-size: 13px !important;
+  line-height: 1.35 !important;
+  padding: 9px !important;
+  white-space: pre-wrap !important;
+}
+
+.tabla-editor-grande th textarea {
+  min-height: 72px !important;
+  background: #1f4e79 !important;
+  color: #ffffff !important;
+  font-weight: 900 !important;
+  text-align: center !important;
+}
+
+.tabla-editor-grande td textarea {
+  min-height: 150px !important;
+  background: #ffffff !important;
+  color: #111827 !important;
+  font-weight: 700 !important;
+}
+
+.tabla-editor-grande td textarea:focus,
+.tabla-editor-grande th textarea:focus {
+  box-shadow: inset 0 0 0 2px #2563eb !important;
+}
+
+.columna-controls,
+.celda-controls {
+  background: rgba(255,255,255,.45) !important;
+  padding: 4px !important;
+  margin: 0 !important;
+  display: flex !important;
+  gap: 4px !important;
+  justify-content: center !important;
+}
+
+.fila-control-head,
+.fila-control-cell {
+  min-width: 55px !important;
+  max-width: 65px !important;
+  text-align: center !important;
+}
+
+/* PDF / impresión: blanco y negro, sin colores */
+@media print {
+  .tabla-editor-grande th,
+  .tabla-editor-grande td,
+  .tabla-seguimiento-box th,
+  .tabla-seguimiento-box td {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: 1px solid #000000 !important;
+    -webkit-print-color-adjust: economy !important;
+    print-color-adjust: economy !important;
+  }
+
+  .tabla-editor-grande th textarea,
+  .tabla-editor-grande td textarea {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  .columna-controls,
+  .celda-controls,
+  .seg-tabla-actions,
+  .modo-vaciar-toolbar {
+    display: none !important;
+  }
+}
+
+@media (max-width: 860px) {
+  .tabla-editor-grande {
+    min-width: 1150px !important;
+  }
+
+  .tabla-editor-grande th,
+  .tabla-editor-grande td {
+    min-width: 125px !important;
+    max-width: 155px !important;
+  }
+
+  .tabla-editor-grande td textarea {
+    min-height: 165px !important;
+  }
+}
+
+
+/* =====================================================
+   SEGUIMIENTOS - TABLAS BLANCO Y NEGRO FINAL
+   Sin colores, títulos más grandes y subrayados.
+===================================================== */
+
+.seg-tabla-editor {
+  background: #ffffff !important;
+  border: 1px solid #111111 !important;
+  border-radius: 0 !important;
+  padding: 14px !important;
+  box-shadow: none !important;
+}
+
+.tabla-scroll-grande,
+.tabla-seguimiento-box .tabla-scroll,
+.tabla-scroll {
+  background: #ffffff !important;
+  border: 1px solid #111111 !important;
+  border-radius: 0 !important;
+  overflow: auto !important;
+}
+
+/* Tabla de edición */
+.tabla-editor-grande {
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+  min-width: 1250px !important;
+  width: max-content !important;
+  background: #ffffff !important;
+  color: #000000 !important;
+  font-family: Arial, Calibri, sans-serif !important;
+}
+
+.tabla-editor-grande th,
+.tabla-editor-grande td {
+  border: 1px solid #000000 !important;
+  background: #ffffff !important;
+  color: #000000 !important;
+  min-width: 135px !important;
+  max-width: 165px !important;
+  padding: 0 !important;
+  vertical-align: top !important;
+}
+
+.tabla-editor-grande th {
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+.tabla-editor-grande th textarea,
+.tabla-editor-grande td textarea {
+  width: 100% !important;
+  border: none !important;
+  outline: none !important;
+  border-radius: 0 !important;
+  resize: vertical !important;
+  box-shadow: none !important;
+  background: #ffffff !important;
+  color: #000000 !important;
+  font-family: Arial, Calibri, sans-serif !important;
+  line-height: 1.35 !important;
+  padding: 10px !important;
+  white-space: pre-wrap !important;
+}
+
+.tabla-editor-grande th textarea {
+  min-height: 74px !important;
+  font-size: 15px !important;
+  font-weight: 900 !important;
+  text-align: center !important;
+  text-decoration: underline !important;
+  text-underline-offset: 4px !important;
+  text-decoration-thickness: 1.5px !important;
+}
+
+.tabla-editor-grande td textarea {
+  min-height: 150px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+}
+
+.tabla-editor-grande td textarea:focus,
+.tabla-editor-grande th textarea:focus {
+  background: #ffffff !important;
+  color: #000000 !important;
+  box-shadow: inset 0 0 0 2px #000000 !important;
+}
+
+/* Sacar fondos de filas alternadas */
+.tabla-editor-grande tbody tr:nth-child(even) td,
+.tabla-editor-grande tbody tr:nth-child(odd) td,
+.tabla-editor-grande tbody tr:nth-child(3n) td {
+  background: #ffffff !important;
+}
+
+/* Controles arriba de columnas en blanco/negro */
+.columna-controls,
+.celda-controls {
+  background: #ffffff !important;
+  border-bottom: 1px solid #000000 !important;
+  padding: 4px !important;
+  margin: 0 !important;
+  display: flex !important;
+  gap: 4px !important;
+  justify-content: center !important;
+}
+
+.columna-controls button,
+.celda-controls button,
+.vaciar-activo-btn {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border: 1px solid #000000 !important;
+  border-radius: 0 !important;
+  font-weight: 900 !important;
+  padding: 4px 6px !important;
+  font-size: 11px !important;
+}
+
+.columna-controls button.danger,
+.celda-controls button.danger,
+.icon-btn.danger {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border: 1px solid #000000 !important;
+}
+
+.fila-control-head,
+.fila-control-cell {
+  min-width: 55px !important;
+  max-width: 65px !important;
+  text-align: center !important;
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+/* Tabla guardada / PDF HTML */
+.tabla-seguimiento-box table {
+  border-collapse: collapse !important;
+  min-width: 1100px !important;
+  width: max-content !important;
+  background: #ffffff !important;
+  color: #000000 !important;
+  font-family: Arial, Calibri, sans-serif !important;
+}
+
+.tabla-seguimiento-box th,
+.tabla-seguimiento-box td {
+  border: 1px solid #000000 !important;
+  background: #ffffff !important;
+  color: #000000 !important;
+  padding: 9px !important;
+  min-width: 120px !important;
+  max-width: 170px !important;
+  vertical-align: top !important;
+}
+
+.tabla-seguimiento-box th {
+  font-size: 15px !important;
+  font-weight: 900 !important;
+  text-align: center !important;
+  text-decoration: underline !important;
+  text-underline-offset: 4px !important;
+  text-decoration-thickness: 1.5px !important;
+}
+
+.tabla-seguimiento-box td {
+  font-size: 13px !important;
+}
+
+.tabla-seguimiento-box tbody tr:nth-child(even) td,
+.tabla-seguimiento-box tbody tr:nth-child(odd) td,
+.tabla-seguimiento-box tbody tr:nth-child(3n) td {
+  background: #ffffff !important;
+}
+
+/* Cuadros de seguimiento sin colores fuertes */
+.revision-seguimiento-box,
+.seg-editor-section,
+.preguntas-seguimiento-box,
+.informe-encuesta-box,
+.seguimiento-aviso-compacto {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border-color: #00000022 !important;
+}
+
+/* Impresión y PDF: blanco y negro obligatorio */
+@media print {
+  * {
+    color: #000000 !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+  }
+
+  .tabla-editor-grande th,
+  .tabla-editor-grande td,
+  .tabla-seguimiento-box th,
+  .tabla-seguimiento-box td,
+  .tabla-editor-grande th textarea,
+  .tabla-editor-grande td textarea {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border-color: #000000 !important;
+    -webkit-print-color-adjust: economy !important;
+    print-color-adjust: economy !important;
+  }
+
+  .columna-controls,
+  .celda-controls,
+  .seg-tabla-actions,
+  .modo-vaciar-toolbar {
+    display: none !important;
+  }
+}
+
+@media (max-width: 860px) {
+  .tabla-editor-grande {
+    min-width: 1150px !important;
+  }
+
+  .tabla-editor-grande th,
+  .tabla-editor-grande td {
+    min-width: 125px !important;
+    max-width: 155px !important;
+  }
+
+  .tabla-editor-grande td textarea {
+    min-height: 165px !important;
+  }
+}
+
+
+/* =====================================================
+   SEGUIMIENTOS - PLANTILLA PROFESIONAL RRHH
+   Blanco y negro, formal, clara y apta para imprimir.
+===================================================== */
+
+.revision-seguimiento-box,
+.seguimiento-card,
+.barrio-archivo-card.seguimiento-card {
+  background: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 28px rgba(15, 23, 42, .08) !important;
+}
+
+.revision-seguimiento-box h2,
+.seguimiento-resumen h3,
+.seg-editor-section h3,
+.preguntas-seguimiento-box h3,
+.informe-encuesta-box h4 {
+  color: #111827 !important;
+  letter-spacing: .2px !important;
+}
+
+.revision-seguimiento-box h2 {
+  border-bottom: 2px solid #111827 !important;
+  padding-bottom: 10px !important;
+  margin-bottom: 14px !important;
+  text-transform: uppercase !important;
+  font-size: 22px !important;
+}
+
+.seg-editor-section {
+  background: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 10px !important;
+  padding: 16px !important;
+}
+
+.seg-tabla-editor {
+  background: #ffffff !important;
+  border: 1px solid #111827 !important;
+  border-radius: 4px !important;
+  padding: 12px !important;
+  box-shadow: none !important;
+  margin-top: 14px !important;
+}
+
+.seg-tabla-editor-head {
+  border-bottom: 1px solid #111827 !important;
+  padding-bottom: 10px !important;
+  margin-bottom: 12px !important;
+}
+
+.seg-tabla-editor-head label {
+  font-weight: 900 !important;
+  color: #111827 !important;
+  text-transform: uppercase !important;
+  font-size: 12px !important;
+  letter-spacing: .4px !important;
+}
+
+.seg-tabla-editor-head input,
+.revision-seguimiento-box input,
+.revision-seguimiento-box textarea,
+.revision-seguimiento-box select {
+  border: 1px solid #9ca3af !important;
+  border-radius: 4px !important;
+  background: #ffffff !important;
+  color: #111827 !important;
+}
+
+.tabla-scroll-grande,
+.tabla-seguimiento-box .tabla-scroll,
+.tabla-scroll {
+  background: #ffffff !important;
+  border: 1px solid #111827 !important;
+  border-radius: 0 !important;
+  overflow: auto !important;
+}
+
+.tabla-editor-grande,
+.tabla-seguimiento-box table {
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+  width: max-content !important;
+  min-width: 1200px !important;
+  background: #ffffff !important;
+  color: #000000 !important;
+  font-family: "Arial", "Calibri", sans-serif !important;
+  font-size: 13px !important;
+}
+
+.tabla-editor-grande th,
+.tabla-editor-grande td,
+.tabla-seguimiento-box th,
+.tabla-seguimiento-box td {
+  border: 1px solid #000000 !important;
+  background: #ffffff !important;
+  color: #000000 !important;
+  min-width: 128px !important;
+  max-width: 165px !important;
+  padding: 0 !important;
+  vertical-align: top !important;
+}
+
+.tabla-editor-grande th,
+.tabla-seguimiento-box th {
+  background: #f3f4f6 !important;
+  color: #000000 !important;
+  text-align: center !important;
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
+  letter-spacing: .25px !important;
+}
+
+.tabla-editor-grande th textarea,
+.tabla-editor-grande td textarea {
+  width: 100% !important;
+  border: none !important;
+  outline: none !important;
+  border-radius: 0 !important;
+  resize: vertical !important;
+  box-shadow: none !important;
+  background: #ffffff !important;
+  color: #000000 !important;
+  font-family: "Arial", "Calibri", sans-serif !important;
+  line-height: 1.35 !important;
+  padding: 9px !important;
+  white-space: pre-wrap !important;
+}
+
+.tabla-editor-grande th textarea {
+  min-height: 66px !important;
+  font-size: 14px !important;
+  font-weight: 900 !important;
+  text-align: center !important;
+  text-decoration: underline !important;
+  text-underline-offset: 4px !important;
+  text-decoration-thickness: 1.2px !important;
+  text-transform: uppercase !important;
+  background: #f3f4f6 !important;
+}
+
+.tabla-editor-grande td textarea {
+  min-height: 145px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  background: #ffffff !important;
+}
+
+.tabla-editor-grande td textarea:focus,
+.tabla-editor-grande th textarea:focus {
+  background: #ffffff !important;
+  color: #000000 !important;
+  box-shadow: inset 0 0 0 2px #111827 !important;
+}
+
+/* Controles discretos y profesionales */
+.columna-controls,
+.celda-controls {
+  background: #f9fafb !important;
+  border-bottom: 1px solid #d1d5db !important;
+  padding: 4px !important;
+  margin: 0 !important;
+  display: flex !important;
+  gap: 4px !important;
+  justify-content: center !important;
+}
+
+.columna-controls button,
+.celda-controls button,
+.vaciar-activo-btn {
+  background: #ffffff !important;
+  color: #111827 !important;
+  border: 1px solid #9ca3af !important;
+  border-radius: 4px !important;
+  font-weight: 900 !important;
+  padding: 4px 6px !important;
+  font-size: 11px !important;
+}
+
+.columna-controls button:hover,
+.celda-controls button:hover {
+  background: #f3f4f6 !important;
+}
+
+.fila-control-head,
+.fila-control-cell {
+  min-width: 55px !important;
+  max-width: 65px !important;
+  text-align: center !important;
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+.seg-tabla-actions button,
+.revision-actions-final button,
+.modo-vaciar-toolbar button {
+  border-radius: 4px !important;
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
+  letter-spacing: .2px !important;
+}
+
+.seg-tabla-actions .danger,
+.secondary.danger {
+  background: #ffffff !important;
+  color: #111827 !important;
+  border: 1px solid #111827 !important;
+}
+
+.informe-encuesta-box,
+.preguntas-seguimiento-box,
+.seguimiento-aviso-compacto {
+  background: #ffffff !important;
+  color: #111827 !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 6px !important;
+}
+
+/* Tabla guardada y PDF HTML */
+.tabla-seguimiento-box table {
+  min-width: 1050px !important;
+}
+
+.tabla-seguimiento-box th,
+.tabla-seguimiento-box td {
+  padding: 8px !important;
+}
+
+.tabla-seguimiento-box th {
+  font-size: 14px !important;
+  font-weight: 900 !important;
+  text-align: center !important;
+  text-decoration: underline !important;
+  text-underline-offset: 4px !important;
+  text-decoration-thickness: 1.2px !important;
+  text-transform: uppercase !important;
+  background: #f3f4f6 !important;
+}
+
+.tabla-seguimiento-box td {
+  font-size: 13px !important;
+  background: #ffffff !important;
+}
+
+.seguimiento-card-head {
+  border-bottom: 1px solid #d1d5db !important;
+  padding-bottom: 12px !important;
+}
+
+.seguimiento-chips span {
+  background: #ffffff !important;
+  border: 1px solid #111827 !important;
+  color: #111827 !important;
+  border-radius: 4px !important;
+}
+
+/* Impresión formal RRHH */
+@media print {
+  body {
+    background: #ffffff !important;
+  }
+
+  * {
+    color: #000000 !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+  }
+
+  .tabla-editor-grande th,
+  .tabla-editor-grande td,
+  .tabla-seguimiento-box th,
+  .tabla-seguimiento-box td,
+  .tabla-editor-grande th textarea,
+  .tabla-editor-grande td textarea {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border-color: #000000 !important;
+    -webkit-print-color-adjust: economy !important;
+    print-color-adjust: economy !important;
+  }
+
+  .tabla-seguimiento-box th,
+  .tabla-editor-grande th textarea {
+    text-decoration: underline !important;
+    font-weight: 900 !important;
+  }
+
+  .columna-controls,
+  .celda-controls,
+  .seg-tabla-actions,
+  .modo-vaciar-toolbar,
+  .revision-actions-final,
+  .registro-actions {
+    display: none !important;
+  }
+}
+
+@media (max-width: 860px) {
+  .tabla-editor-grande {
+    min-width: 1080px !important;
+  }
+
+  .tabla-editor-grande th,
+  .tabla-editor-grande td {
+    min-width: 120px !important;
+    max-width: 150px !important;
+  }
+
+  .tabla-editor-grande td textarea {
+    min-height: 155px !important;
+  }
+}
+
+
+/* =====================================================
+   SEGUIMIENTOS - BOTÓN BORRAR TABLA VISIBLE
+===================================================== */
+
+.seg-tabla-actions {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  align-items: center !important;
+}
+
+.btn-borrar-tabla,
+.seg-tabla-actions .btn-borrar-tabla {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
+}
+
+.btn-borrar-tabla:hover {
+  background: #f3f4f6 !important;
+}
+
+@media (max-width: 860px) {
+  .seg-tabla-actions {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  .seg-tabla-actions button {
+    width: 100% !important;
+  }
+}
+
+
+/* =====================================================
+   SEGUIMIENTOS - FORMULARIO SIMPLE INICIAL
+===================================================== */
+
+.seguimiento-form-simple {
+  background: #ffffff !important;
+}
+
+.seguimiento-form-simple .grid-form,
+.seguimiento-form-simple textarea:not(#segInforme) {
+  display: none !important;
+}
+
+.seguimiento-ayuda-simple {
+  margin: 6px 0 14px;
+  color: #4b5563;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.seguimiento-acciones-iniciales {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+  margin-top: 14px;
+}
+
+.seguimiento-acciones-iniciales button {
+  min-height: 44px !important;
+  font-weight: 900 !important;
+}
+
+@media (max-width: 860px) {
+  .seguimiento-acciones-iniciales {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+  }
+}
+
+
+/* =====================================================
+   SEGUIMIENTOS - PANEL INICIAL CON TÍTULO Y ARCHIVO
+===================================================== */
+
+.seguimiento-form-inicial-visible {
+  display: block !important;
+  background: #ffffff !important;
+}
+
+.seguimiento-form-inicial-visible .grid-form,
+.seguimiento-grid-inicial {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  gap: 14px !important;
+}
+
+.seguimiento-form-inicial-visible label {
+  display: grid !important;
+  gap: 6px !important;
+  font-weight: 900 !important;
+}
+
+.seguimiento-form-inicial-visible input {
+  width: 100% !important;
+  min-height: 42px !important;
+}
+
+.seguimiento-form-inicial-visible textarea,
+.seguimiento-form-inicial-visible #segInforme,
+.seguimiento-form-inicial-visible #segNombreApellido,
+.seguimiento-form-inicial-visible #segFecha,
+.seguimiento-form-inicial-visible #segCelular,
+.seguimiento-form-inicial-visible #segDni,
+.seguimiento-form-inicial-visible #segBarrio,
+.seguimiento-form-inicial-visible #segDireccion {
+  display: none !important;
+}
+
+.seguimiento-ayuda-simple {
+  margin: 12px 0 0 !important;
+  color: #4b5563 !important;
+  font-weight: 700 !important;
+  line-height: 1.45 !important;
+}
+
+.seguimiento-acciones-iniciales {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+  margin-top: 14px !important;
+}
+
+.seguimiento-acciones-iniciales button {
+  min-height: 44px !important;
+  font-weight: 900 !important;
+}
+
+@media (max-width: 860px) {
+  .seguimiento-form-inicial-visible .grid-form,
+  .seguimiento-grid-inicial {
+    grid-template-columns: 1fr !important;
+  }
+
+  .seguimiento-acciones-iniciales {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+  }
+}
+
+
+/* =====================================================
+   FIX SEGUIMIENTOS - MOSTRAR FORMULARIO INICIAL
+===================================================== */
+
+#seguimientoFormInicial,
+.seguimiento-form-inicial-visible {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  background: #ffffff !important;
+  margin: 18px 0 !important;
+  padding: 20px !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, .08) !important;
+}
+
+#seguimientoFormInicial h2 {
+  margin: 0 0 14px !important;
+  color: #1d4ed8 !important;
+}
+
+.seguimiento-grid-inicial {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  gap: 14px !important;
+}
+
+.seguimiento-grid-inicial label {
+  display: grid !important;
+  gap: 6px !important;
+  font-weight: 900 !important;
+  color: #111827 !important;
+}
+
+.seguimiento-grid-inicial input {
+  display: block !important;
+  width: 100% !important;
+  min-height: 42px !important;
+}
+
+.seguimiento-acciones-iniciales {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+  margin-top: 14px !important;
+}
+
+.seguimiento-acciones-iniciales button {
+  min-height: 44px !important;
+  font-weight: 900 !important;
+}
+
+.seguimiento-ayuda-simple {
+  display: block !important;
+  margin: 12px 0 0 !important;
+  color: #4b5563 !important;
+  font-weight: 700 !important;
+  line-height: 1.45 !important;
+}
+
+@media (max-width: 860px) {
+  .seguimiento-grid-inicial {
+    grid-template-columns: 1fr !important;
+  }
+
+  .seguimiento-acciones-iniciales {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+  }
+}
+
+
+/* =====================================================
+   FIX DEFINITIVO SEGUIMIENTOS - CONTENEDOR personasLista
+===================================================== */
+
+#personasLista #seguimientoFormInicial {
+  display: block !important;
+}
+
+#personasLista .seguimientos-lista {
+  display: grid !important;
+  gap: 18px !important;
+  margin-top: 18px !important;
+}
+
+
+/* =====================================================
+   SYNC COMPARTIDA - EVITAR QUE EL EDITOR SE PIERDA
+===================================================== */
+
+.seguimiento-card .registro-actions button,
+.seguimiento-card .icon-btn {
+  cursor: pointer !important;
+}
+
+
+/* =====================================================
+   PERSONAS - MULTI BASE Y REGISTROS AL IMPRIMIR
+===================================================== */
+
+.multi-base-box {
+  grid-column: 1 / -1;
+  padding: 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.multi-base-head {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.multi-base-head b {
+  color: #111827;
+}
+
+.multi-base-head small {
+  color: #6b7280;
+  font-weight: 700;
+}
+
+.multi-base-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 8px;
+}
+
+.multi-base-item {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #f9fafb;
+  font-weight: 800;
+}
+
+.multi-base-item input {
+  width: auto !important;
+  min-height: auto !important;
+}
+
+.registro-print-card {
+  border: 1px solid #111827 !important;
+  background: #ffffff !important;
+  color: #111827 !important;
+}
+
+@media (max-width: 860px) {
+  .multi-base-list {
+    grid-template-columns: 1fr;
+  }
+}
