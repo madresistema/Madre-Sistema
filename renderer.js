@@ -1,163 +1,3 @@
-
-/* =====================================================
-   SUPABASE COMPARTIDO SIN LOGIN
-   Todos los que abren la página ven la misma base.
-   Requiere tabla public.app_data_shared.
-===================================================== */
-
-const SUPABASE_URL = "https://jkkllfyrndbedrlblzdc.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impra2xsZnlybmRiZWRybGJsemRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTg0NDMsImV4cCI6MjA5NzI3NDQ0M30.Gm-6ONaqGXX1b0D6sjDvD2BjNfvZoW9YkDBF0rI2Vh8";
-const SUPABASE_SHARED_ROW_ID = "global";
-
-let supabaseSharedClient = null;
-let supabaseSharedCargando = false;
-let supabaseSharedTimer = null;
-
-function supabaseCompartidoConfigurado() {
-  return (
-    typeof window.supabase !== "undefined" &&
-    SUPABASE_URL &&
-    SUPABASE_ANON_KEY &&
-    !SUPABASE_URL.includes("PEGA_ACA") &&
-    !SUPABASE_ANON_KEY.includes("PEGA_ACA")
-  );
-}
-
-function iniciarSupabaseCompartido() {
-  if (!supabaseCompartidoConfigurado()) return null;
-
-  if (!supabaseSharedClient) {
-    supabaseSharedClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  }
-
-  return supabaseSharedClient;
-}
-
-function datosCompartidosApp() {
-  return {
-    version: 1,
-    categorias,
-    categoriasEliminadas,
-    personas,
-    registros,
-    planos,
-    encuestas,
-    seguimientos,
-    agendas,
-    notasCalcular,
-    libroPaginas,
-    baseOrden: JSON.parse(localStorage.getItem("baseOrden") || "[]"),
-    actualizado: new Date().toISOString()
-  };
-}
-
-function aplicarDatosCompartidosApp(data) {
-  if (!data || typeof data !== "object") return false;
-
-  categorias = Array.isArray(data.categorias) ? data.categorias : categorias;
-  categoriasEliminadas = Array.isArray(data.categoriasEliminadas) ? data.categoriasEliminadas : categoriasEliminadas;
-  personas = Array.isArray(data.personas) ? data.personas : personas;
-  registros = Array.isArray(data.registros) ? data.registros : registros;
-  planos = Array.isArray(data.planos) ? data.planos : planos;
-  encuestas = Array.isArray(data.encuestas) ? data.encuestas : encuestas;
-  seguimientos = Array.isArray(data.seguimientos) ? data.seguimientos : seguimientos;
-  agendas = Array.isArray(data.agendas) ? data.agendas : agendas;
-  notasCalcular = Array.isArray(data.notasCalcular) ? data.notasCalcular : notasCalcular;
-  libroPaginas = Array.isArray(data.libroPaginas) ? data.libroPaginas : libroPaginas;
-
-  if (Array.isArray(data.baseOrden)) {
-    localStorage.setItem("baseOrden", JSON.stringify(data.baseOrden));
-  }
-
-  return true;
-}
-
-function guardarDatosLocalesSinSubir() {
-  localStorage.setItem("categorias", JSON.stringify(categorias));
-  localStorage.setItem("categoriasEliminadas", JSON.stringify(categoriasEliminadas));
-  localStorage.setItem("personas", JSON.stringify(personas));
-  localStorage.setItem("registros", JSON.stringify(registros));
-  localStorage.setItem("planos", JSON.stringify(planos));
-  localStorage.setItem("encuestas", JSON.stringify(encuestas));
-  localStorage.setItem("seguimientos", JSON.stringify(seguimientos));
-  localStorage.setItem("agendas", JSON.stringify(agendas));
-  localStorage.setItem("notasCalcular", JSON.stringify(notasCalcular));
-  localStorage.setItem("libroPaginas", JSON.stringify(libroPaginas));
-  localStorage.setItem("baseOrden", JSON.stringify(categorias.map((c) => Number(c.id))));
-  guardarDatosCompartidosSupabaseDebounce();
-}
-
-async function cargarDatosCompartidosSupabase() {
-  if (typeof seguimientoPendienteRevision !== 'undefined' && seguimientoPendienteRevision) return;
-
-  const client = iniciarSupabaseCompartido();
-
-  if (!client) {
-    console.warn("Supabase compartido no está configurado. La app funcionará solo local.");
-    return;
-  }
-
-  supabaseSharedCargando = true;
-
-  const { data, error } = await client
-    .from("app_data_shared")
-    .select("data, updated_at")
-    .eq("id", SUPABASE_SHARED_ROW_ID)
-    .maybeSingle();
-
-  if (error) {
-    console.warn("No se pudieron cargar datos compartidos:", error.message);
-    supabaseSharedCargando = false;
-    return;
-  }
-
-  if (data?.data) {
-    aplicarDatosCompartidosApp(data.data);
-    guardarDatosLocalesSinSubir();
-    cargarStorage();
-    renderTodo();
-  } else {
-    await guardarDatosCompartidosSupabaseAhora();
-  }
-
-  supabaseSharedCargando = false;
-}
-
-function guardarDatosCompartidosSupabaseDebounce() {
-  if (supabaseSharedCargando) return;
-
-  clearTimeout(supabaseSharedTimer);
-  supabaseSharedTimer = setTimeout(guardarDatosCompartidosSupabaseAhora, 900);
-}
-
-async function guardarDatosCompartidosSupabaseAhora() {
-  const client = iniciarSupabaseCompartido();
-
-  if (!client) return;
-
-  const payload = {
-    id: SUPABASE_SHARED_ROW_ID,
-    data: datosCompartidosApp(),
-    updated_at: new Date().toISOString()
-  };
-
-  const { error } = await client
-    .from("app_data_shared")
-    .upsert(payload, { onConflict: "id" });
-
-  if (error) {
-    console.warn("No se pudieron guardar datos compartidos:", error.message);
-  }
-}
-
-function iniciarSincronizacionCompartidaSupabase() {
-  cargarDatosCompartidosSupabase();
-
-  // Revisa cambios de otras PCs cada 20 segundos.
-  setInterval(cargarDatosCompartidosSupabase, 20000);
-}
-
-
 const CATEGORIAS_DEFAULT = [
   { id: 1, nombre: "Vivienda", icono: "🏠", color: "blue", total: 0 },
   { id: 2, nombre: "Trabajo", icono: "💼", color: "green", total: 0 },
@@ -234,7 +74,6 @@ let libroPaginaSeleccionada = 0;
 let encuestaPendienteRevision = null;
 let encuestaOCRTrabajando = false;
 let archivoSeleccionados = [];
-let archivoRegistroOpciones = {};
 let seguimientoPendienteRevision = null;
 
 const $ = (id) => document.getElementById(id);
@@ -278,10 +117,6 @@ function guardarStorage() {
   localStorage.setItem("notasCalcular", JSON.stringify(notasCalcular));
   localStorage.setItem("libroPaginas", JSON.stringify(libroPaginas));
   localStorage.setItem("baseOrden", JSON.stringify(categorias.map((c) => Number(c.id))));
-
-  if (typeof guardarDatosCompartidosSupabaseDebounce === "function") {
-    guardarDatosCompartidosSupabaseDebounce();
-  }
 }
 
 function cargarStorage() {
@@ -1474,7 +1309,7 @@ function buscarItemsCrearArchivo() {
       barrio: p.barrio || "",
       fecha: p.fecha_carga || "",
       detalle: `${p.direccion || ""} ${p.celular || ""} ${p.motivo_consulta || ""}`,
-      html: () => htmlPersonaCrearArchivo(p, !!archivoRegistroOpciones[`persona-${p.id}`])
+      html: () => htmlPersonaCrearArchivo(p)
     });
   });
 
@@ -1512,7 +1347,7 @@ function buscarItemsCrearArchivo() {
       subtitulo: s.barrio || "Seguimientos",
       barrio: s.barrio || "",
       fecha: s.fecha || s.fecha_carga || "",
-      detalle: `${s.nombre_apellido || ""} ${s.dni || ""} ${s.celular || ""} ${s.direccion_numero || ""} ${s.informe || ""} ${s.nombreArchivo || ""}`,
+      detalle: `${s.nombre_apellido || ""} ${s.dni || ""} ${s.direccion_numero || ""} ${s.informe || ""} ${s.nombreArchivo || ""}`,
       html: () => htmlSeguimientoPDF(s)
     });
   });
@@ -1534,9 +1369,9 @@ function buscarItemsCrearArchivo() {
 }
 
 
-function htmlPersonaCrearArchivo(p, incluirRegistros = true) {
+function htmlPersonaCrearArchivo(p) {
   const cat = categorias.find((c) => Number(c.id) === Number(p.categoria_id));
-  const regs = incluirRegistros ? registros.filter((r) => Number(r.persona_id) === Number(p.id)) : [];
+  const regs = registros.filter((r) => Number(r.persona_id) === Number(p.id));
 
   return `
     <div class="card">
@@ -1553,7 +1388,7 @@ function htmlPersonaCrearArchivo(p, incluirRegistros = true) {
       </table>
 
       ${
-        incluirRegistros && regs.length
+        regs.length
           ? `
             <h3>Registros</h3>
             ${regs.map((r) => `
@@ -1650,28 +1485,6 @@ function renderCrearArchivo() {
 }
 
 
-
-function configurarRegistrosArchivoPersonalizado(accion = "descargar") {
-  const items = buscarItemsCrearArchivo().filter((item) => archivoSeleccionados.includes(item.id));
-  const personasItems = items.filter((item) => item.id.startsWith("persona-"));
-
-  if (!personasItems.length) {
-    archivoRegistroOpciones = {};
-    return;
-  }
-
-  const personasLista = personasItems
-    .map((item) => personas.find((p) => `persona-${p.id}` === item.id))
-    .filter(Boolean);
-
-  const mapa = preguntarRegistroMultiple(personasLista, accion);
-
-  archivoRegistroOpciones = {};
-  personasLista.forEach((p) => {
-    archivoRegistroOpciones[`persona-${p.id}`] = !!mapa[p.id];
-  });
-}
-
 function htmlArchivoPersonalizado() {
   const items = ordenarItemsCrearArchivo(
     buscarItemsCrearArchivo().filter((item) => archivoSeleccionados.includes(item.id))
@@ -1710,7 +1523,6 @@ function imprimirArchivoPersonalizado() {
     return;
   }
 
-  configurarRegistrosArchivoPersonalizado("imprimir este archivo personalizado");
   imprimirHTML("Archivo personalizado", htmlArchivoPersonalizado());
 }
 
@@ -1720,7 +1532,6 @@ function descargarArchivoPersonalizado() {
     return;
   }
 
-  configurarRegistrosArchivoPersonalizado("descargar este archivo personalizado");
   descargarHTML("archivo-personalizado", htmlArchivoPersonalizado());
 }
 
@@ -1827,6 +1638,7 @@ function renderSidebar() {
   document.querySelectorAll(".cat-btn[data-cat]").forEach((btn) => {
     btn.onclick = () => mostrarCategoria(Number(btn.dataset.cat));
       cerrarSidebarMobile();
+      cerrarSidebarMobile();
   });
 
   const btnBarrios = $("btnBarrios");
@@ -1876,6 +1688,7 @@ function renderPanel() {
 
   document.querySelectorAll(".card[data-cat]").forEach((card) => {
     card.onclick = () => mostrarCategoria(Number(card.dataset.cat));
+      cerrarSidebarMobile();
       cerrarSidebarMobile();
   });
 
@@ -2165,17 +1978,7 @@ function abrirFormPersona(categoriaId = "", persona = null) {
   $("barrio").value = persona?.barrio || "";
   $("motivo").value = persona?.motivo_consulta || "";
   $("fechaCarga").value = convertirFechaInput(persona?.fecha_carga || "");
-
-  const principal = persona?.categoria_id || categoriaId || "";
-  $("categoriaSelect").value = principal;
-
-  const seleccionadas = persona
-    ? [Number(persona.categoria_id)]
-    : principal
-      ? [Number(principal)]
-      : [];
-
-  asegurarMultiBasePersona(seleccionadas);
+  $("categoriaSelect").value = persona?.categoria_id || categoriaId || "";
 
   $("formPersona").classList.remove("hidden");
   actualizarAvisoDestino();
@@ -2196,49 +1999,29 @@ function cerrarFormPersona() {
 }
 
 function guardarPersona() {
-  const categoriasDestino = categoriasSeleccionadasFormulario();
-
-  const baseData = {
+  const data = {
+    id: editandoId || Date.now(),
     nombre: $("nombre").value.trim(),
     celular: $("celular").value.trim(),
     direccion: $("direccion").value.trim(),
     barrio: $("barrio").value.trim(),
     motivo_consulta: $("motivo").value.trim(),
+    categoria_id: Number($("categoriaSelect").value),
     fecha_carga: $("fechaCarga").value || new Date().toLocaleDateString("es-AR")
   };
 
-  if (!baseData.nombre || !categoriasDestino.length) {
-    alert("Completá Nombre y elegí al menos una Base de Datos de Destino.");
+  if (!data.nombre || !data.categoria_id) {
+    alert("Completá Nombre y Base de Datos de Destino.");
     return;
   }
 
   if (editandoId) {
-    const categoriaId = Number($("categoriaSelect").value || categoriasDestino[0]);
-    personas = personas.map((p) =>
-      Number(p.id) === Number(editandoId)
-        ? { ...baseData, id: editandoId, categoria_id: categoriaId }
-        : p
-    );
-
-    guardarStorage();
-    cerrarFormPersona();
-    renderTodo();
-
-    if (vista === "categoria") mostrarCategoria(categoriaId);
-    return;
+    personas = personas.map((p) => Number(p.id) === Number(editandoId) ? data : p);
+  } else {
+    personas.push(data);
   }
 
-  const primerId = Date.now();
-
-  categoriasDestino.forEach((catId, index) => {
-    personas.push({
-      ...baseData,
-      id: primerId + index,
-      categoria_id: Number(catId)
-    });
-  });
-
-  const categoriaGuardadaId = Number(categoriasDestino[0]);
+  const categoriaGuardadaId = data.categoria_id;
 
   guardarStorage();
   cerrarFormPersona();
@@ -5636,66 +5419,6 @@ function tablasSeguimientoHtml(tablas) {
   return lista.map((tabla, index) => tablaHtmlDesdeMatriz(tabla.rows || tabla, tabla.titulo || `Cuadro ${index + 1}`)).join("");
 }
 
-
-function limpiarTextoDocxTabla(texto) {
-  return String(texto || "")
-    .replace(/\u00a0/g, " ")
-    .replace(/[ \t]+/g, " ")
-    .replace(/\n\s+/g, "\n")
-    .trim();
-}
-
-function textoCeldaDocxMejorado(celda) {
-  const parrafos = Array.from(celda.getElementsByTagName("w:p")).map((p) =>
-    Array.from(p.getElementsByTagName("w:t"))
-      .map((n) => n.textContent || "")
-      .join("")
-      .trim()
-  ).filter(Boolean);
-
-  const texto = parrafos.length
-    ? parrafos.join("\n")
-    : Array.from(celda.getElementsByTagName("w:t")).map((n) => n.textContent || "").join("");
-
-  return limpiarTextoDocxTabla(texto);
-}
-
-function normalizarFilasDocxMejorado(rows) {
-  return (rows || [])
-    .map((r) => (r || []).map((c) => limpiarTextoDocxTabla(c)))
-    .filter((r) => r.some((c) => String(c || "").trim()));
-}
-
-function esTablaDocxReal(rows) {
-  const filas = normalizarFilasDocxMejorado(rows);
-  if (!filas.length) return false;
-
-  const maxCols = Math.max(...filas.map((r) => r.length));
-  const filasConDosColumnas = filas.filter((r) => r.filter((c) => String(c || "").trim()).length >= 2).length;
-
-  if (maxCols < 2) return false;
-  if (filas.length < 2) return false;
-  if (filasConDosColumnas < 1) return false;
-
-  return true;
-}
-
-function tituloTablaSeguimientoDocx(rows, idx) {
-  const filas = normalizarFilasDocxMejorado(rows);
-  const texto = filas.flat().join(" ").toLowerCase();
-
-  if (texto.includes("programa") || texto.includes("operativo") || texto.includes("barrio") || texto.includes("equipo interviniente")) {
-    return "Datos del operativo";
-  }
-
-  if (texto.includes("caso detectado") || texto.includes("problemática") || texto.includes("problematica") || texto.includes("estado") || texto.includes("observaciones")) {
-    return "Cuadro de seguimiento";
-  }
-
-  return `Cuadro ${idx + 1}`;
-}
-
-
 function textoCeldaDocxGenerico(celda) {
   return Array.from(celda.getElementsByTagName("w:t"))
     .map((n) => n.textContent || "")
@@ -5721,21 +5444,16 @@ async function extraerTablasSeguimientoDesdeDocx(archivo) {
   const xml = new DOMParser().parseFromString(xmlText, "application/xml");
   const tablas = Array.from(xml.getElementsByTagName("w:tbl"));
 
-  return tablas
-    .map((tbl, idx) => {
-      const rowsOriginal = Array.from(tbl.getElementsByTagName("w:tr")).map((tr) =>
-        Array.from(tr.getElementsByTagName("w:tc")).map((tc) => textoCeldaDocxMejorado(tc))
-      );
+  return tablas.map((tbl, idx) => {
+    const rows = Array.from(tbl.getElementsByTagName("w:tr")).map((tr) =>
+      Array.from(tr.getElementsByTagName("w:tc")).map((tc) => textoCeldaDocxGenerico(tc))
+    );
 
-      const rows = normalizarFilasDocxMejorado(rowsOriginal);
-
-      return {
-        titulo: tituloTablaSeguimientoDocx(rows, idx),
-        rows
-      };
-    })
-    .filter((tabla) => esTablaDocxReal(tabla.rows))
-    .slice(0, 2);
+    return {
+      titulo: idx === 0 ? "Cuadro de seguimiento" : `Cuadro ${idx + 1}`,
+      rows: normalizarFilasDocx(rows)
+    };
+  }).filter((t) => t.rows.length);
 }
 
 
@@ -5763,7 +5481,6 @@ function htmlSeguimientoPDF(item) {
         <tbody>
           <tr><th>Nombre y apellido</th><td>${escapeHtml(item.nombre_apellido || "")}</td></tr>
           <tr><th>Fecha</th><td>${escapeHtml(item.fecha || "")}</td></tr>
-          <tr><th>N° celular</th><td>${escapeHtml(item.celular || "")}</td></tr>
           <tr><th>DNI</th><td>${escapeHtml(item.dni || "")}</td></tr>
           <tr><th>Barrio</th><td>${escapeHtml(item.barrio || "")}</td></tr>
           <tr><th>Dirección y número</th><td>${escapeHtml(item.direccion_numero || "")}</td></tr>
@@ -5857,7 +5574,7 @@ function renderTablasSeguimientoEditor(tablas) {
   const lista = Array.isArray(tablas) ? tablas : [];
 
   if (!lista.length) {
-    return `<div class="empty"><p>No hay tablas cargadas. Tocá <b>Agregar apartado</b> para crear una tabla nueva.</p></div>`;
+    return `<div class="empty"><p>No hay cuadros detectados. Tocá <b>Agregar apartado</b> para crear uno.</p></div>`;
   }
 
   return lista.map((tabla, tIndex) => {
@@ -5875,7 +5592,6 @@ function renderTablasSeguimientoEditor(tablas) {
           <div class="seg-tabla-actions">
             <button type="button" class="secondary" onclick="agregarColumnaSeguimiento(${tIndex})">+ Columna a la derecha</button>
             <button type="button" class="secondary" onclick="agregarFilaSeguimiento(${tIndex})">+ Fila</button>
-            <button type="button" class="secondary danger btn-borrar-tabla" onclick="eliminarApartadoSeguimiento(${tIndex})">🗑️ Borrar tabla completa</button>
           </div>
         </div>
 
@@ -5888,7 +5604,7 @@ function renderTablasSeguimientoEditor(tablas) {
                     <div class="columna-controls">
                       <button type="button" title="Mover izquierda" onclick="moverColumnaSeguimiento(${tIndex}, ${cIndex}, -1)">⬅️</button>
                       <button type="button" title="Mover derecha" onclick="moverColumnaSeguimiento(${tIndex}, ${cIndex}, 1)">➡️</button>
-                      <button type="button" class="danger" title="Eliminar columna completa" onclick="eliminarColumnaSeguimiento(${tIndex}, ${cIndex})">🗑️</button>
+                      <button type="button" class="danger" title="Eliminar columna" onclick="eliminarColumnaSeguimiento(${tIndex}, ${cIndex})">🗑️</button>
                     </div>
                     <textarea id="segTablaHead-${tIndex}-${cIndex}" rows="2">${escapeHtml(col)}</textarea>
                   </th>
@@ -5905,7 +5621,7 @@ function renderTablasSeguimientoEditor(tablas) {
                     </td>
                   `).join("")}
                   <td class="fila-control-cell">
-                    <button type="button" class="icon-btn danger" title="Eliminar fila completa" onclick="eliminarFilaSeguimiento(${tIndex}, ${rIndex})">🗑️</button>
+                    <button type="button" class="icon-btn danger" onclick="eliminarFilaSeguimiento(${tIndex}, ${rIndex})">🗑️</button>
                   </td>
                 </tr>
               `).join("")}
@@ -6016,32 +5732,11 @@ function preservarEdicionSeguimientoTemporal() {
     seguimientoPendienteRevision.titulo = String($("revSegTitulo")?.value || seguimientoPendienteRevision.titulo || "").trim();
     seguimientoPendienteRevision.nombre_apellido = String($("revSegNombreApellido")?.value || seguimientoPendienteRevision.nombre_apellido || "").trim();
     seguimientoPendienteRevision.fecha = String($("revSegFecha")?.value || seguimientoPendienteRevision.fecha || "").trim();
-    seguimientoPendienteRevision.celular = String($("revSegCelular")?.value || seguimientoPendienteRevision.celular || "").trim();
     seguimientoPendienteRevision.dni = String($("revSegDni")?.value || seguimientoPendienteRevision.dni || "").trim();
     seguimientoPendienteRevision.barrio = String($("revSegBarrio")?.value || seguimientoPendienteRevision.barrio || "").trim();
     seguimientoPendienteRevision.direccion_numero = String($("revSegDireccion")?.value || seguimientoPendienteRevision.direccion_numero || "").trim();
     seguimientoPendienteRevision.informe = String($("revSegInforme")?.value || seguimientoPendienteRevision.informe || "").trim();
   } catch (e) {}
-}
-
-
-function eliminarApartadoSeguimiento(tIndex) {
-  if (!seguimientoPendienteRevision) return;
-  if (!confirm("¿Eliminar esta tabla completa?")) return;
-
-  preservarEdicionSeguimientoTemporal();
-
-  if (!Array.isArray(seguimientoPendienteRevision.tablas)) {
-    seguimientoPendienteRevision.tablas = [];
-  }
-
-  seguimientoPendienteRevision.tablas = seguimientoPendienteRevision.tablas.filter((_, idx) => Number(idx) !== Number(tIndex));
-
-  renderSeguimientos();
-
-  setTimeout(() => {
-    document.querySelector(".revision-seguimiento-box")?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, 80);
 }
 
 function agregarColumnaSeguimiento(tIndex) {
@@ -6160,11 +5855,6 @@ function renderRevisionSeguimientoPendiente() {
         </label>
 
         <label>
-          N° celular
-          <input id="revSegCelular" inputmode="tel" value="${escapeHtml(seguimientoPendienteRevision.celular || "")}" />
-        </label>
-
-        <label>
           DNI
           <input id="revSegDni" value="${escapeHtml(seguimientoPendienteRevision.dni || "")}" />
         </label>
@@ -6237,7 +5927,6 @@ function confirmarSeguimientoRevision() {
     titulo: String($("revSegTitulo")?.value || seguimientoPendienteRevision.titulo || "").trim(),
     nombre_apellido: String($("revSegNombreApellido")?.value || "").trim(),
     fecha: String($("revSegFecha")?.value || "").trim(),
-    celular: String($("revSegCelular")?.value || "").trim(),
     dni: String($("revSegDni")?.value || "").trim(),
     barrio: String($("revSegBarrio")?.value || "").trim(),
     direccion_numero: String($("revSegDireccion")?.value || "").trim(),
@@ -6270,7 +5959,6 @@ function confirmarSeguimientoRevision() {
   seguimientoPendienteRevision = null;
 
   guardarStorage();
-  if (typeof guardarDatosCompartidosSupabaseAhora === 'function') guardarDatosCompartidosSupabaseAhora();
   renderSeguimientos();
 }
 
@@ -6278,9 +5966,8 @@ function confirmarSeguimientoRevision() {
 
 function renderSeguimientos() {
   cerrarFormPersona();
-
-  if ($("formPersona")) $("formPersona").classList.add("hidden");
-  if ($("busqueda")) $("busqueda").style.display = "block";
+  $("formPersona").classList.add("hidden");
+  $("busqueda").style.display = "block";
 
   $("categoriaHeader").className = "cat-header bg-teal";
   $("categoriaHeader").innerHTML = `
@@ -6308,52 +5995,70 @@ function renderSeguimientos() {
       String(s.nombre_apellido || "").toLowerCase().includes(texto) ||
       String(s.barrio || "").toLowerCase().includes(texto) ||
       String(s.dni || "").toLowerCase().includes(texto) ||
-      String(s.celular || "").toLowerCase().includes(texto) ||
       String(s.direccion_numero || "").toLowerCase().includes(texto) ||
-      String(s.informe || "").toLowerCase().includes(texto) ||
-      String(s.nombreArchivo || "").toLowerCase().includes(texto)
+      String(s.informe || "").toLowerCase().includes(texto)
     )
     .sort((a, b) => Number(b.id) - Number(a.id));
 
-  const htmlInicial = `
-    <div id="seguimientoFormInicial" class="form-card seguimiento-form seguimiento-form-inicial-visible">
+  $("personasLista").innerHTML = `
+    <div class="form-card seguimiento-form">
       <h2>📋 Nuevo seguimiento</h2>
 
-      <div class="grid-form seguimiento-grid-inicial">
+      <div class="grid-form">
         <label>
           Título *
           <input id="segTitulo" placeholder="Ej: Seguimiento problemática cloacas" />
         </label>
 
         <label>
+          Nombre y apellido
+          <input id="segNombreApellido" placeholder="Nombre y apellido" />
+        </label>
+
+        <label>
+          Fecha
+          <input id="segFecha" type="date" />
+        </label>
+
+        <label>
+          DNI
+          <input id="segDni" placeholder="DNI" />
+        </label>
+
+        <label>
+          Barrio
+          <input id="segBarrio" placeholder="Barrio o localidad" />
+        </label>
+
+        <label>
+          Dirección y número
+          <input id="segDireccion" placeholder="Dirección y número" />
+        </label>
+
+        <label class="full">
+          Informe
+          <textarea id="segInforme" rows="6" placeholder="Escribí el informe, descripción, observaciones o seguimiento."></textarea>
+        </label>
+
+        <label class="full">
           Seleccionar archivo
-          <input id="segArchivo" type="file" accept="image/*,.pdf,.doc,.docx" />
+          <input id="segArchivo" type="file" accept="image/*,.pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
         </label>
       </div>
 
-      <div class="actions seguimiento-acciones-iniciales">
+      <div class="actions">
         <button class="primary" onclick="guardarSeguimiento()">Guardar seguimiento</button>
-        <button class="secondary" onclick="crearTablaManualSeguimiento()">Crear tabla manual</button>
       </div>
-
-      <p class="seguimiento-ayuda-simple">
-        Escribí el título y después cargá un archivo o creá una tabla manual. Al hacerlo, abajo aparece el apartado para completar fecha, celular, DNI, barrio, dirección, informe y tablas.
-      </p>
     </div>
-  `;
 
-  const destino = $("personasLista") || $("contenido");
-
-  if (!destino) {
-    console.error("No se encontró contenedor para seguimientos.");
-    return;
-  }
-
-  destino.innerHTML = `
-    ${htmlInicial}
     ${renderRevisionSeguimientoPendiente()}
+
     <div class="seguimientos-lista">
-      ${lista.map(renderSeguimientoCard).join("") || `<p class="empty">No hay seguimientos cargados.</p>`}
+      ${
+        lista.length
+          ? lista.map((s) => renderSeguimientoCard(s)).join("")
+          : `<div class="empty"><p>No hay seguimientos cargados.</p></div>`
+      }
     </div>
   `;
 }
@@ -6406,7 +6111,6 @@ function renderSeguimientoCard(item) {
             <p>🏘️ <b>Barrio:</b> ${escapeHtml(item.barrio || "—")}</p>
             <p>📍 <b>Dirección:</b> ${escapeHtml(item.direccion_numero || "—")}</p>
             <p>📅 <b>Fecha:</b> ${escapeHtml(item.fecha || "—")}</p>
-            <p>📱 <b>N° celular:</b> ${escapeHtml(item.celular || "—")}</p>
             <p>📄 <b>Archivo:</b> ${escapeHtml(item.nombreArchivo || "Sin archivo")}</p>
           </div>
 
@@ -6441,41 +6145,6 @@ function renderSeguimientoCard(item) {
   `;
 }
 
-
-function crearTablaManualSeguimiento() {
-  const titulo = String($("segTitulo")?.value || "").trim();
-
-  if (!titulo) {
-    alert("Completá el título del seguimiento.");
-    return;
-  }
-
-  seguimientoPendienteRevision = {
-    id: Date.now(),
-    titulo,
-    nombre_apellido: "",
-    fecha: "",
-    celular: "",
-    dni: "",
-    barrio: "",
-    direccion_numero: "",
-    informe: "",
-    archivo: "",
-    nombreArchivo: "",
-    tipo: "",
-    tablas: [crearTablaSeguimientoVacia()],
-    preguntas: [],
-    fecha_carga: new Date().toLocaleDateString("es-AR")
-  };
-
-  renderSeguimientos();
-
-  setTimeout(() => {
-    document.querySelector(".revision-seguimiento-box")?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, 80);
-}
-
-
 function guardarSeguimiento() {
   const titulo = String($("segTitulo")?.value || "").trim();
   const archivo = $("segArchivo")?.files?.[0] || null;
@@ -6485,22 +6154,16 @@ function guardarSeguimiento() {
     return;
   }
 
-  if (!archivo) {
-    alert("Seleccioná un archivo o tocá Crear tabla manual.");
-    return;
-  }
-
   const crearPendiente = (dataUrl = "", nombreArchivo = "", tipo = "", tablas = []) => {
     seguimientoPendienteRevision = {
       id: Date.now(),
       titulo,
-      nombre_apellido: "",
-      fecha: "",
-      celular: "",
-      dni: "",
-      barrio: "",
-      direccion_numero: "",
-      informe: "",
+      nombre_apellido: String($("segNombreApellido")?.value || "").trim(),
+      fecha: String($("segFecha")?.value || "").trim(),
+      dni: String($("segDni")?.value || "").trim(),
+      barrio: String($("segBarrio")?.value || "").trim(),
+      direccion_numero: String($("segDireccion")?.value || "").trim(),
+      informe: String($("segInforme")?.value || "").trim(),
       archivo: dataUrl,
       nombreArchivo,
       tipo,
@@ -6514,33 +6177,37 @@ function guardarSeguimiento() {
     }
 
     renderSeguimientos();
-
-    setTimeout(() => {
-      document.querySelector(".revision-seguimiento-box")?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 80);
   };
 
-  const tipo = archivo.type || "";
-  const nombreArchivo = archivo.name || "archivo";
-
-  if (nombreArchivo.toLowerCase().endsWith(".docx")) {
-    extraerTablasSeguimientoDesdeDocx(archivo)
-      .then((tablas) => {
-        leerArchivoComoDataUrl(archivo).then((dataUrl) => {
-          crearPendiente(dataUrl, nombreArchivo, tipo || "application/vnd.openxmlformats-officedocument.wordprocessingml.document", tablas);
-        });
-      })
-      .catch(() => {
-        leerArchivoComoDataUrl(archivo).then((dataUrl) => {
-          crearPendiente(dataUrl, nombreArchivo, tipo, [crearTablaSeguimientoVacia()]);
-        });
-      });
+  if (!archivo) {
+    crearPendiente("", "", "", [crearTablaSeguimientoVacia()]);
     return;
   }
 
-  leerArchivoComoDataUrl(archivo).then((dataUrl) => {
-    crearPendiente(dataUrl, nombreArchivo, tipo, [crearTablaSeguimientoVacia()]);
-  });
+  const pesoMB = archivo.size / 1024 / 1024;
+  if (pesoMB > 5) {
+    alert("El archivo es muy pesado. Usá archivos de hasta 5 MB.");
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = async (e) => {
+    const tipo = archivoEsWord(archivo) ? "word" : archivoEsPdf(archivo) ? "pdf" : "imagen";
+    let tablas = [];
+
+    if (tipo === "word") {
+      try {
+        tablas = await extraerTablasSeguimientoDesdeDocx(archivo);
+      } catch (error) {
+        tablas = [];
+      }
+    }
+
+    crearPendiente(e.target.result, archivo.name, tipo, tablas);
+  };
+
+  reader.readAsDataURL(archivo);
 }
 
 
@@ -6553,7 +6220,6 @@ function eliminarSeguimiento(id) {
   if (!confirm("¿Eliminar este seguimiento?")) return;
   seguimientos = seguimientos.filter((s) => Number(s.id) !== Number(id));
   guardarStorage();
-  if (typeof guardarDatosCompartidosSupabaseAhora === 'function') guardarDatosCompartidosSupabaseAhora();
   renderSeguimientos();
 }
 
@@ -6574,7 +6240,6 @@ async function correoSeguimiento(id) {
 Seguimiento: ${item.titulo || ""}
 Nombre y apellido: ${item.nombre_apellido || ""}
 Fecha: ${item.fecha || ""}
-N° celular: ${item.celular || ""}
 DNI: ${item.dni || ""}
 Barrio: ${item.barrio || ""}
 Dirección y número: ${item.direccion_numero || ""}
@@ -6610,7 +6275,6 @@ async function correoSeguimientos() {
 ${i + 1}) ${s.titulo || "Seguimiento"}
 Nombre y apellido: ${s.nombre_apellido || ""}
 Fecha: ${s.fecha || ""}
-N° celular: ${s.celular || ""}
 DNI: ${s.dni || ""}
 Barrio: ${s.barrio || ""}
 Dirección y número: ${s.direccion_numero || ""}
@@ -7203,146 +6867,6 @@ function eliminarEncuesta(id) {
 // TEXTOS / IMPRESIÓN / CORREO / DESCARGA
 // ===============================
 
-
-function registrosDePersona(personaId) {
-  return registros.filter((r) => Number(r.persona_id) === Number(personaId));
-}
-
-function htmlRegistrosDePersona(personaId) {
-  const regs = registrosDePersona(personaId);
-
-  if (!regs.length) {
-    return `<p><i>Sin registros internos.</i></p>`;
-  }
-
-  return `
-    <h2>Registros internos</h2>
-    ${regs.map((r) => `
-      <div class="card registro-print-card">
-        <h3>${escapeHtml(r.titulo || "Registro")}</h3>
-        <p><b>Fecha:</b> ${escapeHtml(r.fecha || "—")}</p>
-        <p>${escapeHtml(r.descripcion || "—").replace(/\n/g, "<br>")}</p>
-      </div>
-    `).join("")}
-  `;
-}
-
-function htmlPersonaConOpciones(p, incluirRegistros = false) {
-  return `
-    <h1>Registro: ${escapeHtml(p.nombre || "Persona")}</h1>
-    <div class="card">
-      <pre>${escapeHtml(textoPersona(p))}</pre>
-      ${incluirRegistros ? htmlRegistrosDePersona(p.id) : ""}
-    </div>
-  `;
-}
-
-function preguntarRegistroSimple(nombre = "este apartado") {
-  return confirm(`¿Querés imprimir/descargar ${nombre} con registros internos?\n\nAceptar = Sí\nCancelar = No`);
-}
-
-function preguntarRegistroMultiple(personasLista, accion = "imprimir") {
-  if (!personasLista.length) return {};
-
-  const respuesta = prompt(
-    `¿Deseás ${accion} con registros internos?\n\n` +
-    `Escribí una opción:\n` +
-    `SI = todos con registros\n` +
-    `NO = todos sin registros\n` +
-    `EDITAR = elegir persona por persona`,
-    "NO"
-  );
-
-  const r = String(respuesta || "NO").trim().toLowerCase();
-  const mapa = {};
-
-  if (r === "si" || r === "sí" || r === "s") {
-    personasLista.forEach((p) => mapa[p.id] = true);
-    return mapa;
-  }
-
-  if (r === "editar" || r === "e") {
-    const listado = personasLista.map((p, i) => `${i + 1}) ${p.nombre || "Sin nombre"}`).join("\n");
-    const elegidos = prompt(
-      `Elegí cuáles van CON registros internos.\n\n${listado}\n\n` +
-      `Escribí los números separados por coma. Ej: 1,3,5\n` +
-      `Los que no pongas salen sin registros.`,
-      ""
-    );
-
-    const nums = String(elegidos || "")
-      .split(",")
-      .map((x) => Number(x.trim()))
-      .filter(Boolean);
-
-    personasLista.forEach((p, i) => {
-      mapa[p.id] = nums.includes(i + 1);
-    });
-
-    return mapa;
-  }
-
-  personasLista.forEach((p) => mapa[p.id] = false);
-  return mapa;
-}
-
-function htmlPersonasConMapaRegistro(personasLista, mapa) {
-  return personasLista.map((p) => htmlPersonaConOpciones(p, !!mapa[p.id])).join("");
-}
-
-function categoriasSeleccionadasFormulario() {
-  const checks = Array.from(document.querySelectorAll(".categoria-extra-check:checked"))
-    .map((c) => Number(c.value))
-    .filter(Boolean);
-
-  const principal = Number($("categoriaSelect")?.value || 0);
-  if (principal && !checks.includes(principal)) checks.unshift(principal);
-
-  return [...new Set(checks)];
-}
-
-function renderCategoriasExtraPersona(seleccionadas = []) {
-  const normales = categorias.filter((cat) => !cat.parent && cat.tipo !== "barrio");
-
-  return `
-    <div class="multi-base-box">
-      <div class="multi-base-head">
-        <b>Mandar también a otras bases de datos</b>
-        <small>Podés elegir una o varias bases.</small>
-      </div>
-
-      <div class="multi-base-list">
-        ${normales.map((cat) => `
-          <label class="multi-base-item">
-            <input
-              type="checkbox"
-              class="categoria-extra-check"
-              value="${cat.id}"
-              ${seleccionadas.map(Number).includes(Number(cat.id)) ? "checked" : ""}
-            />
-            <span>${cat.icono} ${escapeHtml(cat.nombre)}</span>
-          </label>
-        `).join("")}
-      </div>
-    </div>
-  `;
-}
-
-function asegurarMultiBasePersona(seleccionadas = []) {
-  const select = $("categoriaSelect");
-  if (!select || !select.parentElement) return;
-
-  let box = $("multiBasePersonaBox");
-  if (!box) {
-    box = document.createElement("div");
-    box.id = "multiBasePersonaBox";
-    select.parentElement.insertAdjacentElement("afterend", box);
-  }
-
-  box.innerHTML = renderCategoriasExtraPersona(seleccionadas);
-}
-
-
 function textoPersona(p) {
   return `
 Nombre: ${p.nombre || "—"}
@@ -7398,7 +6922,7 @@ Fecha: ${plano.fecha || "—"}
 }
 
 function htmlPersona(p) {
-  return htmlPersonaConOpciones(p, false);
+  return `<h1>Registro: ${escapeHtml(p.nombre)}</h1><div class="card"><pre>${escapeHtml(textoPersona(p))}</pre></div>`;
 }
 
 function htmlRegistro(r) {
@@ -7439,14 +6963,8 @@ function imprimirBase() {
     return;
   }
 
-  if (catActiva.tipo === "seguimiento") {
-    imprimirSeguimientos();
-    return;
-  }
-
   const personasCat = personas.filter((p) => Number(p.categoria_id) === Number(catActiva.id));
-  const mapa = preguntarRegistroMultiple(personasCat, "imprimir esta base");
-  imprimirHTML(`Imprimir ${catActiva.nombre}`, `<h1>Base de datos: ${escapeHtml(catActiva.nombre)}</h1>${personasCat.length ? htmlPersonasConMapaRegistro(personasCat, mapa) : "<p>No hay registros cargados.</p>"}`);
+  imprimirHTML(`Imprimir ${catActiva.nombre}`, `<h1>Base de datos: ${escapeHtml(catActiva.nombre)}</h1>${personasCat.length ? personasCat.map(htmlPersona).join("") : "<p>No hay registros cargados.</p>"}`);
 }
 
 function descargarBase() {
@@ -7462,14 +6980,8 @@ function descargarBase() {
     return;
   }
 
-  if (catActiva.tipo === "seguimiento") {
-    descargarSeguimientos();
-    return;
-  }
-
   const personasCat = personas.filter((p) => Number(p.categoria_id) === Number(catActiva.id));
-  const mapa = preguntarRegistroMultiple(personasCat, "descargar esta base");
-  descargarHTML(`base-${catActiva.nombre}`, `<h1>Base de datos: ${escapeHtml(catActiva.nombre)}</h1>${personasCat.length ? htmlPersonasConMapaRegistro(personasCat, mapa) : "<p>No hay registros cargados.</p>"}`);
+  descargarHTML(`base-${catActiva.nombre}`, `<h1>Base de datos: ${escapeHtml(catActiva.nombre)}</h1>${personasCat.length ? personasCat.map(htmlPersona).join("") : "<p>No hay registros cargados.</p>"}`);
 }
 
 async function correoBase() {
@@ -7524,10 +7036,7 @@ ${cuerpo}`);
 
 function imprimirPersona(id) {
   const p = personas.find((x) => Number(x.id) === Number(id));
-  if (!p) return;
-
-  const incluir = preguntarRegistroSimple(p.nombre || "esta persona");
-  imprimirHTML(`Imprimir ${p.nombre}`, htmlPersonaConOpciones(p, incluir));
+  if (p) imprimirHTML(`Imprimir ${p.nombre}`, htmlPersona(p));
 }
 
 function correoPersona(id) {
@@ -7537,10 +7046,7 @@ function correoPersona(id) {
 
 function descargarPersona(id) {
   const p = personas.find((x) => Number(x.id) === Number(id));
-  if (!p) return;
-
-  const incluir = preguntarRegistroSimple(p.nombre || "esta persona");
-  descargarHTML(`persona-${p.nombre}`, htmlPersonaConOpciones(p, incluir));
+  if (p) descargarHTML(`persona-${p.nombre}`, htmlPersona(p));
 }
 
 function imprimirRegistro(id) {
@@ -9312,25 +8818,3 @@ function descargarLibro() {
 }
 
 document.addEventListener("DOMContentLoaded", init);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-window.addEventListener('load', iniciarSincronizacionCompartidaSupabase);
