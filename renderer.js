@@ -1,4 +1,3 @@
-
 /* =====================================================
    SUPABASE COMPARTIDO SIN LOGIN
    Todos los que abren la página ven la misma base.
@@ -16,10 +15,13 @@ let supabaseSharedTimer = null;
 function supabaseCompartidoConfigurado() {
   return (
     typeof window.supabase !== "undefined" &&
-    SUPABASE_URL &&
-    SUPABASE_ANON_KEY &&
-    !SUPABASE_URL.includes("https://jkkllfyrndbedrlblzdc.supabase.co") &&
-    !SUPABASE_ANON_KEY.includes("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impra2xsZnlybmRiZWRybGJsemRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTg0NDMsImV4cCI6MjA5NzI3NDQ0M30.Gm-6ONaqGXX1b0D6sjDvD2BjNfvZoW9YkDBF0rI2Vh8")
+    typeof SUPABASE_URL === "string" &&
+    typeof SUPABASE_ANON_KEY === "string" &&
+    SUPABASE_URL.startsWith("https://") &&
+    SUPABASE_ANON_KEY.length > 50 &&
+    !SUPABASE_URL.includes("PEGA_ACA") &&
+    !SUPABASE_ANON_KEY.includes("PEGA_ACA") &&
+    !SUPABASE_ANON_KEY.includes("PEGÁ_ACÁ")
   );
 }
 
@@ -84,11 +86,10 @@ function guardarDatosLocalesSinSubir() {
   localStorage.setItem("notasCalcular", JSON.stringify(notasCalcular));
   localStorage.setItem("libroPaginas", JSON.stringify(libroPaginas));
   localStorage.setItem("baseOrden", JSON.stringify(categorias.map((c) => Number(c.id))));
-  guardarDatosCompartidosSupabaseDebounce();
 }
 
 async function cargarDatosCompartidosSupabase() {
-  if (typeof seguimientoPendienteRevision !== 'undefined' && seguimientoPendienteRevision) return;
+  if (typeof seguimientoPendienteRevision !== "undefined" && seguimientoPendienteRevision) return;
 
   const client = iniciarSupabaseCompartido();
 
@@ -111,13 +112,14 @@ async function cargarDatosCompartidosSupabase() {
     return;
   }
 
-  if (data?.data) {
+  if (data?.data && Object.keys(data.data).length > 0) {
     aplicarDatosCompartidosApp(data.data);
     guardarDatosLocalesSinSubir();
     cargarStorage();
     renderTodo();
+    console.log("✅ Datos cargados desde Supabase:", data.updated_at);
   } else {
-    await guardarDatosCompartidosSupabaseAhora();
+    console.warn("⚠️ Supabase está vacío. No se suben datos vacíos automáticamente.");
   }
 
   supabaseSharedCargando = false;
@@ -147,16 +149,16 @@ async function guardarDatosCompartidosSupabaseAhora() {
 
   if (error) {
     console.warn("No se pudieron guardar datos compartidos:", error.message);
+  } else {
+    console.log("✅ Datos guardados en Supabase.");
   }
 }
 
 function iniciarSincronizacionCompartidaSupabase() {
   cargarDatosCompartidosSupabase();
 
-  // Revisa cambios de otras PCs cada 20 segundos.
   setInterval(cargarDatosCompartidosSupabase, 20000);
 }
-
 
 const CATEGORIAS_DEFAULT = [
   { id: 1, nombre: "Vivienda", icono: "🏠", color: "blue", total: 0 },
@@ -1198,6 +1200,10 @@ function init() {
   cargarStorage();
   bindEvents();
   renderTodo();
+
+  if (typeof iniciarSincronizacionCompartidaSupabase === "function") {
+    iniciarSincronizacionCompartidaSupabase();
+  }
 }
 
 
