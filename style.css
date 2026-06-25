@@ -5700,19 +5700,41 @@ textarea {
 }
 
 
+
 /* =====================================================
-   SUPABASE POR DISPOSITIVO + ADMIN
+   SUPABASE POR DISPOSITIVO + ADMIN - PANEL PRINCIPAL
 ===================================================== */
 
-.supabase-admin-box {
-  position: fixed;
-  right: 18px;
-  bottom: 18px;
-  z-index: 9999;
+.supabase-admin-panel {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 16px;
+  padding: 16px;
+  margin: 0 0 22px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, .08);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: center;
+}
+
+.admin-panel-left h3 {
+  margin: 0 0 6px;
+  font-size: 18px;
+  color: #111827;
+}
+
+.admin-panel-left p {
+  margin: 0 0 10px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.admin-panel-actions {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 230px;
+  flex-wrap: wrap;
+  gap: 9px;
+  justify-content: flex-end;
 }
 
 .supabase-admin-main {
@@ -5722,7 +5744,7 @@ textarea {
   border-radius: 12px;
   padding: 10px 12px;
   font-weight: 900;
-  box-shadow: 0 8px 22px rgba(0,0,0,.18);
+  box-shadow: 0 4px 12px rgba(0,0,0,.08);
 }
 
 .supabase-admin-main.secondary-admin {
@@ -5732,12 +5754,12 @@ textarea {
 }
 
 .supabase-device-status {
-  background: #ffffff;
+  display: inline-block;
+  background: #f9fafb;
   color: #111827;
   border: 1px solid #d1d5db;
   border-radius: 12px;
   padding: 10px;
-  box-shadow: 0 8px 22px rgba(0,0,0,.12);
   font-size: 12px;
   line-height: 1.35;
 }
@@ -5762,7 +5784,7 @@ textarea {
 }
 
 .modal-admin-card {
-  width: min(1050px, 96vw);
+  width: min(1120px, 96vw);
   margin: 20px auto;
   background: #ffffff;
   border-radius: 18px;
@@ -5863,23 +5885,12 @@ textarea {
 }
 
 @media (max-width: 820px) {
-  .supabase-admin-box {
-    left: 12px;
-    right: 12px;
-    bottom: 12px;
-    width: auto;
-    flex-direction: row;
-    flex-wrap: wrap;
+  .supabase-admin-panel {
+    grid-template-columns: 1fr;
   }
 
-  .supabase-admin-main {
-    flex: 1 1 110px;
-    padding: 9px 8px;
-    font-size: 12px;
-  }
-
-  .supabase-device-status {
-    flex: 1 1 100%;
+  .admin-panel-actions {
+    justify-content: flex-start;
   }
 
   .admin-device-card {
@@ -5888,8 +5899,17 @@ textarea {
 }
 
 @media print {
-  .supabase-admin-box,
+  .supabase-admin-panel,
   .modal-admin-dispositivos {
     display: none !important;
   }
+}
+
+/* ADMIN - COMPU BASE */
+.admin-device-card.admin-device-base {
+  border: 2px solid #111827;
+  background: #fff;
+}
+.admin-device-card.admin-device-base h3::before {
+  content: "⭐ ";
 }
