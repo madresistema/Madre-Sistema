@@ -803,6 +803,17 @@ let seguimientoPendienteRevision = null;
 const $ = (id) => document.getElementById(id);
 
 
+function normalizarClaveTexto(valor) {
+  return String(valor || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+
+
 function limpiarCategoriasBarriosViejas() {
   const nombresViejos = ["planos", "encuesta"];
 
@@ -3438,11 +3449,11 @@ function abrirFormPersona(categoriaId = "", persona = null) {
   const principal = persona?.categoria_id || categoriaId || "";
   $("categoriaSelect").value = principal;
 
-  const seleccionadas = persona
-    ? categoriasDePersonaRelacionada(persona)
-    : principal
-      ? [Number(principal)]
-      : [];
+  // Al editar desde una base, se edita SOLO ese registro/base.
+  // No se marcan automáticamente las otras copias para no pisar motivos diferentes.
+  const seleccionadas = principal
+    ? [Number(principal)]
+    : [];
 
   asegurarMultiBasePersona(seleccionadas);
 
@@ -3483,29 +3494,53 @@ function guardarPersona() {
 
   if (editandoId) {
     const original = personas.find((p) => Number(p.id) === Number(editandoId));
+    if (!original) {
+      alert("No se encontró la persona a editar.");
+      return;
+    }
+
+    const categoriaOriginal = Number(original.categoria_id);
     const grupoId = original?.persona_grupo_id || `grupo_${editandoId}`;
-    const relacionados = personas.filter((p) =>
-      p.persona_grupo_id === grupoId || Number(p.id) === Number(editandoId)
-    );
 
-    personas = personas.filter((p) => !(p.persona_grupo_id === grupoId || Number(p.id) === Number(editandoId)));
+    // IMPORTANTÍSIMO:
+    // Editar una persona desde una base modifica SOLO ese registro/base.
+    // Si la misma persona existe en Gobierno, Vivienda, Inspección, etc.,
+    // esas otras copias quedan intactas porque pueden tener motivos diferentes.
+    const idxOriginal = personas.findIndex((p) => Number(p.id) === Number(editandoId));
+    personas[idxOriginal] = {
+      ...original,
+      ...baseData,
+      id: original.id,
+      categoria_id: categoriaOriginal,
+      persona_grupo_id: grupoId
+    };
 
-    categoriasDestino.forEach((catId, index) => {
-      const existente = relacionados.find((p) => Number(p.categoria_id) === Number(catId));
+    // Si además marcás otras bases, se crean copias nuevas en esas bases,
+    // pero NO se modifican ni se eliminan copias ya existentes.
+    const nuevasBases = categoriasDestino.filter((catId) => Number(catId) !== categoriaOriginal);
+
+    nuevasBases.forEach((catId, index) => {
+      const yaExisteEnEsaBase = personas.some((p) =>
+        Number(p.categoria_id) === Number(catId) &&
+        normalizarClaveTexto(p.nombre) === normalizarClaveTexto(baseData.nombre) &&
+        normalizarClaveTexto(p.barrio) === normalizarClaveTexto(baseData.barrio)
+      );
+
+      if (yaExisteEnEsaBase) return;
+
       personas.push({
         ...baseData,
-        id: existente?.id || (Date.now() + index),
+        id: Date.now() + index,
         categoria_id: Number(catId),
         persona_grupo_id: grupoId
       });
     });
 
-    const categoriaId = Number(categoriasDestino[0]);
     guardarStorage();
     cerrarFormPersona();
     renderTodo();
 
-    if (vista === "categoria") mostrarCategoria(categoriaId);
+    if (vista === "categoria") mostrarCategoria(categoriaOriginal);
     return;
   }
 
