@@ -5698,3 +5698,198 @@ textarea {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* =====================================================
+   SUPABASE POR DISPOSITIVO + ADMIN
+===================================================== */
+
+.supabase-admin-box {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 230px;
+}
+
+.supabase-admin-main {
+  background: #111827;
+  color: #ffffff;
+  border: 1px solid #374151;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-weight: 900;
+  box-shadow: 0 8px 22px rgba(0,0,0,.18);
+}
+
+.supabase-admin-main.secondary-admin {
+  background: #ffffff;
+  color: #111827;
+  border-color: #d1d5db;
+}
+
+.supabase-device-status {
+  background: #ffffff;
+  color: #111827;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 8px 22px rgba(0,0,0,.12);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.supabase-device-status b,
+.supabase-device-status span {
+  display: block;
+}
+
+.modal-admin-dispositivos {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, .62);
+  z-index: 10000;
+  display: none;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.modal-admin-dispositivos.visible {
+  display: block;
+}
+
+.modal-admin-card {
+  width: min(1050px, 96vw);
+  margin: 20px auto;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 20px 45px rgba(0,0,0,.28);
+  border: 1px solid #e5e7eb;
+}
+
+.modal-admin-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 14px;
+  margin-bottom: 14px;
+}
+
+.modal-admin-head h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #111827;
+}
+
+.modal-admin-head p {
+  margin: 6px 0 0;
+  color: #6b7280;
+  font-weight: 700;
+}
+
+.modal-admin-head button {
+  background: #f3f4f6;
+  color: #111827;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-weight: 900;
+}
+
+.modal-admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.modal-admin-actions button,
+.admin-device-actions button {
+  background: #2563eb;
+  color: white;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 900;
+}
+
+.admin-device-list {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-device-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: center;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 14px;
+  background: #f9fafb;
+}
+
+.admin-device-card h3 {
+  margin: 0 0 6px;
+  color: #111827;
+}
+
+.admin-device-card p {
+  margin: 3px 0;
+  color: #4b5563;
+  font-size: 13px;
+}
+
+.admin-device-card small {
+  display: block;
+  margin-top: 7px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.admin-device-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.admin-device-actions .danger {
+  background: #dc2626;
+}
+
+@media (max-width: 820px) {
+  .supabase-admin-box {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    width: auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .supabase-admin-main {
+    flex: 1 1 110px;
+    padding: 9px 8px;
+    font-size: 12px;
+  }
+
+  .supabase-device-status {
+    flex: 1 1 100%;
+  }
+
+  .admin-device-card {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media print {
+  .supabase-admin-box,
+  .modal-admin-dispositivos {
+    display: none !important;
+  }
+}
