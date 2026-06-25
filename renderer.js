@@ -1394,19 +1394,25 @@ function documentoHTMLParaPDF(nombre, contenidoHtml) {
       <meta charset="UTF-8" />
       <title>${escapeHtml(nombre)}</title>
       <style>
-        @page { size: A4; margin: 12mm; }
+        @page {
+          size: A4;
+          margin: 12mm;
+        }
 
-        html, body {
+        html,
+        body {
           margin: 0;
           padding: 0;
-          background: white;
+          background: #ffffff;
           color: #111827;
           font-family: Arial, Helvetica, sans-serif;
           font-size: 15px;
           line-height: 1.35;
         }
 
-        body { padding: 18px 22px; }
+        body {
+          padding: 30px;
+        }
 
         .aviso-web-pdf {
           background: #eff6ff;
@@ -1419,29 +1425,44 @@ function documentoHTMLParaPDF(nombre, contenidoHtml) {
         }
 
         h1 {
-          margin: 0 0 20px;
-          font-size: 34px;
+          margin: 0 0 22px;
+          font-size: 38px;
+          line-height: 1.1;
           font-weight: 900;
           color: #111827;
         }
 
+        .total-elementos-pdf {
+          margin: 0 0 24px;
+          font-size: 18px;
+          color: #111827;
+        }
+
         h2 {
-          margin: 22px 0 14px;
-          font-size: 28px;
+          margin: 26px 0 20px;
+          font-size: 30px;
+          line-height: 1.1;
           font-weight: 900;
           color: #111827;
         }
 
         h3 {
-          margin: 18px 0 8px;
+          margin: 20px 0 14px;
           font-size: 22px;
+          line-height: 1.2;
           font-weight: 900;
           color: #111827;
         }
 
-        p { margin: 8px 0 14px; font-size: 17px; }
+        p {
+          margin: 8px 0 14px;
+          font-size: 18px;
+          color: #111827;
+        }
 
-        .archivo-personalizado-grupo { margin-top: 18px; }
+        .archivo-personalizado-grupo {
+          margin-top: 18px;
+        }
 
         .archivo-personalizado-section {
           break-inside: avoid;
@@ -1451,7 +1472,7 @@ function documentoHTMLParaPDF(nombre, contenidoHtml) {
 
         .archivo-personalizado-section > h3 {
           font-size: 22px;
-          margin-bottom: 12px;
+          margin-bottom: 14px;
         }
 
         .archivo-personalizado-section > p {
@@ -1464,16 +1485,18 @@ function documentoHTMLParaPDF(nombre, contenidoHtml) {
           border: 1px solid #d1d5db;
           border-radius: 14px;
           padding: 22px 24px;
-          margin: 14px 0 26px;
-          background: white;
+          margin: 18px 0 28px;
+          background: #ffffff;
           break-inside: avoid;
           page-break-inside: avoid;
         }
 
         .persona-pdf-nombre {
-          margin: 0 0 18px;
+          margin: 0 0 22px;
           font-size: 30px;
+          line-height: 1.15;
           font-weight: 900;
+          color: #111827;
         }
 
         .persona-pdf-tabla,
@@ -1482,32 +1505,32 @@ function documentoHTMLParaPDF(nombre, contenidoHtml) {
           border-collapse: collapse;
           table-layout: fixed;
           margin-top: 8px;
-        }
-
-        .persona-pdf-tabla th,
-        .persona-pdf-tabla td,
-        th,
-        td {
-          border: 1px solid #777;
-          padding: 10px 12px;
-          vertical-align: top;
-          font-size: 20px;
-          background: white;
-          color: #111827;
+          background: #ffffff;
         }
 
         .persona-pdf-tabla th,
         th {
           width: 26%;
+          border: 1px solid #777777;
+          padding: 10px 12px;
+          vertical-align: middle;
           text-align: center;
+          font-size: 20px;
           font-weight: 900;
-          background: white;
+          background: #ffffff !important;
+          color: #111827;
         }
 
         .persona-pdf-tabla td,
         td {
+          border: 1px solid #777777;
+          padding: 10px 12px;
+          vertical-align: middle;
           text-align: left;
+          font-size: 20px;
           font-weight: 400;
+          background: #ffffff !important;
+          color: #111827;
         }
 
         pre {
@@ -1520,18 +1543,33 @@ function documentoHTMLParaPDF(nombre, contenidoHtml) {
           max-width: 100%;
           max-height: 760px;
           object-fit: contain;
-          border: 1px solid #ddd;
+          border: 1px solid #dddddd;
           border-radius: 10px;
           background: #f3f4f6;
           display: block;
           margin: 10px 0;
         }
 
-        iframe { width: 100%; height: 760px; border: 1px solid #ddd; }
+        iframe {
+          width: 100%;
+          height: 760px;
+          border: 1px solid #dddddd;
+        }
 
-        .espacio-libro { display:inline; width:auto; min-width:0; height:auto; background:transparent; white-space:break-spaces; }
+        .espacio-libro {
+          display: inline;
+          width: auto;
+          min-width: 0;
+          height: auto;
+          background: transparent;
+          white-space: break-spaces;
+        }
 
-        .print-doble { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        .print-doble {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 18px;
+        }
 
         .pagina-print {
           border: 1px solid #d1d5db;
@@ -1550,9 +1588,13 @@ function documentoHTMLParaPDF(nombre, contenidoHtml) {
         @media print {
           .no-print,
           .aviso-web-pdf,
-          button { display: none !important; }
+          button {
+            display: none !important;
+          }
 
-          body { padding: 0; }
+          body {
+            padding: 18px;
+          }
 
           img,
           .persona-pdf-card,
@@ -2304,7 +2346,7 @@ function htmlArchivoPersonalizado() {
 
   return `
     <h1>Archivo personalizado</h1>
-    <p><b>Total de elementos:</b> ${items.length}</p>
+    <p class="total-elementos-pdf"><b>Total de elementos:</b> ${items.length}</p>
 
     ${Object.entries(grupos).map(([grupo, lista]) => `
       <section class="archivo-personalizado-grupo">
@@ -8586,19 +8628,37 @@ function htmlRegistrosDePersona(personaId) {
 
 function htmlPersonaConOpciones(p, incluirRegistros = false) {
   const cat = categorias.find((c) => Number(c.id) === Number(p.categoria_id));
-  const baseNombre = cat?.nombre || p.base || "—";
+  const baseNombre = cat?.nombre || p.base || p.__base_nombre || "—";
 
   return `
     <div class="persona-pdf-card">
       <h2 class="persona-pdf-nombre">👤 ${escapeHtml(p.nombre || "Persona")}</h2>
 
       <table class="persona-pdf-tabla">
-        <tr><th>Base</th><td>${escapeHtml(baseNombre)}</td></tr>
-        <tr><th>Dirección</th><td>${escapeHtml(p.direccion || "")}</td></tr>
-        <tr><th>Celular</th><td>${escapeHtml(p.celular || "")}</td></tr>
-        <tr><th>Barrio</th><td>${escapeHtml(p.barrio || "")}</td></tr>
-        <tr><th>Fecha</th><td>${escapeHtml(p.fecha_carga || "")}</td></tr>
-        <tr><th>Motivo</th><td>${escapeHtml(p.motivo_consulta || "").replace(/\n/g, "<br>")}</td></tr>
+        <tr>
+          <th>Base</th>
+          <td>${escapeHtml(baseNombre)}</td>
+        </tr>
+        <tr>
+          <th>Dirección</th>
+          <td>${escapeHtml(p.direccion || "")}</td>
+        </tr>
+        <tr>
+          <th>Celular</th>
+          <td>${escapeHtml(p.celular || "")}</td>
+        </tr>
+        <tr>
+          <th>Barrio</th>
+          <td>${escapeHtml(p.barrio || "")}</td>
+        </tr>
+        <tr>
+          <th>Fecha</th>
+          <td>${escapeHtml(p.fecha_carga || "")}</td>
+        </tr>
+        <tr>
+          <th>Motivo</th>
+          <td>${escapeHtml(p.motivo_consulta || "").replace(/\n/g, "<br>")}</td>
+        </tr>
       </table>
 
       ${incluirRegistros ? htmlRegistrosDePersona(p.id) : ""}
@@ -8606,8 +8666,67 @@ function htmlPersonaConOpciones(p, incluirRegistros = false) {
   `;
 }
 
+
+function htmlPersonaSeccionPDF(p, incluirRegistros = false) {
+  return `
+    <section class="archivo-personalizado-section">
+      <h3>Persona · ${escapeHtml(p.nombre || "Persona")}</h3>
+      <p><b>Fecha:</b> ${escapeHtml(p.fecha_carga || "—")}</p>
+      ${htmlPersonaConOpciones(p, incluirRegistros)}
+    </section>
+  `;
+}
+
+function htmlDocumentoPersonasPDF(titulo, personasLista, mapaRegistros = {}) {
+  const lista = Array.isArray(personasLista) ? personasLista : [];
+
+  if (!lista.length) {
+    return `
+      <h1>Archivo personalizado</h1>
+      <p class="total-elementos-pdf"><b>Total de elementos:</b> 0</p>
+      <p>No hay registros cargados.</p>
+    `;
+  }
+
+  const grupos = {};
+
+  lista.forEach((p) => {
+    const base = nombreBasePorCategoriaId(p.categoria_id) || p.base || p.__base_nombre || "Sin base";
+    if (!grupos[base]) grupos[base] = [];
+    grupos[base].push(p);
+  });
+
+  return `
+    <h1>Archivo personalizado</h1>
+    <p class="total-elementos-pdf"><b>Total de elementos:</b> ${lista.length}</p>
+
+    ${Object.entries(grupos).map(([base, personasGrupo]) => `
+      <section class="archivo-personalizado-grupo">
+        <h2>${escapeHtml(base)}</h2>
+        ${personasGrupo.map((p) => htmlPersonaSeccionPDF(p, !!mapaRegistros[p.id])).join("")}
+      </section>
+    `).join("")}
+  `;
+}
+
 function preguntarRegistroSimple(nombre = "este apartado") {
-  return confirm(`¿Querés imprimir/descargar ${nombre} con registros internos?\n\nAceptar = Sí\nCancelar = No`);
+  const respuesta = prompt(
+    `¿Deseás imprimir/descargar ${nombre} con registros internos?\n\n` +
+    `Escribí una opción:\n` +
+    `SI = con registros internos\n` +
+    `NO = sin registros internos\n` +
+    `EDITAR = elegir manualmente`,
+    "NO"
+  );
+
+  const r = String(respuesta || "NO").trim().toLowerCase();
+
+  if (r === "si" || r === "sí" || r === "s") return true;
+  if (r === "editar" || r === "e") {
+    return confirm(`¿Incluir registros internos para ${nombre}?\n\nAceptar = Sí\nCancelar = No`);
+  }
+
+  return false;
 }
 
 function preguntarRegistroMultiple(personasLista, accion = "imprimir") {
@@ -8815,7 +8934,7 @@ function imprimirBase() {
 
   const personasCat = personas.filter((p) => Number(p.categoria_id) === Number(catActiva.id));
   const mapa = preguntarRegistroMultiple(personasCat, "imprimir esta base");
-  imprimirHTML(`Imprimir ${catActiva.nombre}`, `<h1>Base de datos: ${escapeHtml(catActiva.nombre)}</h1>${personasCat.length ? htmlPersonasConMapaRegistro(personasCat, mapa) : "<p>No hay registros cargados.</p>"}`);
+  imprimirHTML(`Imprimir ${catActiva.nombre}`, htmlDocumentoPersonasPDF("Archivo personalizado", personasCat, mapa));
 }
 
 function descargarBase() {
@@ -8838,7 +8957,7 @@ function descargarBase() {
 
   const personasCat = personas.filter((p) => Number(p.categoria_id) === Number(catActiva.id));
   const mapa = preguntarRegistroMultiple(personasCat, "descargar esta base");
-  descargarHTML(`base-${catActiva.nombre}`, `<h1>Base de datos: ${escapeHtml(catActiva.nombre)}</h1>${personasCat.length ? htmlPersonasConMapaRegistro(personasCat, mapa) : "<p>No hay registros cargados.</p>"}`);
+  descargarHTML(`base-${catActiva.nombre}`, htmlDocumentoPersonasPDF("Archivo personalizado", personasCat, mapa));
 }
 
 async function correoBase() {
@@ -8896,7 +9015,7 @@ function imprimirPersona(id) {
   if (!p) return;
 
   const incluir = preguntarRegistroSimple(p.nombre || "esta persona");
-  imprimirHTML(`Imprimir ${p.nombre}`, htmlPersonaConOpciones(p, incluir));
+  imprimirHTML(`Imprimir ${p.nombre}`, htmlDocumentoPersonasPDF("Archivo personalizado", [p], { [p.id]: incluir }));
 }
 
 function correoPersona(id) {
@@ -8909,7 +9028,7 @@ function descargarPersona(id) {
   if (!p) return;
 
   const incluir = preguntarRegistroSimple(p.nombre || "esta persona");
-  descargarHTML(`persona-${p.nombre}`, htmlPersonaConOpciones(p, incluir));
+  descargarHTML(`persona-${p.nombre}`, htmlDocumentoPersonasPDF("Archivo personalizado", [p], { [p.id]: incluir }));
 }
 
 function imprimirRegistro(id) {
