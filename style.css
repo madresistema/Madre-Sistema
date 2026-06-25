@@ -6082,3 +6082,27 @@ textarea {
     width: 100%;
   }
 }
+
+
+/* Crear archivo - botón visible para borrar solo Seguimientos */
+.crear-archivo-item-wrap {
+  margin-bottom: 10px;
+}
+
+.btn-borrar-seguimiento-crear {
+  background: #dc2626 !important;
+  color: #fff !important;
+  border: 0 !important;
+  border-radius: 10px !important;
+  padding: 12px 14px !important;
+  font-weight: 900 !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+}
+
+@media (max-width: 760px) {
+  .crear-archivo-item-wrap {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+  }
+}
