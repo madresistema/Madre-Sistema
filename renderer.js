@@ -1,16 +1,25 @@
 /* =====================================================
-   SUPABASE COMPARTIDO SIN LOGIN
-   Todos los que abren la página ven la misma base.
-   Requiere tabla public.app_data_shared.
+   SUPABASE POR DISPOSITIVO + ADMIN
+   - Cada computadora ve solo lo que cargó ella.
+   - El administrador puede ver/cargar/editar todas con contraseña.
+   - Requiere tabla public.app_data_devices.
 ===================================================== */
 
 const SUPABASE_URL = "https://jkkllfyrndbedrlblzdc.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impra2xsZnlybmRiZWRybGJsemRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTg0NDMsImV4cCI6MjA5NzI3NDQ0M30.Gm-6ONaqGXX1b0D6sjDvD2BjNfvZoW9YkDBF0rI2Vh8";
-const SUPABASE_SHARED_ROW_ID = "global";
+
+const SUPABASE_DEVICE_TABLE = "app_data_devices";
+const DEVICE_ID_KEY = "kees_gestion_device_id";
+const DEVICE_NAME_KEY = "kees_gestion_device_name";
+const ADMIN_PASSWORD = "Bateria22";
 
 let supabaseSharedClient = null;
 let supabaseSharedCargando = false;
 let supabaseSharedTimer = null;
+let supabaseAdminActivo = false;
+let supabaseAdminEditandoDeviceId = null;
+let supabaseAdminEditandoDeviceName = "";
+let supabaseUltimaCargaRemota = null;
 
 function supabaseCompartidoConfigurado() {
   return (
@@ -35,9 +44,57 @@ function iniciarSupabaseCompartido() {
   return supabaseSharedClient;
 }
 
+function crearIdDispositivo() {
+  const rnd = Math.random().toString(36).slice(2, 10);
+  return `pc_${Date.now()}_${rnd}`;
+}
+
+function obtenerDispositivoId() {
+  let id = localStorage.getItem(DEVICE_ID_KEY);
+
+  if (!id) {
+    id = crearIdDispositivo();
+    localStorage.setItem(DEVICE_ID_KEY, id);
+  }
+
+  return id;
+}
+
+function obtenerDispositivoNombre() {
+  let nombre = localStorage.getItem(DEVICE_NAME_KEY);
+
+  if (!nombre) {
+    nombre = `Computadora ${new Date().toLocaleDateString("es-AR")} ${new Date().toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })}`;
+    localStorage.setItem(DEVICE_NAME_KEY, nombre);
+  }
+
+  return nombre;
+}
+
+function cambiarNombreDispositivo() {
+  const actual = obtenerDispositivoNombre();
+  const nuevo = prompt("Nombre para identificar esta computadora:", actual);
+
+  if (!nuevo || !nuevo.trim()) return;
+
+  localStorage.setItem(DEVICE_NAME_KEY, nuevo.trim());
+  guardarDatosCompartidosSupabaseAhora();
+  actualizarEstadoSupabaseUI();
+}
+
+function deviceIdActivoParaGuardar() {
+  return supabaseAdminEditandoDeviceId || obtenerDispositivoId();
+}
+
+function deviceNameActivoParaGuardar() {
+  return supabaseAdminEditandoDeviceName || obtenerDispositivoNombre();
+}
+
 function datosCompartidosApp() {
   return {
-    version: 1,
+    version: 2,
+    deviceId: deviceIdActivoParaGuardar(),
+    deviceName: deviceNameActivoParaGuardar(),
     categorias,
     categoriasEliminadas,
     personas,
@@ -74,6 +131,27 @@ function aplicarDatosCompartidosApp(data) {
   return true;
 }
 
+function contarArrayData(data, key) {
+  return Array.isArray(data?.[key]) ? data[key].length : 0;
+}
+
+function totalDatosData(data) {
+  return (
+    contarArrayData(data, "personas") +
+    contarArrayData(data, "registros") +
+    contarArrayData(data, "planos") +
+    contarArrayData(data, "encuestas") +
+    contarArrayData(data, "seguimientos") +
+    contarArrayData(data, "agendas") +
+    contarArrayData(data, "notasCalcular") +
+    contarArrayData(data, "libroPaginas")
+  );
+}
+
+function totalDatosActuales() {
+  return totalDatosData(datosCompartidosApp());
+}
+
 function guardarDatosLocalesSinSubir() {
   localStorage.setItem("categorias", JSON.stringify(categorias));
   localStorage.setItem("categoriasEliminadas", JSON.stringify(categoriasEliminadas));
@@ -88,27 +166,36 @@ function guardarDatosLocalesSinSubir() {
   localStorage.setItem("baseOrden", JSON.stringify(categorias.map((c) => Number(c.id))));
 }
 
+function guardarDatosLocalesConFecha() {
+  localStorage.setItem("kees_ultima_modificacion_local", new Date().toISOString());
+  guardarDatosLocalesSinSubir();
+}
+
 async function cargarDatosCompartidosSupabase() {
   if (typeof seguimientoPendienteRevision !== "undefined" && seguimientoPendienteRevision) return;
 
   const client = iniciarSupabaseCompartido();
 
   if (!client) {
-    console.warn("Supabase compartido no está configurado. La app funcionará solo local.");
+    console.warn("Supabase no está configurado. La app funcionará solo en esta computadora.");
+    actualizarEstadoSupabaseUI("local");
     return;
   }
+
+  const deviceId = deviceIdActivoParaGuardar();
 
   supabaseSharedCargando = true;
 
   const { data, error } = await client
-    .from("app_data_shared")
-    .select("data, updated_at")
-    .eq("id", SUPABASE_SHARED_ROW_ID)
+    .from(SUPABASE_DEVICE_TABLE)
+    .select("id, device_name, data, updated_at")
+    .eq("id", deviceId)
     .maybeSingle();
 
   if (error) {
-    console.warn("No se pudieron cargar datos compartidos:", error.message);
+    console.warn("No se pudieron cargar datos de Supabase:", error.message);
     supabaseSharedCargando = false;
+    actualizarEstadoSupabaseUI("error");
     return;
   }
 
@@ -117,48 +204,317 @@ async function cargarDatosCompartidosSupabase() {
     guardarDatosLocalesSinSubir();
     cargarStorage();
     renderTodo();
-    console.log("✅ Datos cargados desde Supabase:", data.updated_at);
+    supabaseUltimaCargaRemota = data.updated_at;
+    console.log("✅ Datos cargados desde Supabase:", data.device_name || data.id, data.updated_at);
   } else {
-    console.warn("⚠️ Supabase está vacío. No se suben datos vacíos automáticamente.");
+    const localData = datosCompartidosApp();
+
+    // Si esta PC ya tiene datos locales, crea su copia en Supabase.
+    // Si no tiene datos, crea la fila vacía solo para identificar el dispositivo.
+    await guardarDatosCompartidosSupabaseAhora(true);
+    console.log("✅ Dispositivo creado en Supabase:", deviceId, localData.deviceName);
   }
 
   supabaseSharedCargando = false;
+  actualizarEstadoSupabaseUI("ok");
 }
 
 function guardarDatosCompartidosSupabaseDebounce() {
   if (supabaseSharedCargando) return;
 
   clearTimeout(supabaseSharedTimer);
-  supabaseSharedTimer = setTimeout(guardarDatosCompartidosSupabaseAhora, 900);
+  supabaseSharedTimer = setTimeout(() => guardarDatosCompartidosSupabaseAhora(false), 900);
 }
 
-async function guardarDatosCompartidosSupabaseAhora() {
+async function guardarDatosCompartidosSupabaseAhora(forzar = false) {
   const client = iniciarSupabaseCompartido();
 
-  if (!client) return;
+  if (!client) {
+    actualizarEstadoSupabaseUI("local");
+    return;
+  }
+
+  const deviceId = deviceIdActivoParaGuardar();
+  const payloadData = datosCompartidosApp();
+
+  if (!forzar && totalDatosData(payloadData) === 0) {
+    console.warn("⚠️ No se suben datos completamente vacíos.");
+    return;
+  }
 
   const payload = {
-    id: SUPABASE_SHARED_ROW_ID,
-    data: datosCompartidosApp(),
+    id: deviceId,
+    device_name: deviceNameActivoParaGuardar(),
+    data: payloadData,
     updated_at: new Date().toISOString()
   };
 
   const { error } = await client
-    .from("app_data_shared")
+    .from(SUPABASE_DEVICE_TABLE)
     .upsert(payload, { onConflict: "id" });
 
   if (error) {
-    console.warn("No se pudieron guardar datos compartidos:", error.message);
+    console.warn("No se pudieron guardar datos en Supabase:", error.message);
+    actualizarEstadoSupabaseUI("error");
   } else {
-    console.log("✅ Datos guardados en Supabase.");
+    console.log("✅ Datos guardados en Supabase:", payload.device_name);
+    actualizarEstadoSupabaseUI("ok");
   }
 }
 
 function iniciarSincronizacionCompartidaSupabase() {
+  obtenerDispositivoId();
+  obtenerDispositivoNombre();
+  asegurarUIAdminDispositivos();
+  actualizarEstadoSupabaseUI();
+
   cargarDatosCompartidosSupabase();
 
-  setInterval(cargarDatosCompartidosSupabase, 20000);
+  // Revisa cambios de la misma computadora cada 25 segundos.
+  setInterval(cargarDatosCompartidosSupabase, 25000);
 }
+
+function exportarBackupJSONCompleto() {
+  const data = datosCompartidosApp();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+
+  a.href = url;
+  a.download = `backup-${nombreArchivoSeguro(deviceNameActivoParaGuardar())}-${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  URL.revokeObjectURL(url);
+}
+
+function importarBackupJSONCompleto() {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".json,application/json";
+
+  input.onchange = () => {
+    const archivo = input.files && input.files[0];
+    if (!archivo) return;
+
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(String(e.target.result || "{}"));
+        const confirmar = confirm("¿Importar este respaldo en esta computadora?\n\nEsto reemplaza la vista actual de esta PC y lo sube a Supabase.");
+        if (!confirmar) return;
+
+        aplicarDatosCompartidosApp(data);
+        guardarDatosLocalesConFecha();
+        renderTodo();
+        guardarDatosCompartidosSupabaseAhora(true);
+        alert("Respaldo importado correctamente.");
+      } catch (error) {
+        alert("El archivo no es un respaldo JSON válido.");
+      }
+    };
+
+    reader.readAsText(archivo, "utf-8");
+  };
+
+  input.click();
+}
+
+function actualizarEstadoSupabaseUI(estado = "") {
+  const el = document.getElementById("supabaseDeviceStatus");
+  if (!el) return;
+
+  const nombre = deviceNameActivoParaGuardar();
+  const total = personas.length + registros.length + planos.length + encuestas.length + seguimientos.length;
+
+  const modo = supabaseAdminEditandoDeviceId
+    ? `ADMIN editando: ${nombre}`
+    : `Esta PC: ${nombre}`;
+
+  const icono =
+    estado === "error" ? "🔴" :
+    estado === "local" ? "🟠" :
+    "🟢";
+
+  el.innerHTML = `
+    <b>${icono} ${escapeHtml(modo)}</b>
+    <span>${total} registros</span>
+  `;
+}
+
+function asegurarUIAdminDispositivos() {
+  if (document.getElementById("supabaseAdminBox")) return;
+
+  const box = document.createElement("div");
+  box.id = "supabaseAdminBox";
+  box.className = "supabase-admin-box";
+  box.innerHTML = `
+    <button type="button" class="supabase-admin-main" onclick="abrirPanelAdminDispositivos()">🔐 Admin</button>
+    <button type="button" class="supabase-admin-main secondary-admin" onclick="cambiarNombreDispositivo()">🖥️ Nombre PC</button>
+    <button type="button" class="supabase-admin-main secondary-admin" onclick="exportarBackupJSONCompleto()">⬇️ Backup</button>
+    <button type="button" class="supabase-admin-main secondary-admin" onclick="importarBackupJSONCompleto()">⬆️ Importar</button>
+    <div id="supabaseDeviceStatus" class="supabase-device-status"></div>
+  `;
+
+  document.body.appendChild(box);
+}
+
+function htmlResumenDispositivo(row) {
+  const d = row?.data || {};
+  return `
+    <small>
+      Personas: ${contarArrayData(d, "personas")} ·
+      Registros: ${contarArrayData(d, "registros")} ·
+      Seguimientos: ${contarArrayData(d, "seguimientos")} ·
+      Planos: ${contarArrayData(d, "planos")} ·
+      Encuestas: ${contarArrayData(d, "encuestas")}
+    </small>
+  `;
+}
+
+async function abrirPanelAdminDispositivos() {
+  const clave = prompt("Contraseña de administrador:");
+  if (clave !== ADMIN_PASSWORD) {
+    alert("Contraseña incorrecta.");
+    return;
+  }
+
+  supabaseAdminActivo = true;
+
+  const client = iniciarSupabaseCompartido();
+  if (!client) {
+    alert("Supabase no está configurado.");
+    return;
+  }
+
+  const { data, error } = await client
+    .from(SUPABASE_DEVICE_TABLE)
+    .select("id, device_name, data, created_at, updated_at")
+    .order("updated_at", { ascending: false });
+
+  if (error) {
+    alert("No se pudieron cargar los dispositivos: " + error.message);
+    return;
+  }
+
+  mostrarModalAdminDispositivos(Array.isArray(data) ? data : []);
+}
+
+function mostrarModalAdminDispositivos(rows) {
+  let modal = document.getElementById("modalAdminDispositivos");
+
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "modalAdminDispositivos";
+    modal.className = "modal-admin-dispositivos";
+    document.body.appendChild(modal);
+  }
+
+  const totalGeneral = rows.reduce((acc, row) => acc + totalDatosData(row.data || {}), 0);
+
+  modal.innerHTML = `
+    <div class="modal-admin-card">
+      <div class="modal-admin-head">
+        <div>
+          <h2>🔐 Administrador · Todas las computadoras</h2>
+          <p>${rows.length} dispositivo${rows.length !== 1 ? "s" : ""} · ${totalGeneral} registros totales</p>
+        </div>
+        <button onclick="cerrarPanelAdminDispositivos()">✖</button>
+      </div>
+
+      <div class="modal-admin-actions">
+        <button onclick="volverAMiDispositivo()">🖥️ Volver a mi computadora</button>
+        <button onclick="exportarBackupJSONCompleto()">⬇️ Exportar vista actual</button>
+      </div>
+
+      <div class="admin-device-list">
+        ${
+          rows.length
+            ? rows.map((row) => `
+              <div class="admin-device-card">
+                <div>
+                  <h3>${escapeHtml(row.device_name || row.id)}</h3>
+                  <p><b>ID:</b> ${escapeHtml(row.id)}</p>
+                  <p><b>Última actualización:</b> ${escapeHtml(row.updated_at || "")}</p>
+                  ${htmlResumenDispositivo(row)}
+                </div>
+                <div class="admin-device-actions">
+                  <button onclick="cargarDispositivoAdmin('${escapeHtml(row.id)}')">Ver / editar</button>
+                  <button class="danger" onclick="eliminarDispositivoAdmin('${escapeHtml(row.id)}')">Eliminar</button>
+                </div>
+              </div>
+            `).join("")
+            : `<div class="empty"><p>No hay dispositivos guardados todavía.</p></div>`
+        }
+      </div>
+    </div>
+  `;
+
+  modal.classList.add("visible");
+}
+
+function cerrarPanelAdminDispositivos() {
+  const modal = document.getElementById("modalAdminDispositivos");
+  if (modal) modal.classList.remove("visible");
+}
+
+async function cargarDispositivoAdmin(deviceId) {
+  const client = iniciarSupabaseCompartido();
+  if (!client) return;
+
+  const { data, error } = await client
+    .from(SUPABASE_DEVICE_TABLE)
+    .select("id, device_name, data, updated_at")
+    .eq("id", deviceId)
+    .maybeSingle();
+
+  if (error || !data) {
+    alert("No se pudo cargar ese dispositivo.");
+    return;
+  }
+
+  supabaseAdminEditandoDeviceId = data.id;
+  supabaseAdminEditandoDeviceName = data.device_name || data.id;
+
+  aplicarDatosCompartidosApp(data.data || {});
+  guardarDatosLocalesSinSubir();
+  cargarStorage();
+  renderTodo();
+  cerrarPanelAdminDispositivos();
+  actualizarEstadoSupabaseUI("ok");
+
+  alert(`Ahora estás viendo/editando: ${supabaseAdminEditandoDeviceName}\n\nTodo lo que modifiques se guardará en esa computadora.`);
+}
+
+function volverAMiDispositivo() {
+  supabaseAdminEditandoDeviceId = null;
+  supabaseAdminEditandoDeviceName = "";
+  cerrarPanelAdminDispositivos();
+  cargarDatosCompartidosSupabase();
+  actualizarEstadoSupabaseUI("ok");
+}
+
+async function eliminarDispositivoAdmin(deviceId) {
+  if (!confirm("¿Eliminar este dispositivo de Supabase? Esta acción no borra los datos locales de esa computadora, pero sí la copia compartida.")) return;
+
+  const client = iniciarSupabaseCompartido();
+  if (!client) return;
+
+  const { error } = await client
+    .from(SUPABASE_DEVICE_TABLE)
+    .delete()
+    .eq("id", deviceId);
+
+  if (error) {
+    alert("No se pudo eliminar: " + error.message);
+    return;
+  }
+
+  abrirPanelAdminDispositivos();
+}
+
 
 const CATEGORIAS_DEFAULT = [
   { id: 1, nombre: "Vivienda", icono: "🏠", color: "blue", total: 0 },
