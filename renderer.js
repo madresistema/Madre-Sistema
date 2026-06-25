@@ -701,17 +701,23 @@ async function elegirDispositivoAdminParaImportar() {
   const { data, error } = await client
     .from(SUPABASE_DEVICE_TABLE)
     .select("id, device_name, is_base, updated_at, created_at")
-    .order("device_name", { ascending: true });
+    .order("created_at", { ascending: true });
 
-  const rows = Array.isArray(data) ? data : [];
-  if (error || !rows.length) return { id: deviceIdActivoParaGuardar(), name: deviceNameActivoParaGuardar() };
+  const rowsOrdenadas = ordenarDispositivosAdmin(Array.isArray(data) ? data : []);
+  if (error || !rowsOrdenadas.length) return { id: deviceIdActivoParaGuardar(), name: deviceNameActivoParaGuardar() };
 
-  const lista = rows.map((r, i) => `${i + 1}) ${r.device_name || r.id}`).join("\n");
+  const lista = rowsOrdenadas.map((r, i) => {
+    const etiqueta = etiquetaDispositivoAdmin(r, i);
+    const detalle = nombreDetalleDispositivoAdmin(r, etiqueta);
+    return `${i + 1}) ${etiqueta}${detalle}`;
+  }).join("\n");
+
   const elegido = prompt(`¿En qué PC querés importar el archivo?\n\n${lista}\n\nEscribí el número:`, "1");
   const idx = Number(elegido) - 1;
 
-  if (!rows[idx]) return null;
-  return { id: rows[idx].id, name: rows[idx].device_name || rows[idx].id };
+  if (!rowsOrdenadas[idx]) return null;
+  const etiqueta = etiquetaDispositivoAdmin(rowsOrdenadas[idx], idx);
+  return { id: rowsOrdenadas[idx].id, name: rowsOrdenadas[idx].device_name || etiqueta };
 }
 
 
@@ -2304,10 +2310,515 @@ function subirArchivoPersonalizadoNube() {
   descargarHTML("archivo-personalizado-nube", htmlArchivoPersonalizado());
 }
 
+function normalizarTextoImportacion(valor) {
+  return String(valor || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
 function normalizarClaveDuplicadoPersona(p) {
-  return [p.categoria_id, p.nombre, p.barrio]
-    .map((x) => String(x || "").trim().toLowerCase())
+  const baseNombre = p.__base_nombre || nombreBasePorCategoriaId(p.categoria_id) || p.base || "";
+  return [baseNombre, p.nombre, p.barrio]
+    .map((x) => normalizarTextoImportacion(x))
     .join("|");
+}
+
+function nombreBasePorCategoriaId(catId) {
+  const cat = categorias.find((c) => Number(c.id) === Number(catId));
+  return cat ? cat.nombre : "";
+}
+
+function buscarCategoriaPorNombre(nombre) {
+  const clave = normalizarTextoImportacion(nombre);
+  return categorias.find((c) => normalizarTextoImportacion(c.nombre) === clave);
+}
+
+function asegurarCategoriaImportada(nombreBase) {
+  const nombre = String(nombreBase || "General").trim() || "General";
+  let cat = buscarCategoriaPorNombre(nombre);
+  if (cat) return cat;
+
+  const maxId = categorias.reduce((acc, c) => Math.max(acc, Number(c.id) || 0), 0);
+  cat = {
+    id: maxId + 1,
+    nombre,
+    icono: "📁",
+    color: colorAleatorioBase(),
+    total: 0
+  };
+
+  categorias.push(cat);
+  categorias = ordenarCategorias(categorias);
+  return cat;
+}
+
+function limpiarLineaPDFImportacion(linea) {
+  return String(linea || "")
+    .replace(/\u00a0/g, " ")
+    .replace(/[ \t]+/g, " ")
+    .trim();
+}
+
+function esLineaBasuraPDFImportacion(linea) {
+  const l = limpiarLineaPDFImportacion(linea);
+  if (!l) return true;
+  if (/^about:blank/i.test(l)) return true;
+  if (/^archivo personalizado$/i.test(l)) return true;
+  if (/^total de elementos:/i.test(l)) return true;
+  if (/^\d{1,2}\/\d{1,2}\/\d{2,4},?\s+\d{1,2}:\d{2}/i.test(l)) return true;
+  if (/^\d+\/\d+$/i.test(l)) return true;
+  return false;
+}
+
+function textoDespuesDeEtiqueta(linea, etiqueta) {
+  const re = new RegExp("^(?:" + etiqueta + ")\\s*:?\\s*(.*)$", "i");
+  const m = limpiarLineaPDFImportacion(linea).match(re);
+  return m ? limpiarLineaPDFImportacion(m[1] || "") : null;
+}
+
+function esLineaCampoPDFImportacion(linea) {
+  const l = limpiarLineaPDFImportacion(linea);
+  return /^(base|direcci[oó]n|direccion|celular|barrio|fecha|motivo)\b/i.test(l) ||
+    /^persona\s*[·\-]/i.test(l) ||
+    /^👤/.test(l) ||
+    esEncabezadoBasePDFImportacion(l, "");
+}
+
+function valorCampoPDFImportacion(lineas, i, etiqueta) {
+  const directo = textoDespuesDeEtiqueta(lineas[i], etiqueta);
+  if (directo === null) return null;
+
+  if (directo) return { valor: directo, saltar: 0 };
+
+  const sig = limpiarLineaPDFImportacion(lineas[i + 1] || "");
+  if (sig && !esLineaCampoPDFImportacion(sig) && !esLineaBasuraPDFImportacion(sig)) {
+    return { valor: sig, saltar: 1 };
+  }
+
+  return { valor: "", saltar: 0 };
+}
+
+function normalizarFechaImportada(fecha) {
+  const f = limpiarLineaPDFImportacion(fecha);
+  const iso = f.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if (iso) return `${iso[1]}-${String(iso[2]).padStart(2, "0")}-${String(iso[3]).padStart(2, "0")}`;
+
+  const latam = f.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
+  if (latam) {
+    const yyyy = latam[3].length === 2 ? `20${latam[3]}` : latam[3];
+    return `${yyyy}-${String(latam[2]).padStart(2, "0")}-${String(latam[1]).padStart(2, "0")}`;
+  }
+  return f || new Date().toISOString().slice(0, 10);
+}
+
+function esEncabezadoBasePDFImportacion(linea, siguiente) {
+  const l = limpiarLineaPDFImportacion(linea);
+  if (!l || esLineaBasuraPDFImportacion(l)) return false;
+  if (/^persona\s*[·\-]/i.test(l)) return false;
+  if (/^fecha\s*:/i.test(l)) return false;
+  if (/^(base|direcci[oó]n|celular|barrio|fecha|motivo)\b/i.test(l)) return false;
+  if (/^👤/.test(l)) return false;
+  return /^persona\s*[·\-]/i.test(limpiarLineaPDFImportacion(siguiente || ""));
+}
+
+async function extraerTextoPDFArchivo(archivo) {
+  if (typeof window.pdfjsLib === "undefined") {
+    throw new Error("No está cargada la librería PDF.js. Revisá index.html.");
+  }
+
+  window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs";
+
+  const buffer = await archivo.arrayBuffer();
+  const pdf = await window.pdfjsLib.getDocument({ data: new Uint8Array(buffer) }).promise;
+  const paginas = [];
+
+  for (let p = 1; p <= pdf.numPages; p++) {
+    const page = await pdf.getPage(p);
+    const content = await page.getTextContent();
+    const items = content.items || [];
+
+    const lineas = [];
+    const grupos = new Map();
+
+    items.forEach((item) => {
+      const txt = limpiarLineaPDFImportacion(item.str || "");
+      if (!txt) return;
+      const y = Math.round((item.transform && item.transform[5]) || 0);
+      const x = Math.round((item.transform && item.transform[4]) || 0);
+      const key = String(y);
+      if (!grupos.has(key)) grupos.set(key, []);
+      grupos.get(key).push({ x, txt });
+    });
+
+    Array.from(grupos.entries())
+      .sort((a, b) => Number(b[0]) - Number(a[0]))
+      .forEach(([, arr]) => {
+        arr.sort((a, b) => a.x - b.x);
+        const linea = limpiarLineaPDFImportacion(arr.map((x) => x.txt).join(" "));
+        if (linea) lineas.push(linea);
+      });
+
+    paginas.push(lineas.join("\n"));
+  }
+
+  return paginas.join("\n");
+}
+
+function parsearPersonasDesdeTextoPDF(texto) {
+  const lineas = String(texto || "")
+    .split(/\r?\n/)
+    .map(limpiarLineaPDFImportacion)
+    .filter((l) => !esLineaBasuraPDFImportacion(l));
+
+  const personasPDF = [];
+  let baseActual = "General";
+  let actual = null;
+  let leyendoMotivo = false;
+
+  function cerrarActual() {
+    if (!actual) return;
+    actual.nombre = limpiarLineaPDFImportacion(actual.nombre);
+    actual.base = limpiarLineaPDFImportacion(actual.base || baseActual || "General");
+    actual.direccion = limpiarLineaPDFImportacion(actual.direccion);
+    actual.celular = limpiarLineaPDFImportacion(actual.celular);
+    actual.barrio = limpiarLineaPDFImportacion(actual.barrio);
+    actual.fecha_carga = normalizarFechaImportada(actual.fecha_carga || new Date().toISOString().slice(0, 10));
+    actual.motivo_consulta = limpiarLineaPDFImportacion(actual.motivo_consulta);
+
+    if (actual.nombre) personasPDF.push(actual);
+    actual = null;
+    leyendoMotivo = false;
+  }
+
+  for (let i = 0; i < lineas.length; i++) {
+    const linea = lineas[i];
+    const sig = lineas[i + 1] || "";
+
+    if (esEncabezadoBasePDFImportacion(linea, sig)) {
+      cerrarActual();
+      baseActual = linea;
+      continue;
+    }
+
+    const personaMatch = linea.match(/^persona\s*[·\-]\s*(.+)$/i);
+    if (personaMatch) {
+      cerrarActual();
+      actual = {
+        nombre: limpiarLineaPDFImportacion(personaMatch[1]),
+        base: baseActual,
+        direccion: "",
+        celular: "",
+        barrio: "",
+        fecha_carga: "",
+        motivo_consulta: ""
+      };
+      continue;
+    }
+
+    if (!actual) continue;
+
+    if (/^👤/.test(linea)) {
+      const nombreIcono = limpiarLineaPDFImportacion(linea.replace(/^👤\s*/, ""));
+      if (nombreIcono && !actual.nombre) actual.nombre = nombreIcono;
+      leyendoMotivo = false;
+      continue;
+    }
+
+    const fechaTitulo = linea.match(/^fecha\s*:\s*(.+)$/i);
+    if (fechaTitulo && !actual.fecha_carga) {
+      actual.fecha_carga = fechaTitulo[1];
+      leyendoMotivo = false;
+      continue;
+    }
+
+    const baseCampo = valorCampoPDFImportacion(lineas, i, "Base");
+    if (baseCampo !== null) {
+      actual.base = baseCampo.valor || baseActual;
+      if (baseCampo.saltar) i += baseCampo.saltar;
+      leyendoMotivo = false;
+      continue;
+    }
+
+    const direccionCampo = valorCampoPDFImportacion(lineas, i, "Dirección|Direccion");
+    if (direccionCampo !== null) {
+      actual.direccion = direccionCampo.valor;
+      if (direccionCampo.saltar) i += direccionCampo.saltar;
+      leyendoMotivo = false;
+      continue;
+    }
+
+    const celularCampo = valorCampoPDFImportacion(lineas, i, "Celular");
+    if (celularCampo !== null) {
+      actual.celular = celularCampo.valor;
+      if (celularCampo.saltar) i += celularCampo.saltar;
+      leyendoMotivo = false;
+      continue;
+    }
+
+    const barrioCampo = valorCampoPDFImportacion(lineas, i, "Barrio");
+    if (barrioCampo !== null) {
+      actual.barrio = barrioCampo.valor;
+      if (barrioCampo.saltar) i += barrioCampo.saltar;
+      leyendoMotivo = false;
+      continue;
+    }
+
+    const fechaCampo = valorCampoPDFImportacion(lineas, i, "Fecha");
+    if (fechaCampo !== null) {
+      actual.fecha_carga = fechaCampo.valor;
+      if (fechaCampo.saltar) i += fechaCampo.saltar;
+      leyendoMotivo = false;
+      continue;
+    }
+
+    const motivoCampo = valorCampoPDFImportacion(lineas, i, "Motivo");
+    if (motivoCampo !== null) {
+      actual.motivo_consulta = motivoCampo.valor;
+      if (motivoCampo.saltar) i += motivoCampo.saltar;
+      leyendoMotivo = true;
+      continue;
+    }
+
+    if (leyendoMotivo && linea && !/^persona\s*[·\-]/i.test(linea)) {
+      actual.motivo_consulta = limpiarLineaPDFImportacion(`${actual.motivo_consulta || ""} ${linea}`);
+    }
+  }
+
+  cerrarActual();
+  return personasPDF;
+}
+
+function prepararPersonasImportadasPDF(personasPDF) {
+  const ahora = Date.now();
+  return personasPDF.map((p, idx) => {
+    const cat = asegurarCategoriaImportada(p.base || "General");
+    return {
+      id: ahora + idx + Math.floor(Math.random() * 9999),
+      nombre: p.nombre || "Sin nombre",
+      celular: p.celular || "",
+      direccion: p.direccion || "",
+      barrio: p.barrio || "",
+      motivo_consulta: p.motivo_consulta || "",
+      fecha_carga: normalizarFechaImportada(p.fecha_carga),
+      categoria_id: Number(cat.id),
+      __base_nombre: cat.nombre,
+      __import_tmp_id: `pdf_${idx}_${ahora}`
+    };
+  });
+}
+
+function detectarDuplicadosImportacionPersonas(items) {
+  const existentes = new Set(personas.map((p) => normalizarClaveDuplicadoPersona({ ...p, __base_nombre: nombreBasePorCategoriaId(p.categoria_id) })));
+  const vistosImportados = new Set();
+
+  items.forEach((item) => {
+    const clave = normalizarClaveDuplicadoPersona(item.persona);
+    item.duplicado = existentes.has(clave) || vistosImportados.has(clave);
+    item.seleccionado = !item.duplicado;
+    vistosImportados.add(clave);
+  });
+
+  return items;
+}
+
+function editarPersonaImportadaModal(tmpId) {
+  const item = window.__importacionPDFItems?.find((x) => x.id === tmpId);
+  if (!item) return;
+
+  const p = item.persona;
+  const nombre = prompt("Nombre:", p.nombre || "");
+  if (nombre === null) return;
+  const direccion = prompt("Dirección:", p.direccion || "");
+  if (direccion === null) return;
+  const celular = prompt("Celular:", p.celular || "");
+  if (celular === null) return;
+  const barrio = prompt("Barrio:", p.barrio || "");
+  if (barrio === null) return;
+  const fecha = prompt("Fecha de carga:", p.fecha_carga || "");
+  if (fecha === null) return;
+  const motivo = prompt("Motivo de consulta:", p.motivo_consulta || "");
+  if (motivo === null) return;
+  const baseActual = p.__base_nombre || nombreBasePorCategoriaId(p.categoria_id);
+  const base = prompt("Base de datos de destino:", baseActual || "General");
+  if (base === null) return;
+
+  const cat = asegurarCategoriaImportada(base || "General");
+  Object.assign(p, {
+    nombre,
+    direccion,
+    celular,
+    barrio,
+    fecha_carga: normalizarFechaImportada(fecha),
+    motivo_consulta: motivo,
+    categoria_id: Number(cat.id),
+    __base_nombre: cat.nombre
+  });
+
+  item.duplicado = personas.map((x) => normalizarClaveDuplicadoPersona({ ...x, __base_nombre: nombreBasePorCategoriaId(x.categoria_id) })).includes(normalizarClaveDuplicadoPersona(p));
+  renderModalImportacionPDF();
+}
+
+function toggleSeleccionImportacionPDF(tmpId) {
+  const item = window.__importacionPDFItems?.find((x) => x.id === tmpId);
+  if (!item) return;
+  item.seleccionado = !item.seleccionado;
+  renderModalImportacionPDF();
+}
+
+function editarSeleccionadosImportacionPDF() {
+  const seleccionados = (window.__importacionPDFItems || []).filter((x) => x.seleccionado);
+  if (!seleccionados.length) {
+    alert("No hay registros seleccionados para editar.");
+    return;
+  }
+  seleccionados.slice(0, 20).forEach((x) => editarPersonaImportadaModal(x.id));
+  if (seleccionados.length > 20) alert("Se editaron los primeros 20 seleccionados. Podés editar los demás con el botón Editar de cada fila.");
+}
+
+function cerrarModalImportacionPDF() {
+  const modal = document.getElementById("modalImportacionPDF");
+  if (modal) modal.remove();
+  window.__importacionPDFItems = null;
+  window.__importacionPDFTarget = null;
+}
+
+async function confirmarImportacionPDF() {
+  const items = window.__importacionPDFItems || [];
+  const seleccionados = items.filter((x) => x.seleccionado).map((x) => x.persona);
+
+  if (!seleccionados.length) {
+    alert("No seleccionaste ningún registro para importar.");
+    return;
+  }
+
+  seleccionados.forEach((p) => {
+    const limpio = { ...p };
+    delete limpio.__base_nombre;
+    delete limpio.__import_tmp_id;
+    personas.push(limpio);
+  });
+
+  guardarStorage();
+  await guardarDatosCompartidosSupabaseAhora(true);
+  renderTodo();
+  cerrarModalImportacionPDF();
+  alert(`${seleccionados.length} registros importados y guardados en Supabase.`);
+}
+
+function renderModalImportacionPDF() {
+  const items = window.__importacionPDFItems || [];
+  let modal = document.getElementById("modalImportacionPDF");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "modalImportacionPDF";
+    modal.className = "modal-importacion-pdf";
+    document.body.appendChild(modal);
+  }
+
+  const total = items.length;
+  const repetidos = items.filter((x) => x.duplicado).length;
+  const seleccionados = items.filter((x) => x.seleccionado).length;
+  const target = window.__importacionPDFTarget;
+
+  modal.innerHTML = `
+    <div class="modal-importacion-card">
+      <div class="modal-importacion-head">
+        <div>
+          <h2>⬆️ Importar PDF del sistema</h2>
+          <p>Se detectaron <b>${total}</b> registros con Nombre, Base, Dirección, Celular, Barrio, Fecha y Motivo · <b>${repetidos}</b> posibles repetidos · <b>${seleccionados}</b> seleccionados.</p>
+          <small>Destino: ${escapeHtml(target?.name || deviceNameActivoParaGuardar())}</small>
+        </div>
+        <button onclick="cerrarModalImportacionPDF()">✖</button>
+      </div>
+
+      <div class="importacion-lista">
+        ${items.map((item) => {
+          const p = item.persona;
+          return `
+            <div class="importacion-row ${item.duplicado ? "duplicado" : ""}">
+              <label class="importacion-check">
+                <input type="checkbox" ${item.seleccionado ? "checked" : ""} onchange="toggleSeleccionImportacionPDF('${escapeHtml(item.id)}')" />
+                <span>${item.duplicado ? "Repetido" : "Mandar"}</span>
+              </label>
+              <div class="importacion-info">
+                <b>${escapeHtml(p.nombre)}</b>
+                <small>${escapeHtml(p.__base_nombre || nombreBasePorCategoriaId(p.categoria_id))} · ${escapeHtml(p.barrio || "Sin barrio")} · ${escapeHtml(p.direccion || "Sin dirección")}</small>
+                <p>${escapeHtml(p.motivo_consulta || "")}</p>
+              </div>
+              <button type="button" onclick="editarPersonaImportadaModal('${escapeHtml(item.id)}')">Editar</button>
+            </div>
+          `;
+        }).join("")}
+      </div>
+
+      <div class="modal-importacion-actions">
+        <button class="secondary" onclick="cerrarModalImportacionPDF()">Cancelar</button>
+        <button onclick="editarSeleccionadosImportacionPDF()">Editar seleccionados</button>
+        <button class="primary" onclick="confirmarImportacionPDF()">Siguiente / importar</button>
+      </div>
+    </div>
+  `;
+}
+
+async function cargarContextoDispositivoParaImportar(target) {
+  const client = iniciarSupabaseCompartido();
+  if (!target || !target.id || target.id === deviceIdActivoParaGuardar() || !client) return null;
+
+  const originalContext = {
+    id: supabaseAdminEditandoDeviceId,
+    name: supabaseAdminEditandoDeviceName,
+    localData: datosCompartidosApp()
+  };
+
+  const { data } = await client
+    .from(SUPABASE_DEVICE_TABLE)
+    .select("id, device_name, data")
+    .eq("id", target.id)
+    .maybeSingle();
+
+  if (data?.data) {
+    supabaseAdminEditandoDeviceId = data.id;
+    supabaseAdminEditandoDeviceName = data.device_name || data.id;
+    aplicarDatosCompartidosApp(data.data);
+    guardarDatosLocalesSinSubir();
+    cargarStorage();
+  }
+
+  return originalContext;
+}
+
+async function importarPDFRegistros(archivo) {
+  const target = await elegirDispositivoAdminParaImportar();
+  if (!target) return;
+
+  await cargarContextoDispositivoParaImportar(target);
+
+  const texto = await extraerTextoPDFArchivo(archivo);
+  const personasPDF = parsearPersonasDesdeTextoPDF(texto);
+
+  if (!personasPDF.length) {
+    alert("No se detectaron registros de personas dentro del PDF.");
+    return;
+  }
+
+  const preparadas = prepararPersonasImportadasPDF(personasPDF).map((p, idx) => ({
+    id: p.__import_tmp_id || `pdf_${idx}_${Date.now()}`,
+    persona: p,
+    duplicado: false,
+    seleccionado: true
+  }));
+
+  detectarDuplicadosImportacionPersonas(preparadas);
+
+  const repetidos = preparadas.filter((x) => x.duplicado).length;
+  alert(`Se detectaron ${preparadas.length} registros en el PDF.\nPosibles repetidos: ${repetidos}.\n\nEn la pantalla siguiente los repetidos aparecen destildados. Podés tildar, destildar o editar antes de importar.`);
+
+  window.__importacionPDFItems = preparadas;
+  window.__importacionPDFTarget = target;
+  renderModalImportacionPDF();
 }
 
 function pedirDuplicadosAImportar(duplicados) {
@@ -2425,24 +2936,36 @@ async function importarDataEnDispositivo(target, importData) {
 function importarArchivoPersonalizadoNube() {
   const input = document.createElement("input");
   input.type = "file";
-  input.accept = ".json,.gestion,application/json";
+  input.accept = ".json,.gestion,.pdf,application/json,application/pdf";
 
   input.onchange = async () => {
     const archivo = input.files && input.files[0];
     if (!archivo) return;
 
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      try {
-        const data = JSON.parse(String(e.target.result || "{}"));
-        const target = await elegirDispositivoAdminParaImportar();
-        if (!target) return;
-        await importarDataEnDispositivo(target, data);
-      } catch (error) {
-        alert("El archivo no es válido para importar. Usá un respaldo/exportación de la app; el PDF sirve para ver/imprimir, pero no contiene datos editables para importar.");
+    const nombre = String(archivo.name || "").toLowerCase();
+    const esPdf = archivo.type === "application/pdf" || nombre.endsWith(".pdf");
+
+    try {
+      if (esPdf) {
+        await importarPDFRegistros(archivo);
+        return;
       }
-    };
-    reader.readAsText(archivo, "utf-8");
+
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const data = JSON.parse(String(e.target.result || "{}"));
+          const target = await elegirDispositivoAdminParaImportar();
+          if (!target) return;
+          await importarDataEnDispositivo(target, data);
+        } catch (error) {
+          alert("El archivo no es un JSON válido para importar.");
+        }
+      };
+      reader.readAsText(archivo, "utf-8");
+    } catch (error) {
+      alert("No se pudo importar el archivo: " + error.message);
+    }
   };
 
   input.click();
