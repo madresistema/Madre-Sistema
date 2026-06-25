@@ -11,7 +11,9 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const SUPABASE_DEVICE_TABLE = "app_data_devices";
 const DEVICE_ID_KEY = "kees_gestion_device_id";
 const DEVICE_NAME_KEY = "kees_gestion_device_name";
-const ADMIN_PASSWORD = "Bateria22";
+const DEVICE_NAME_MANUAL_KEY = "kees_gestion_device_name_manual";
+const DEVICE_BASE_KEY = "kees_gestion_device_base";
+const ADMIN_PASSWORD = "socioconsultas";
 
 let supabaseSharedClient = null;
 let supabaseSharedCargando = false;
@@ -64,7 +66,7 @@ function obtenerDispositivoNombre() {
   let nombre = localStorage.getItem(DEVICE_NAME_KEY);
 
   if (!nombre) {
-    nombre = `Computadora ${new Date().toLocaleDateString("es-AR")} ${new Date().toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })}`;
+    nombre = "PC local";
     localStorage.setItem(DEVICE_NAME_KEY, nombre);
   }
 
@@ -78,8 +80,34 @@ function cambiarNombreDispositivo() {
   if (!nuevo || !nuevo.trim()) return;
 
   localStorage.setItem(DEVICE_NAME_KEY, nuevo.trim());
-  guardarDatosCompartidosSupabaseAhora();
+  localStorage.setItem(DEVICE_NAME_MANUAL_KEY, "1");
+  if (nuevo.trim().toLowerCase() !== "compu base") localStorage.removeItem(DEVICE_BASE_KEY);
+  guardarDatosCompartidosSupabaseAhora(true);
   actualizarEstadoSupabaseUI();
+}
+
+async function asignarNombreAutomaticoDispositivoSiHaceFalta() {
+  if (localStorage.getItem(DEVICE_NAME_MANUAL_KEY) === "1") return obtenerDispositivoNombre();
+
+  const client = iniciarSupabaseCompartido();
+  if (!client) return obtenerDispositivoNombre();
+
+  const id = obtenerDispositivoId();
+  const actual = localStorage.getItem(DEVICE_NAME_KEY) || "";
+  if (actual && actual !== "PC local") return actual;
+
+  const { data } = await client
+    .from(SUPABASE_DEVICE_TABLE)
+    .select("id, device_name, created_at")
+    .order("created_at", { ascending: true });
+
+  const rows = Array.isArray(data) ? data : [];
+  const existeEsta = rows.some((r) => r.id === id);
+  const totalAntes = existeEsta ? rows.findIndex((r) => r.id === id) : rows.length;
+  const nuevoNombre = `PC ${totalAntes + 1}`;
+
+  localStorage.setItem(DEVICE_NAME_KEY, nuevoNombre);
+  return nuevoNombre;
 }
 
 function deviceIdActivoParaGuardar() {
@@ -182,13 +210,15 @@ async function cargarDatosCompartidosSupabase() {
     return;
   }
 
+  await asignarNombreAutomaticoDispositivoSiHaceFalta();
+
   const deviceId = deviceIdActivoParaGuardar();
 
   supabaseSharedCargando = true;
 
   const { data, error } = await client
     .from(SUPABASE_DEVICE_TABLE)
-    .select("id, device_name, data, updated_at")
+    .select("id, device_name, is_base, data, updated_at")
     .eq("id", deviceId)
     .maybeSingle();
 
@@ -226,6 +256,24 @@ function guardarDatosCompartidosSupabaseDebounce() {
   supabaseSharedTimer = setTimeout(() => guardarDatosCompartidosSupabaseAhora(false), 900);
 }
 
+async function guardarBackupHistoricoSupabase(deviceId, deviceName, data) {
+  const client = iniciarSupabaseCompartido();
+  if (!client || totalDatosData(data) === 0) return;
+
+  try {
+    await client
+      .from("app_data_devices_history")
+      .insert({
+        device_id: deviceId,
+        device_name: deviceName,
+        data: data,
+        created_at: new Date().toISOString()
+      });
+  } catch (e) {
+    console.warn("No se pudo crear backup histórico:", e.message);
+  }
+}
+
 async function guardarDatosCompartidosSupabaseAhora(forzar = false) {
   const client = iniciarSupabaseCompartido();
 
@@ -245,9 +293,12 @@ async function guardarDatosCompartidosSupabaseAhora(forzar = false) {
   const payload = {
     id: deviceId,
     device_name: deviceNameActivoParaGuardar(),
+    is_base: localStorage.getItem(DEVICE_BASE_KEY) === "1" || deviceNameActivoParaGuardar() === "Compu base",
     data: payloadData,
     updated_at: new Date().toISOString()
   };
+
+  await guardarBackupHistoricoSupabase(deviceId, payload.device_name, payloadData);
 
   const { error } = await client
     .from(SUPABASE_DEVICE_TABLE)
@@ -292,7 +343,7 @@ function exportarBackupJSONCompleto() {
 function importarBackupJSONCompleto() {
   const input = document.createElement("input");
   input.type = "file";
-  input.accept = ".json,application/json";
+  input.accept = ".json,.gestion,application/json";
 
   input.onchange = () => {
     const archivo = input.files && input.files[0];
@@ -345,20 +396,88 @@ function actualizarEstadoSupabaseUI(estado = "") {
 }
 
 function asegurarUIAdminDispositivos() {
-  if (document.getElementById("supabaseAdminBox")) return;
+  renderAdminPanelPrincipal();
+}
 
-  const box = document.createElement("div");
-  box.id = "supabaseAdminBox";
-  box.className = "supabase-admin-box";
+function renderAdminPanelPrincipal() {
+  const panel = document.querySelector("#panelView .container");
+  if (!panel) return;
+
+  let box = document.getElementById("supabaseAdminBox");
+  if (!box) {
+    box = document.createElement("div");
+    box.id = "supabaseAdminBox";
+    box.className = "supabase-admin-panel";
+
+    const topbar = panel.querySelector(".topbar");
+    if (topbar) topbar.insertAdjacentElement("afterend", box);
+    else panel.prepend(box);
+  }
+
   box.innerHTML = `
-    <button type="button" class="supabase-admin-main" onclick="abrirPanelAdminDispositivos()">🔐 Admin</button>
-    <button type="button" class="supabase-admin-main secondary-admin" onclick="cambiarNombreDispositivo()">🖥️ Nombre PC</button>
-    <button type="button" class="supabase-admin-main secondary-admin" onclick="exportarBackupJSONCompleto()">⬇️ Backup</button>
-    <button type="button" class="supabase-admin-main secondary-admin" onclick="importarBackupJSONCompleto()">⬆️ Importar</button>
-    <div id="supabaseDeviceStatus" class="supabase-device-status"></div>
+    <div class="admin-panel-left">
+      <h3>☁️ Guardado por computadora</h3>
+      <p>Cada PC guarda sus propios registros. El administrador puede ver y editar todas.</p>
+      <div id="supabaseDeviceStatus" class="supabase-device-status"></div>
+    </div>
+    <div class="admin-panel-actions">
+      <button type="button" class="supabase-admin-main" onclick="abrirPanelAdminDispositivos()">🔐 Entrar como admin</button>
+    </div>
   `;
 
-  document.body.appendChild(box);
+  actualizarEstadoSupabaseUI();
+}
+
+
+function ordenarDispositivosAdmin(rows) {
+  return [...(rows || [])].sort((a, b) => {
+    if (a.is_base && !b.is_base) return -1;
+    if (!a.is_base && b.is_base) return 1;
+    return String(a.created_at || a.updated_at || "").localeCompare(String(b.created_at || b.updated_at || ""));
+  });
+}
+
+function etiquetaDispositivoAdmin(row, index) {
+  if (row?.is_base || String(row?.device_name || "").toLowerCase() === "compu base") return "Compu base";
+  return `PC ${index + 1}`;
+}
+
+function nombreDetalleDispositivoAdmin(row, etiqueta) {
+  const nombre = String(row?.device_name || "").trim();
+  if (!nombre || nombre === etiqueta || nombre === "PC local") return "";
+  return ` · ${nombre}`;
+}
+
+async function marcarComoCompuBaseAdmin(deviceId) {
+  const client = iniciarSupabaseCompartido();
+  if (!client) return;
+
+  if (!confirm("¿Marcar esta computadora como Compu base?\n\nLas demás quedarán como PC 1, PC 2, etc.")) return;
+
+  const ahora = new Date().toISOString();
+
+  await client
+    .from(SUPABASE_DEVICE_TABLE)
+    .update({ is_base: false })
+    .neq("id", "__nunca__");
+
+  const { error } = await client
+    .from(SUPABASE_DEVICE_TABLE)
+    .update({ is_base: true, device_name: "Compu base", updated_at: ahora })
+    .eq("id", deviceId);
+
+  if (error) {
+    alert("No se pudo marcar como Compu base: " + error.message);
+    return;
+  }
+
+  if (deviceId === obtenerDispositivoId()) {
+    localStorage.setItem(DEVICE_NAME_KEY, "Compu base");
+    localStorage.setItem(DEVICE_NAME_MANUAL_KEY, "1");
+    localStorage.setItem(DEVICE_BASE_KEY, "1");
+  }
+
+  abrirPanelAdminDispositivos();
 }
 
 function htmlResumenDispositivo(row) {
@@ -391,7 +510,7 @@ async function abrirPanelAdminDispositivos() {
 
   const { data, error } = await client
     .from(SUPABASE_DEVICE_TABLE)
-    .select("id, device_name, data, created_at, updated_at")
+    .select("id, device_name, is_base, data, created_at, updated_at")
     .order("updated_at", { ascending: false });
 
   if (error) {
@@ -412,7 +531,8 @@ function mostrarModalAdminDispositivos(rows) {
     document.body.appendChild(modal);
   }
 
-  const totalGeneral = rows.reduce((acc, row) => acc + totalDatosData(row.data || {}), 0);
+  const rowsOrdenadas = ordenarDispositivosAdmin(rows);
+  const totalGeneral = rowsOrdenadas.reduce((acc, row) => acc + totalDatosData(row.data || {}), 0);
 
   modal.innerHTML = `
     <div class="modal-admin-card">
@@ -426,26 +546,30 @@ function mostrarModalAdminDispositivos(rows) {
 
       <div class="modal-admin-actions">
         <button onclick="volverAMiDispositivo()">🖥️ Volver a mi computadora</button>
-        <button onclick="exportarBackupJSONCompleto()">⬇️ Exportar vista actual</button>
       </div>
 
       <div class="admin-device-list">
         ${
-          rows.length
-            ? rows.map((row) => `
-              <div class="admin-device-card">
+          rowsOrdenadas.length
+            ? rowsOrdenadas.map((row, index) => {
+              const etiqueta = etiquetaDispositivoAdmin(row, index);
+              const detalleNombre = nombreDetalleDispositivoAdmin(row, etiqueta);
+              return `
+              <div class="admin-device-card ${row.is_base ? "admin-device-base" : ""}">
                 <div>
-                  <h3>${escapeHtml(row.device_name || row.id)}</h3>
+                  <h3>${escapeHtml(etiqueta)}${escapeHtml(detalleNombre)}</h3>
                   <p><b>ID:</b> ${escapeHtml(row.id)}</p>
                   <p><b>Última actualización:</b> ${escapeHtml(row.updated_at || "")}</p>
                   ${htmlResumenDispositivo(row)}
                 </div>
                 <div class="admin-device-actions">
-                  <button onclick="cargarDispositivoAdmin('${escapeHtml(row.id)}')">Ver / editar</button>
+                  <button onclick="cargarDispositivoAdmin('${escapeHtml(row.id)}')">Ver / editar datos</button>
+                  <button onclick="editarNombreDispositivoAdmin('${escapeHtml(row.id)}', '${escapeHtml(row.device_name || etiqueta)}')">Editar nombre PC</button>
+                  <button onclick="marcarComoCompuBaseAdmin('${escapeHtml(row.id)}')">⭐ Hacer compu base</button>
                   <button class="danger" onclick="eliminarDispositivoAdmin('${escapeHtml(row.id)}')">Eliminar</button>
                 </div>
-              </div>
-            `).join("")
+              </div>`;
+            }).join("")
             : `<div class="empty"><p>No hay dispositivos guardados todavía.</p></div>`
         }
       </div>
@@ -466,7 +590,7 @@ async function cargarDispositivoAdmin(deviceId) {
 
   const { data, error } = await client
     .from(SUPABASE_DEVICE_TABLE)
-    .select("id, device_name, data, updated_at")
+    .select("id, device_name, is_base, data, updated_at")
     .eq("id", deviceId)
     .maybeSingle();
 
@@ -513,6 +637,81 @@ async function eliminarDispositivoAdmin(deviceId) {
   }
 
   abrirPanelAdminDispositivos();
+}
+
+async function editarNombreDispositivoAdmin(deviceId, nombreActual = "") {
+  const client = iniciarSupabaseCompartido();
+  if (!client) return;
+
+  const nuevo = prompt("Nuevo nombre de la PC:", nombreActual || deviceId);
+  if (!nuevo || !nuevo.trim()) return;
+
+  const { error } = await client
+    .from(SUPABASE_DEVICE_TABLE)
+    .update({ device_name: nuevo.trim(), is_base: nuevo.trim().toLowerCase() === "compu base", updated_at: new Date().toISOString() })
+    .eq("id", deviceId);
+
+  if (error) {
+    alert("No se pudo editar el nombre: " + error.message);
+    return;
+  }
+
+  if (supabaseAdminEditandoDeviceId === deviceId) supabaseAdminEditandoDeviceName = nuevo.trim();
+  if (deviceId === obtenerDispositivoId()) {
+    localStorage.setItem(DEVICE_NAME_KEY, nuevo.trim());
+    localStorage.setItem(DEVICE_NAME_MANUAL_KEY, "1");
+    if (nuevo.trim().toLowerCase() === "compu base") localStorage.setItem(DEVICE_BASE_KEY, "1");
+    else localStorage.removeItem(DEVICE_BASE_KEY);
+  }
+  abrirPanelAdminDispositivos();
+}
+
+async function exportarDispositivoAdmin(deviceId) {
+  const client = iniciarSupabaseCompartido();
+  if (!client) return;
+
+  const { data, error } = await client
+    .from(SUPABASE_DEVICE_TABLE)
+    .select("id, device_name, is_base, data, updated_at")
+    .eq("id", deviceId)
+    .maybeSingle();
+
+  if (error || !data) {
+    alert("No se pudo descargar ese dispositivo.");
+    return;
+  }
+
+  const blob = new Blob([JSON.stringify(data.data || {}, null, 2)], { type: "application/json;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `backup-${nombreArchivoSeguro(data.device_name || data.id)}-${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+async function elegirDispositivoAdminParaImportar() {
+  if (!supabaseAdminActivo) return { id: deviceIdActivoParaGuardar(), name: deviceNameActivoParaGuardar() };
+
+  const client = iniciarSupabaseCompartido();
+  if (!client) return { id: deviceIdActivoParaGuardar(), name: deviceNameActivoParaGuardar() };
+
+  const { data, error } = await client
+    .from(SUPABASE_DEVICE_TABLE)
+    .select("id, device_name, is_base, updated_at, created_at")
+    .order("device_name", { ascending: true });
+
+  const rows = Array.isArray(data) ? data : [];
+  if (error || !rows.length) return { id: deviceIdActivoParaGuardar(), name: deviceNameActivoParaGuardar() };
+
+  const lista = rows.map((r, i) => `${i + 1}) ${r.device_name || r.id}`).join("\n");
+  const elegido = prompt(`¿En qué PC querés importar el archivo?\n\n${lista}\n\nEscribí el número:`, "1");
+  const idx = Number(elegido) - 1;
+
+  if (!rows[idx]) return null;
+  return { id: rows[idx].id, name: rows[idx].device_name || rows[idx].id };
 }
 
 
@@ -823,7 +1022,7 @@ function subirBaseDatos(catId) {
 
   const input = document.createElement("input");
   input.type = "file";
-  input.accept = ".json,application/json";
+  input.accept = ".json,.gestion,application/json";
 
   input.onchange = () => {
     const archivo = input.files && input.files[0];
@@ -1974,6 +2173,8 @@ function renderCrearArchivo() {
     <div class="cat-actions">
       <button onclick="imprimirArchivoPersonalizado()">🖨️ Imprimir</button>
       <button onclick="descargarArchivoPersonalizado()">⬇️ Descargar PDF</button>
+      <button onclick="subirArchivoPersonalizadoNube()">☁️ Subir a la nube</button>
+      <button onclick="importarArchivoPersonalizadoNube()">⬆️ Importar archivo</button>
     </div>
   `;
 
@@ -2084,6 +2285,167 @@ function descargarArchivoPersonalizado() {
 
   configurarRegistrosArchivoPersonalizado("descargar este archivo personalizado");
   descargarHTML("archivo-personalizado", htmlArchivoPersonalizado());
+}
+
+function subirArchivoPersonalizadoNube() {
+  if (!archivoSeleccionados.length) {
+    alert("Seleccioná al menos un registro, plano, encuesta, gráfico o seguimiento.");
+    return;
+  }
+
+  configurarRegistrosArchivoPersonalizado("subir/guardar en la nube este archivo personalizado");
+
+  alert(
+    "Se abrirá Guardar como PDF.\n\n" +
+    "Para Google Drive: elegí una carpeta de Google Drive sincronizada en esta PC o guardalo y subilo a Drive.\n\n" +
+    "Además, los datos quedan guardados automáticamente en Supabase."
+  );
+
+  descargarHTML("archivo-personalizado-nube", htmlArchivoPersonalizado());
+}
+
+function normalizarClaveDuplicadoPersona(p) {
+  return [p.categoria_id, p.nombre, p.barrio]
+    .map((x) => String(x || "").trim().toLowerCase())
+    .join("|");
+}
+
+function pedirDuplicadosAImportar(duplicados) {
+  if (!duplicados.length) return new Set();
+
+  const lista = duplicados
+    .map((d, i) => `${i + 1}) ${d.nuevo.nombre || "Sin nombre"} · ${d.nuevo.barrio || "Sin barrio"} · ${d.baseNombre || "Base"}`)
+    .join("\n");
+
+  const noImportar = prompt(
+    `Se detectaron posibles repetidos.\n\nTodos están seleccionados para importar.\n\n${lista}\n\nEscribí los números que NO querés importar separados por coma, o dejá vacío para importar todos.`,
+    ""
+  );
+
+  const ignorar = new Set();
+  String(noImportar || "").split(",").map((x) => Number(x.trim()) - 1).forEach((idx) => {
+    if (idx >= 0 && idx < duplicados.length) ignorar.add(duplicados[idx].nuevo.__import_tmp_id);
+  });
+
+  const editar = confirm("¿Querés editar algún repetido antes de importarlo?");
+  if (editar) {
+    duplicados.forEach((d, i) => {
+      if (ignorar.has(d.nuevo.__import_tmp_id)) return;
+      const ok = confirm(`¿Editar repetido ${i + 1}?\n${d.nuevo.nombre || "Sin nombre"} - ${d.nuevo.barrio || "Sin barrio"}`);
+      if (!ok) return;
+      const nombre = prompt("Nombre:", d.nuevo.nombre || "");
+      const barrio = prompt("Barrio:", d.nuevo.barrio || "");
+      const direccion = prompt("Dirección:", d.nuevo.direccion || "");
+      const celular = prompt("Celular:", d.nuevo.celular || "");
+      const motivo = prompt("Motivo de consulta:", d.nuevo.motivo_consulta || "");
+      if (nombre !== null) d.nuevo.nombre = nombre;
+      if (barrio !== null) d.nuevo.barrio = barrio;
+      if (direccion !== null) d.nuevo.direccion = direccion;
+      if (celular !== null) d.nuevo.celular = celular;
+      if (motivo !== null) d.nuevo.motivo_consulta = motivo;
+    });
+  }
+
+  return ignorar;
+}
+
+async function importarDataEnDispositivo(target, importData) {
+  const client = iniciarSupabaseCompartido();
+  let originalContext = null;
+
+  if (target && target.id && target.id !== deviceIdActivoParaGuardar()) {
+    const { data } = await client
+      .from(SUPABASE_DEVICE_TABLE)
+      .select("id, device_name, data")
+      .eq("id", target.id)
+      .maybeSingle();
+
+    if (data?.data) {
+      originalContext = { id: supabaseAdminEditandoDeviceId, name: supabaseAdminEditandoDeviceName };
+      supabaseAdminEditandoDeviceId = data.id;
+      supabaseAdminEditandoDeviceName = data.device_name || data.id;
+      aplicarDatosCompartidosApp(data.data);
+      guardarDatosLocalesSinSubir();
+      cargarStorage();
+    }
+  }
+
+  const origen = importData.data && typeof importData.data === "object" ? importData.data : importData;
+  const nuevasPersonas = Array.isArray(origen.personas) ? origen.personas : [];
+  const nuevosRegistros = Array.isArray(origen.registros) ? origen.registros : [];
+  const nuevosPlanos = Array.isArray(origen.planos) ? origen.planos : [];
+  const nuevasEncuestas = Array.isArray(origen.encuestas) ? origen.encuestas : [];
+  const nuevosSeguimientos = Array.isArray(origen.seguimientos) ? origen.seguimientos : [];
+
+  const basePorId = Object.fromEntries(categorias.map((c) => [Number(c.id), c.nombre]));
+  const existentes = new Set(personas.map(normalizarClaveDuplicadoPersona));
+  const duplicados = [];
+
+  nuevasPersonas.forEach((p, idx) => {
+    p.__import_tmp_id = `tmp_${idx}_${Date.now()}`;
+    if (existentes.has(normalizarClaveDuplicadoPersona(p))) {
+      duplicados.push({ nuevo: p, baseNombre: basePorId[Number(p.categoria_id)] || "Base" });
+    }
+  });
+
+  const ignorar = pedirDuplicadosAImportar(duplicados);
+  const idMap = {};
+
+  nuevasPersonas.forEach((p) => {
+    if (ignorar.has(p.__import_tmp_id)) return;
+    const oldId = p.id;
+    const newId = Date.now() + Math.floor(Math.random() * 999999);
+    idMap[oldId] = newId;
+    const limpio = { ...p, id: newId };
+    delete limpio.__import_tmp_id;
+    personas.push(limpio);
+  });
+
+  nuevosRegistros.forEach((r) => {
+    const newPersonaId = idMap[r.persona_id] || r.persona_id;
+    registros.push({ ...r, id: Date.now() + Math.floor(Math.random() * 999999), persona_id: newPersonaId });
+  });
+
+  nuevosPlanos.forEach((p) => planos.push({ ...p, id: Date.now() + Math.floor(Math.random() * 999999) }));
+  nuevasEncuestas.forEach((e) => encuestas.push({ ...e, id: Date.now() + Math.floor(Math.random() * 999999) }));
+  nuevosSeguimientos.forEach((s) => seguimientos.push({ ...s, id: Date.now() + Math.floor(Math.random() * 999999) }));
+
+  guardarStorage();
+  await guardarDatosCompartidosSupabaseAhora(true);
+  renderTodo();
+
+  if (originalContext) {
+    supabaseAdminEditandoDeviceId = originalContext.id;
+    supabaseAdminEditandoDeviceName = originalContext.name;
+  }
+
+  alert("Archivo importado y guardado en Supabase.");
+}
+
+function importarArchivoPersonalizadoNube() {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".json,.gestion,application/json";
+
+  input.onchange = async () => {
+    const archivo = input.files && input.files[0];
+    if (!archivo) return;
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const data = JSON.parse(String(e.target.result || "{}"));
+        const target = await elegirDispositivoAdminParaImportar();
+        if (!target) return;
+        await importarDataEnDispositivo(target, data);
+      } catch (error) {
+        alert("El archivo no es válido para importar. Usá un respaldo/exportación de la app; el PDF sirve para ver/imprimir, pero no contiene datos editables para importar.");
+      }
+    };
+    reader.readAsText(archivo, "utf-8");
+  };
+
+  input.click();
 }
 
 
@@ -2214,6 +2576,7 @@ function renderSelectCategorias() {
 
 function renderPanel() {
   activarNavPrincipal("btnPanel");
+  setTimeout(renderAdminPanelPrincipal, 0);
 
   const categoriasPanel = categorias.filter((cat) => !cat.parent && cat.tipo !== "barrio");
 
@@ -2512,6 +2875,27 @@ function bindPersonaButtons(personasFiltradas) {
 // FORMULARIO NORMAL
 // ===============================
 
+function categoriasDePersonaRelacionada(persona) {
+  if (!persona) return [];
+
+  if (persona.persona_grupo_id) {
+    const ids = personas
+      .filter((p) => p.persona_grupo_id === persona.persona_grupo_id)
+      .map((p) => Number(p.categoria_id));
+    return [...new Set(ids)];
+  }
+
+  const clave = [persona.nombre, persona.celular, persona.direccion, persona.barrio]
+    .map((x) => String(x || "").trim().toLowerCase())
+    .join("|");
+
+  const ids = personas
+    .filter((p) => [p.nombre, p.celular, p.direccion, p.barrio].map((x) => String(x || "").trim().toLowerCase()).join("|") === clave)
+    .map((p) => Number(p.categoria_id));
+
+  return [...new Set(ids.length ? ids : [Number(persona.categoria_id)])];
+}
+
 function abrirFormPersona(categoriaId = "", persona = null) {
   if (vista === "categoria") moverFormularioA("categoria");
   else moverFormularioA("panel");
@@ -2532,7 +2916,7 @@ function abrirFormPersona(categoriaId = "", persona = null) {
   $("categoriaSelect").value = principal;
 
   const seleccionadas = persona
-    ? [Number(persona.categoria_id)]
+    ? categoriasDePersonaRelacionada(persona)
     : principal
       ? [Number(principal)]
       : [];
@@ -2575,13 +2959,25 @@ function guardarPersona() {
   }
 
   if (editandoId) {
-    const categoriaId = Number($("categoriaSelect").value || categoriasDestino[0]);
-    personas = personas.map((p) =>
-      Number(p.id) === Number(editandoId)
-        ? { ...baseData, id: editandoId, categoria_id: categoriaId }
-        : p
+    const original = personas.find((p) => Number(p.id) === Number(editandoId));
+    const grupoId = original?.persona_grupo_id || `grupo_${editandoId}`;
+    const relacionados = personas.filter((p) =>
+      p.persona_grupo_id === grupoId || Number(p.id) === Number(editandoId)
     );
 
+    personas = personas.filter((p) => !(p.persona_grupo_id === grupoId || Number(p.id) === Number(editandoId)));
+
+    categoriasDestino.forEach((catId, index) => {
+      const existente = relacionados.find((p) => Number(p.categoria_id) === Number(catId));
+      personas.push({
+        ...baseData,
+        id: existente?.id || (Date.now() + index),
+        categoria_id: Number(catId),
+        persona_grupo_id: grupoId
+      });
+    });
+
+    const categoriaId = Number(categoriasDestino[0]);
     guardarStorage();
     cerrarFormPersona();
     renderTodo();
@@ -2591,12 +2987,14 @@ function guardarPersona() {
   }
 
   const primerId = Date.now();
+  const grupoId = `grupo_${primerId}`;
 
   categoriasDestino.forEach((catId, index) => {
     personas.push({
       ...baseData,
       id: primerId + index,
-      categoria_id: Number(catId)
+      categoria_id: Number(catId),
+      persona_grupo_id: grupoId
     });
   });
 
@@ -9695,4 +10093,3 @@ document.addEventListener("DOMContentLoaded", init);
 
 
 
-window.addEventListener('load', iniciarSincronizacionCompartidaSupabase);
