@@ -6040,3 +6040,45 @@ textarea {
     flex-direction: column;
   }
 }
+
+
+/* Crear archivo - borrar solo personas de Seguimientos */
+.crear-archivo-item-wrap {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+  border-radius: 12px;
+}
+
+.crear-archivo-item-wrap .crear-archivo-item {
+  margin: 0;
+  width: 100%;
+}
+
+.btn-borrar-seguimiento-crear {
+  border: none;
+  border-radius: 10px;
+  background: #dc2626;
+  color: #ffffff;
+  font-weight: 900;
+  padding: 10px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 8px 18px rgba(220, 38, 38, 0.18);
+}
+
+.btn-borrar-seguimiento-crear:hover {
+  background: #b91c1c;
+}
+
+@media (max-width: 760px) {
+  .crear-archivo-item-wrap {
+    grid-template-columns: 1fr;
+  }
+
+  .btn-borrar-seguimiento-crear {
+    width: 100%;
+  }
+}
