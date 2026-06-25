@@ -2092,6 +2092,52 @@ function agruparItemsPorSubtitulo(items) {
   return grupos;
 }
 
+
+function esItemPersonaSeguimientosCrearArchivo(item) {
+  if (!item || !String(item.id || "").startsWith("persona-")) return false;
+
+  const personaId = Number(String(item.id).replace("persona-", ""));
+  const p = personas.find((x) => Number(x.id) === personaId);
+  if (!p) return false;
+
+  const cat = categorias.find((c) => Number(c.id) === Number(p.categoria_id));
+  const nombreCat = String(cat?.nombre || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+  const subtitulo = String(item.subtitulo || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+
+  return nombreCat.includes("seguimiento") || subtitulo.includes("seguimiento");
+}
+
+function eliminarPersonaSeguimientosDesdeCrearArchivo(itemId) {
+  const personaId = Number(String(itemId || "").replace("persona-", ""));
+  const p = personas.find((x) => Number(x.id) === personaId);
+
+  if (!p) {
+    alert("No se encontró ese registro.");
+    return;
+  }
+
+  const cat = categorias.find((c) => Number(c.id) === Number(p.categoria_id));
+  const nombreCat = String(cat?.nombre || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+
+  if (!nombreCat.includes("seguimiento")) {
+    alert("Solo se puede borrar desde Crear archivo cuando pertenece a Seguimientos.");
+    return;
+  }
+
+  if (!confirm(`¿Eliminar SOLO este registro de Seguimientos?\n\n${p.nombre || "Sin nombre"}\n\nNo se borra de otras bases.`)) {
+    return;
+  }
+
+  personas = personas.filter((x) => Number(x.id) !== personaId);
+  registros = registros.filter((r) => Number(r.persona_id) !== personaId);
+  archivoSeleccionados = archivoSeleccionados.filter((id) => id !== itemId);
+  delete archivoRegistroOpciones[itemId];
+
+  guardarStorage();
+  renderTodo();
+  mostrarCrearArchivo();
+}
+
 function renderGrupoCrearArchivo(titulo, items) {
   return `
     <section class="crear-archivo-grupo">
@@ -2101,19 +2147,31 @@ function renderGrupoCrearArchivo(titulo, items) {
       </div>
 
       <div class="crear-archivo-lista">
-        ${items.map((item) => `
-          <label class="crear-archivo-item ${archivoSeleccionados.includes(item.id) ? "seleccionado" : ""}">
-            <input type="checkbox" ${archivoSeleccionados.includes(item.id) ? "checked" : ""} onchange="toggleSeleccionCrearArchivo('${item.id}')" />
-            <div>
-              <b>${escapeHtml(item.tipo)} · ${escapeHtml(item.titulo)}</b>
-              <p>${escapeHtml(item.subtitulo || "")}</p>
-              <small>
-                ${item.fecha ? `📅 ${escapeHtml(item.fecha)} · ` : ""}
-                ${escapeHtml(item.detalle || "")}
-              </small>
+        ${items.map((item) => {
+          const puedeBorrarSeguimiento = esItemPersonaSeguimientosCrearArchivo(item);
+
+          return `
+            <div class="crear-archivo-item-wrap ${archivoSeleccionados.includes(item.id) ? "seleccionado" : ""}" style="display:grid;grid-template-columns:1fr ${puedeBorrarSeguimiento ? "220px" : "0px"};gap:10px;align-items:center;">
+              <label class="crear-archivo-item ${archivoSeleccionados.includes(item.id) ? "seleccionado" : ""}" style="margin:0;">
+                <input type="checkbox" ${archivoSeleccionados.includes(item.id) ? "checked" : ""} onchange="toggleSeleccionCrearArchivo('${item.id}')" />
+                <div>
+                  <b>${escapeHtml(item.tipo)} · ${escapeHtml(item.titulo)}</b>
+                  <p>${escapeHtml(item.subtitulo || "")}</p>
+                  <small>
+                    ${item.fecha ? `📅 ${escapeHtml(item.fecha)} · ` : ""}
+                    ${escapeHtml(item.detalle || "")}
+                  </small>
+                </div>
+              </label>
+
+              ${
+                puedeBorrarSeguimiento
+                  ? `<button type="button" onclick="eliminarPersonaSeguimientosDesdeCrearArchivo('${item.id}')" style="background:#dc2626;color:white;border:none;border-radius:10px;padding:12px 14px;font-weight:900;cursor:pointer;white-space:nowrap;">🗑️ Eliminar de Seguimientos</button>`
+                  : ""
+              }
             </div>
-          </label>
-        `).join("")}
+          `;
+        }).join("")}
       </div>
     </section>
   `;
