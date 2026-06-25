@@ -5913,3 +5913,130 @@ textarea {
 .admin-device-card.admin-device-base h3::before {
   content: "⭐ ";
 }
+
+
+/* IMPORTACION PDF */
+.modal-importacion-pdf {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.68);
+  z-index: 99999;
+  padding: 20px;
+}
+.modal-importacion-pdf .modal-importacion-card,
+.modal-importacion-pdf {
+  display: flex;
+}
+.modal-importacion-card {
+  width: min(1100px, 96vw);
+  max-height: 92vh;
+  overflow: hidden;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 22px 70px rgba(0,0,0,.28);
+  display: flex;
+  flex-direction: column;
+}
+.modal-importacion-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 20px 22px;
+  border-bottom: 1px solid #e5e7eb;
+}
+.modal-importacion-head h2 {
+  margin: 0 0 6px;
+  font-size: 22px;
+}
+.modal-importacion-head p,
+.modal-importacion-head small {
+  margin: 0;
+  color: #4b5563;
+}
+.modal-importacion-head > button {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #f3f4f6;
+  color: #111827;
+  font-weight: 900;
+}
+.importacion-lista {
+  padding: 14px 20px;
+  overflow-y: auto;
+  display: grid;
+  gap: 10px;
+}
+.importacion-row {
+  display: grid;
+  grid-template-columns: 120px 1fr 90px;
+  gap: 12px;
+  align-items: center;
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  border-radius: 12px;
+  padding: 12px;
+}
+.importacion-row.duplicado {
+  border-color: #fecaca;
+  background: #fff7ed;
+}
+.importacion-check {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-weight: 900;
+  color: #1e3a8a;
+}
+.importacion-check input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+}
+.importacion-info b {
+  display: block;
+  font-size: 15px;
+}
+.importacion-info small {
+  display: block;
+  color: #4b5563;
+  margin-top: 3px;
+}
+.importacion-info p {
+  margin: 4px 0 0;
+  color: #374151;
+  font-size: 13px;
+}
+.importacion-row > button,
+.modal-importacion-actions button {
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 900;
+  background: #2563eb;
+  color: white;
+}
+.importacion-row > button {
+  background: #111827;
+}
+.modal-importacion-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid #e5e7eb;
+  padding: 16px 22px;
+}
+.modal-importacion-actions .secondary {
+  background: #e5e7eb;
+  color: #111827;
+}
+@media (max-width: 760px) {
+  .importacion-row {
+    grid-template-columns: 1fr;
+  }
+  .modal-importacion-actions {
+    flex-direction: column;
+  }
+}
