@@ -1394,14 +1394,19 @@ function documentoHTMLParaPDF(nombre, contenidoHtml) {
       <meta charset="UTF-8" />
       <title>${escapeHtml(nombre)}</title>
       <style>
-        body {
-          font-family: Arial, sans-serif;
-          padding: 30px;
-          color: #111827;
+        @page { size: A4; margin: 12mm; }
+
+        html, body {
+          margin: 0;
+          padding: 0;
           background: white;
+          color: #111827;
+          font-family: Arial, Helvetica, sans-serif;
+          font-size: 15px;
+          line-height: 1.35;
         }
 
-        h1 { margin-top: 0; }
+        body { padding: 18px 22px; }
 
         .aviso-web-pdf {
           background: #eff6ff;
@@ -1413,17 +1418,102 @@ function documentoHTMLParaPDF(nombre, contenidoHtml) {
           font-weight: 700;
         }
 
-        .card {
-          border: 1px solid #ddd;
-          border-radius: 12px;
-          padding: 18px;
-          margin-bottom: 16px;
+        h1 {
+          margin: 0 0 20px;
+          font-size: 34px;
+          font-weight: 900;
+          color: #111827;
+        }
+
+        h2 {
+          margin: 22px 0 14px;
+          font-size: 28px;
+          font-weight: 900;
+          color: #111827;
+        }
+
+        h3 {
+          margin: 18px 0 8px;
+          font-size: 22px;
+          font-weight: 900;
+          color: #111827;
+        }
+
+        p { margin: 8px 0 14px; font-size: 17px; }
+
+        .archivo-personalizado-grupo { margin-top: 18px; }
+
+        .archivo-personalizado-section {
+          break-inside: avoid;
           page-break-inside: avoid;
+          margin: 0 0 24px;
+        }
+
+        .archivo-personalizado-section > h3 {
+          font-size: 22px;
+          margin-bottom: 12px;
+        }
+
+        .archivo-personalizado-section > p {
+          font-size: 18px;
+          margin-bottom: 14px;
+        }
+
+        .persona-pdf-card,
+        .card {
+          border: 1px solid #d1d5db;
+          border-radius: 14px;
+          padding: 22px 24px;
+          margin: 14px 0 26px;
+          background: white;
+          break-inside: avoid;
+          page-break-inside: avoid;
+        }
+
+        .persona-pdf-nombre {
+          margin: 0 0 18px;
+          font-size: 30px;
+          font-weight: 900;
+        }
+
+        .persona-pdf-tabla,
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          table-layout: fixed;
+          margin-top: 8px;
+        }
+
+        .persona-pdf-tabla th,
+        .persona-pdf-tabla td,
+        th,
+        td {
+          border: 1px solid #777;
+          padding: 10px 12px;
+          vertical-align: top;
+          font-size: 20px;
+          background: white;
+          color: #111827;
+        }
+
+        .persona-pdf-tabla th,
+        th {
+          width: 26%;
+          text-align: center;
+          font-weight: 900;
+          background: white;
+        }
+
+        .persona-pdf-tabla td,
+        td {
+          text-align: left;
+          font-weight: 400;
         }
 
         pre {
           white-space: break-spaces;
-          font-size: 14px;
+          font-size: 16px;
+          font-family: Arial, Helvetica, sans-serif;
         }
 
         img {
@@ -1437,35 +1527,11 @@ function documentoHTMLParaPDF(nombre, contenidoHtml) {
           margin: 10px 0;
         }
 
-        iframe {
-          width: 100%;
-          height: 760px;
-          border: 1px solid #ddd;
-        }
+        iframe { width: 100%; height: 760px; border: 1px solid #ddd; }
 
         .espacio-libro { display:inline; width:auto; min-width:0; height:auto; background:transparent; white-space:break-spaces; }
 
-        table {
-          width: 100%;
-          border-collapse: collapse;
-        }
-
-        th,
-        td {
-          border: 1px solid #999;
-          padding: 8px;
-          vertical-align: top;
-        }
-
-        th {
-          background: #818cf8;
-        }
-
-        .print-doble {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 18px;
-        }
+        .print-doble { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 
         .pagina-print {
           border: 1px solid #d1d5db;
@@ -1483,20 +1549,19 @@ function documentoHTMLParaPDF(nombre, contenidoHtml) {
 
         @media print {
           .no-print,
-          .aviso-web-pdf {
-            display: none !important;
-          }
+          .aviso-web-pdf,
+          button { display: none !important; }
 
-          body {
-            padding: 18px;
-          }
+          body { padding: 0; }
 
-          img {
+          img,
+          .persona-pdf-card,
+          .archivo-personalizado-section {
             break-inside: avoid;
             page-break-inside: avoid;
           }
         }
-      </style>
+</style>
     </head>
     <body>${contenidoHtml}</body>
     </html>
@@ -1587,34 +1652,8 @@ function imprimirHTML(titulo, contenidoHtml) {
     return;
   }
 
-  ventana.document.write(`
-    <!doctype html>
-    <html>
-    <head>
-      <title>${escapeHtml(titulo)}</title>
-      <style>
-        body { font-family: Arial, sans-serif; padding: 30px; color: #111827; }
-        h1 { margin-top: 0; }
-        .card { border: 1px solid #ddd; border-radius: 12px; padding: 18px; margin-bottom: 16px; page-break-inside: avoid; }
-        img { max-width: 100%; max-height: 760px; object-fit: contain; display:block; margin:10px 0; }
-        iframe { width: 100%; height: 760px; border: 1px solid #ddd; }
-        pre { white-space: break-spaces; font-size: 14px; }
-        .espacio-libro{display:inline;width:auto;min-width:0;height:auto;background:transparent;white-space:break-spaces;}
-        table { width:100%; border-collapse:collapse; }
-        th, td { border: 1px solid #999; padding: 8px; vertical-align: top; }
-        th { background: #818cf8; }
-        .print-doble{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-        .pagina-print{border:1px solid #d1d5db;padding:25px;min-height:700px;background:white;page-break-inside:avoid;white-space:pre-wrap}
-        .pagina-print.lined{background-image:linear-gradient(#ffffff 39px,#dbeafe 40px);background-size:100% 40px}
-        @media print { button { display:none; } img { break-inside: avoid; page-break-inside: avoid; } }
-      </style>
-    </head>
-    <body>
-      ${contenidoHtml}
-    </body>
-    </html>
-  `);
-
+  ventana.document.open();
+  ventana.document.write(documentoHTMLParaPDF(titulo, contenidoHtml));
   ventana.document.close();
   esperarImagenesYPrint(ventana);
 }
@@ -8546,10 +8585,22 @@ function htmlRegistrosDePersona(personaId) {
 }
 
 function htmlPersonaConOpciones(p, incluirRegistros = false) {
+  const cat = categorias.find((c) => Number(c.id) === Number(p.categoria_id));
+  const baseNombre = cat?.nombre || p.base || "—";
+
   return `
-    <h1>Registro: ${escapeHtml(p.nombre || "Persona")}</h1>
-    <div class="card">
-      <pre>${escapeHtml(textoPersona(p))}</pre>
+    <div class="persona-pdf-card">
+      <h2 class="persona-pdf-nombre">👤 ${escapeHtml(p.nombre || "Persona")}</h2>
+
+      <table class="persona-pdf-tabla">
+        <tr><th>Base</th><td>${escapeHtml(baseNombre)}</td></tr>
+        <tr><th>Dirección</th><td>${escapeHtml(p.direccion || "")}</td></tr>
+        <tr><th>Celular</th><td>${escapeHtml(p.celular || "")}</td></tr>
+        <tr><th>Barrio</th><td>${escapeHtml(p.barrio || "")}</td></tr>
+        <tr><th>Fecha</th><td>${escapeHtml(p.fecha_carga || "")}</td></tr>
+        <tr><th>Motivo</th><td>${escapeHtml(p.motivo_consulta || "").replace(/\n/g, "<br>")}</td></tr>
+      </table>
+
       ${incluirRegistros ? htmlRegistrosDePersona(p.id) : ""}
     </div>
   `;
